@@ -5,7 +5,6 @@ require "extensions.all"
 require "extensions.build_events"
 require "extensions.complexity"
 require "extensions.copy_shared_libs"
-require "extensions.coverage"
 require "extensions.dependents"
 require "extensions.doxygen"
 require "extensions.generated_files"
@@ -26,7 +25,7 @@ local utilities = require "core.utilities"
 
 if _ACTION then
 
-   local sol = solution "small_examples"
+   local sol = solution "sudoku_solver"
 
    configurations{"debug", "release"}
 
