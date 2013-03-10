@@ -1,8 +1,6 @@
 
 #include "sudoku_lib/solutions/stream_solutions.hpp"
 
-#include "boost/foreach.hpp"
-
 //------------------------------------------------------------------------------
 SudokuLib::StreamSolutions::StreamSolutions(std::ostream& rStream)
    :
@@ -13,7 +11,7 @@ SudokuLib::StreamSolutions::StreamSolutions(std::ostream& rStream)
 void SudokuLib::StreamSolutions::AddSolutions
    (const SolutionListT& rSolutionList)
 {
-   BOOST_FOREACH(const Solution& rSolution, rSolutionList)
+   for(const Solution& rSolution : rSolutionList)
    {
       const std::string puzzle   (PuzzleToString(rSolution.m_puzzle));
       const std::string solution (PuzzleToString(rSolution.m_solution));

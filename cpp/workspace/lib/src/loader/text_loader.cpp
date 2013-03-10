@@ -3,7 +3,6 @@
 
 #include "sudoku_lib/loader/itext_file.hpp"
 
-#include "boost/foreach.hpp"
 #include "boost/lexical_cast.hpp"
 
 #include <stdexcept>
@@ -48,7 +47,7 @@ SudokuLib::TextLoader::TextLoader(ITextFile& rFile)
       PuzzlePtrT pPuzzle (new PuzzleT);
 
       // Validate and add each character to the puzzle
-      BOOST_FOREACH(const char& rChar, line)
+      for(const char& rChar : line)
       {
          ValueT nValue;
 

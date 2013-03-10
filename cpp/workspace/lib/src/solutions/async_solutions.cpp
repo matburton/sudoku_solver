@@ -1,8 +1,6 @@
 
 #include "sudoku_lib/solutions/async_solutions.hpp"
 
-#include "boost/foreach.hpp"
-
 #include <condition_variable>
 #include <mutex>
 #include <thread>
@@ -102,7 +100,7 @@ void SudokuLib::AsyncSolutions::AddSolutions(const SolutionListT& rSolutionList)
 
       SolutionListT newSolutionQueue (m_pImpl->m_solutionQueue);
 
-      BOOST_FOREACH(const Solution& rSolution, rSolutionList)
+      for(const Solution& rSolution : rSolutionList)
       {
          newSolutionQueue.push_back(rSolution);
       }

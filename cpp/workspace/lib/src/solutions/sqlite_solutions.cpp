@@ -3,7 +3,6 @@
 
 #include "sqlite3.h"
 
-#include "boost/foreach.hpp"
 #include "boost/format.hpp"
 
 #include <stdexcept>
@@ -101,7 +100,7 @@ void SudokuLib::SqliteSolutions::AddSolutions
 {
    SqliteTransaction sqliteTransaction (m_pDatabase);
 
-   BOOST_FOREACH(const Solution& rSolution, rSolutionList)
+   for(const Solution& rSolution : rSolutionList)
    {
       const std::string sqlStatment
          ("INSERT OR IGNORE INTO tbl_Solutions (Puzzle, Solution) VALUES (?, ?)");

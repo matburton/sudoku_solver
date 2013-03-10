@@ -1,7 +1,6 @@
 
 #include "sudoku_lib/types.hpp"
 
-#include "boost/foreach.hpp"
 #include "boost/lexical_cast.hpp"
 
 #include <stdexcept>
@@ -17,7 +16,7 @@ std::string SudokuLib::PuzzleToString(const PuzzleT& rPuzzle)
 
    std::string puzzleString;
 
-   BOOST_FOREACH(const SudokuLib::ValueT& rValue, rPuzzle)
+   for(const SudokuLib::ValueT& rValue : rPuzzle)
    {
       if (0 == rValue)
       {

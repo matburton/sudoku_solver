@@ -3,7 +3,6 @@
 #include "sudoku_lib/loader/itext_file.hpp"
 
 #include "boost/test/unit_test.hpp"
-#include "boost/foreach.hpp"
 
 #include <map>
 
@@ -45,7 +44,7 @@ BOOST_AUTO_TEST_CASE(Constructor)
                                   "3",
                                   "1234123412341235"};
 
-   BOOST_FOREACH(const std::string& rString, strings)
+   for(const std::string& rString : strings)
    {
       MockTextFile textFile;
       textFile.m_strings.push(rString);
@@ -112,12 +111,12 @@ BOOST_AUTO_TEST_CASE(GetPuzzle)
 
    MockTextFile textFile;
 
-   BOOST_FOREACH(const PuzzleStringMapT::value_type& rPair, puzzles)
+   for(const PuzzleStringMapT::value_type& rPair : puzzles)
       textFile.m_strings.push(rPair.first);
 
    SudokuLib::TextLoader textLoader (textFile);
 
-   BOOST_FOREACH(const PuzzleStringMapT::value_type& rPair, puzzles)
+   for(const PuzzleStringMapT::value_type& rPair : puzzles)
    {
       const SudokuLib::PuzzlePtrT pPuzzle (textLoader.GetPuzzle());
 
