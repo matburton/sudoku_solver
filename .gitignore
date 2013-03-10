@@ -1,0 +1,17 @@
+
+bin/
+obj/
+packages/
+
+*.bak
+*.suo
+*.user
+
+_ReSharper*
+
+~$*
+
+Thumbs.db
+Desktop.ini
+
+*.py[co]
