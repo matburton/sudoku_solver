@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+# Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost_test", "..\..\..\libraries\boost\build\test\build\windows\vs2012\boost_test.vcxproj", "{A08C402B-60B1-CF48-8F32-B5BF2782CF7C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fltk", "..\..\..\libraries\fltk\build\lib\build\windows\vs2012\fltk.vcxproj", "{2D6D187C-765A-5C42-B539-106F142E2BF3}"

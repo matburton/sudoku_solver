@@ -6,6 +6,8 @@ packages/
 *.bak
 *.suo
 *.user
+*.sdf
+*.opensdf
 
 _ReSharper*
 

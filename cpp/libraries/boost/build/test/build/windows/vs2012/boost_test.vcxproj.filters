@@ -1,6 +1,421 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{8ED6D473-C1AE-9043-995A-5DF85C6181C1}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost">
+			<UniqueIdentifier>{42BEC295-2517-DA49-8E7C-36E6B9510F58}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test">
+			<UniqueIdentifier>{40041C8D-D621-FD48-A7CE-4622D4A5B611}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\utils">
+			<UniqueIdentifier>{C4D85007-BC55-634A-9E02-AD6CFA38997C}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\utils\runtime">
+			<UniqueIdentifier>{201814D7-0A8D-CD4F-929B-A96BC5336EF4}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\utils\runtime\cla">
+			<UniqueIdentifier>{4403EC63-4D34-E241-853F-93702BC23C87}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\utils\runtime\cla\iface">
+			<UniqueIdentifier>{4B27B82C-E9F8-EB4F-AAEF-31357FBEF51F}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\utils\runtime\cla\detail">
+			<UniqueIdentifier>{0476805B-4501-2942-AE54-51AE496327E8}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\utils\runtime\file">
+			<UniqueIdentifier>{28F9E62D-F30C-BC40-BFDE-712D9A04BC03}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\utils\runtime\env">
+			<UniqueIdentifier>{1D2DC2DA-02DA-6947-8319-FFB7B6E9E245}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\utils\basic_cstring">
+			<UniqueIdentifier>{12B7E3C0-6D09-9D48-82D7-E538366E8BD0}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\utils\iterator">
+			<UniqueIdentifier>{0AA4CFA8-9126-654C-AC56-45A09F11F174}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\output">
+			<UniqueIdentifier>{33E5FFDF-E1FE-7144-9505-B673B55503FD}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\detail">
+			<UniqueIdentifier>{EAC52F1C-C35E-FC43-9F57-CB9DCAE4F266}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\boost\test\included">
+			<UniqueIdentifier>{702D4F2A-D8A3-D140-9B0C-13315A3BC736}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\libs">
+			<UniqueIdentifier>{8CAA5AA7-DD03-ED43-9D23-B52D48071DC5}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\libs\test">
+			<UniqueIdentifier>{08F9E907-27AA-9849-8ED0-027FD9F05D3E}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\libs\test\src">
+			<UniqueIdentifier>{F09769CF-17F0-E443-ADB3-69DFD8EA821A}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\auto_unit_test.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\debug.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\debug_config.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\exception_safety.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\execution_monitor.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\floating_point_comparison.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\framework.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\interaction_based.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\logged_expectations.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\minimal.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\mock_object.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\output_test_stream.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\parameterized_test.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\predicate_result.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\prg_exec_monitor.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\progress_monitor.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\results_collector.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\results_reporter.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\test_case_template.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\test_exec_monitor.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\test_observer.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\test_tools.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\unit_test.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_log.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_log_formatter.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_monitor.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_suite.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_suite_impl.hpp">
+			<Filter>src\boost\test</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\algorithm.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\assign_op.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\callback.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\class_properties.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\custom_manip.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\fixed_mapping.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\foreach.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\lazy_ostream.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\named_params.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\nullstream.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\rtti.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\trivial_singleton.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\wrap_stringstream.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\xml_printer.hpp">
+			<Filter>src\boost\test\utils</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\argument.hpp">
+			<Filter>src\boost\test\utils\runtime</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\config.hpp">
+			<Filter>src\boost\test\utils\runtime</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\configuration.hpp">
+			<Filter>src\boost\test\utils\runtime</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\fwd.hpp">
+			<Filter>src\boost\test\utils\runtime</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\interpret_argument_value.hpp">
+			<Filter>src\boost\test\utils\runtime</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\parameter.hpp">
+			<Filter>src\boost\test\utils\runtime</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\trace.hpp">
+			<Filter>src\boost\test\utils\runtime</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\validation.hpp">
+			<Filter>src\boost\test\utils\runtime</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\argument_factory.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\argv_traverser.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\basic_parameter.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\char_parameter.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\dual_name_parameter.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\fwd.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\id_policy.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\modifier.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\named_parameter.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\parameter.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\parser.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\positional_parameter.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\typed_parameter.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\validation.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\value_generator.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\value_handler.hpp">
+			<Filter>src\boost\test\utils\runtime\cla</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\iface\argument_factory.hpp">
+			<Filter>src\boost\test\utils\runtime\cla\iface</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\iface\id_policy.hpp">
+			<Filter>src\boost\test\utils\runtime\cla\iface</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\detail\argument_value_usage.hpp">
+			<Filter>src\boost\test\utils\runtime\cla\detail</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\file\config_file.hpp">
+			<Filter>src\boost\test\utils\runtime\file</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\file\config_file_iterator.hpp">
+			<Filter>src\boost\test\utils\runtime\file</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\env\environment.hpp">
+			<Filter>src\boost\test\utils\runtime\env</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\env\fwd.hpp">
+			<Filter>src\boost\test\utils\runtime\env</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\env\modifier.hpp">
+			<Filter>src\boost\test\utils\runtime\env</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\env\variable.hpp">
+			<Filter>src\boost\test\utils\runtime\env</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\basic_cstring.hpp">
+			<Filter>src\boost\test\utils\basic_cstring</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\basic_cstring_fwd.hpp">
+			<Filter>src\boost\test\utils\basic_cstring</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\bcs_char_traits.hpp">
+			<Filter>src\boost\test\utils\basic_cstring</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\compare.hpp">
+			<Filter>src\boost\test\utils\basic_cstring</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\io.hpp">
+			<Filter>src\boost\test\utils\basic_cstring</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\iterator\ifstream_line_iterator.hpp">
+			<Filter>src\boost\test\utils\iterator</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\iterator\input_iterator_facade.hpp">
+			<Filter>src\boost\test\utils\iterator</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\iterator\istream_line_iterator.hpp">
+			<Filter>src\boost\test\utils\iterator</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\utils\iterator\token_iterator.hpp">
+			<Filter>src\boost\test\utils\iterator</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\output\compiler_log_formatter.hpp">
+			<Filter>src\boost\test\output</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\output\plain_report_formatter.hpp">
+			<Filter>src\boost\test\output</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\output\xml_log_formatter.hpp">
+			<Filter>src\boost\test\output</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\output\xml_report_formatter.hpp">
+			<Filter>src\boost\test\output</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\detail\config.hpp">
+			<Filter>src\boost\test\detail</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\detail\enable_warnings.hpp">
+			<Filter>src\boost\test\detail</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\detail\fwd_decl.hpp">
+			<Filter>src\boost\test\detail</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\detail\global_typedef.hpp">
+			<Filter>src\boost\test\detail</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\detail\log_level.hpp">
+			<Filter>src\boost\test\detail</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\detail\suppress_warnings.hpp">
+			<Filter>src\boost\test\detail</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\detail\unit_test_parameters.hpp">
+			<Filter>src\boost\test\detail</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\detail\workaround.hpp">
+			<Filter>src\boost\test\detail</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\included\prg_exec_monitor.hpp">
+			<Filter>src\boost\test\included</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\included\test_exec_monitor.hpp">
+			<Filter>src\boost\test\included</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\included\unit_test.hpp">
+			<Filter>src\boost\test\included</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\..\..\src\boost\test\included\unit_test_framework.hpp">
+			<Filter>src\boost\test\included</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
 		<ClCompile Include="..\..\init_unit_test_suite.cpp" />
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\compiler_log_formatter.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\debug.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\exception_safety.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\execution_monitor.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\framework.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\interaction_based.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\logged_expectations.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\plain_report_formatter.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\progress_monitor.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\results_collector.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\results_reporter.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\test_tools.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_log.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_main.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_monitor.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_parameters.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_suite.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\xml_log_formatter.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\libs\test\src\xml_report_formatter.cpp">
+			<Filter>src\libs\test\src</Filter>
+		</ClCompile>
 	</ItemGroup>
 </Project>

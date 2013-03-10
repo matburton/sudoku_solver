@@ -194,7 +194,147 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\boost\test\auto_unit_test.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\debug.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\debug_config.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\exception_safety.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\execution_monitor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\floating_point_comparison.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\framework.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\interaction_based.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\logged_expectations.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\minimal.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\mock_object.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\output_test_stream.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\parameterized_test.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\predicate_result.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\prg_exec_monitor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\progress_monitor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\results_collector.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\results_reporter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\test_case_template.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\test_exec_monitor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\test_observer.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\test_tools.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\unit_test.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_log.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_log_formatter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_monitor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_suite.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\unit_test_suite_impl.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\algorithm.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\assign_op.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\callback.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\class_properties.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\custom_manip.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\fixed_mapping.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\foreach.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\lazy_ostream.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\named_params.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\nullstream.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\rtti.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\trivial_singleton.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\wrap_stringstream.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\xml_printer.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\argument.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\config.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\configuration.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\fwd.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\interpret_argument_value.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\parameter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\trace.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\validation.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\argument_factory.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\argv_traverser.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\basic_parameter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\char_parameter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\dual_name_parameter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\fwd.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\id_policy.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\modifier.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\named_parameter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\parameter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\parser.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\positional_parameter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\typed_parameter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\validation.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\value_generator.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\value_handler.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\iface\argument_factory.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\iface\id_policy.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\cla\detail\argument_value_usage.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\file\config_file.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\file\config_file_iterator.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\env\environment.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\env\fwd.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\env\modifier.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\runtime\env\variable.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\basic_cstring.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\basic_cstring_fwd.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\bcs_char_traits.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\compare.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\basic_cstring\io.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\iterator\ifstream_line_iterator.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\iterator\input_iterator_facade.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\iterator\istream_line_iterator.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\utils\iterator\token_iterator.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\output\compiler_log_formatter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\output\plain_report_formatter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\output\xml_log_formatter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\output\xml_report_formatter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\detail\config.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\detail\enable_warnings.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\detail\fwd_decl.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\detail\global_typedef.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\detail\log_level.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\detail\suppress_warnings.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\detail\unit_test_parameters.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\detail\workaround.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\included\prg_exec_monitor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\included\test_exec_monitor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\included\unit_test.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\boost\test\included\unit_test_framework.hpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\..\init_unit_test_suite.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\compiler_log_formatter.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\debug.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\exception_safety.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\execution_monitor.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\framework.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\interaction_based.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\logged_expectations.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\plain_report_formatter.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\progress_monitor.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\results_collector.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\results_reporter.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\test_tools.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_log.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_main.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_monitor.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_parameters.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\unit_test_suite.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\xml_log_formatter.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\libs\test\src\xml_report_formatter.cpp">
     </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
