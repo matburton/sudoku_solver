@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{B7EFB14D-C181-BF42-972B-E7B1A12D43CE}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\sudoku_fltk_gui">
+			<UniqueIdentifier>{46FBB1A6-4117-8643-AF68-2B53780DDE39}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\sudoku_fltk_gui\solutions">
+			<UniqueIdentifier>{06A96732-A435-F046-9A0F-914BE21FB256}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="resources">
+			<UniqueIdentifier>{195E3C24-0685-D14C-8A9B-E4E71DE6C977}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\..\src\sudoku_fltk_gui\solutions\solutions_progress.hpp">
+			<Filter>src\sudoku_fltk_gui\solutions</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\..\src\sudoku_fltk_gui\main.cpp">
+			<Filter>src\sudoku_fltk_gui</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\sudoku_fltk_gui\solutions\solutions_progress.cpp">
+			<Filter>src\sudoku_fltk_gui\solutions</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<ResourceCompile Include="..\..\..\resources\resources.rc">
+			<Filter>resources</Filter>
+		</ResourceCompile>
+	</ItemGroup>
+</Project>

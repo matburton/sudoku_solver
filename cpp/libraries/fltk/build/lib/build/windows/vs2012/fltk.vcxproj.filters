@@ -1,0 +1,864 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{63527B7D-334E-9345-8C5D-182DC53AE3C5}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\src">
+			<UniqueIdentifier>{99E2604B-D3BA-7540-AE09-C2780A8C9363}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\FL">
+			<UniqueIdentifier>{B357CA91-7921-FA48-A60C-97EC83337F26}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\..\..\..\src\src\filename_absolute.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\filename_expand.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\filename_ext.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\filename_isdir.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\filename_list.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\filename_match.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\filename_setext.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_abort.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_add_idle.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Adjuster.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_arc.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_arci.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_arg.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_ask.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Bitmap.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_BMP_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Box.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_boxtype.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Browser.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Browser_.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Browser_load.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Button.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Chart.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Check_Browser.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Check_Button.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Choice.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Clock.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_color.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Color_Chooser.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_compose.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Counter.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_cursor.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_curve.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Dial.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_diamond_box.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_display.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_dnd.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Double_Window.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_draw.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_draw_image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_draw_pixmap.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_encoding_latin1.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_encoding_mac_roman.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_engraved_label.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_File_Browser.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_File_Chooser.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_File_Chooser2.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_file_dir.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_File_Icon.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_File_Icon2.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_File_Input.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_font.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_get_key.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_get_system_colors.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_GIF_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Gl_Choice.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Gl_Overlay.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Gl_Window.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_grab.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Group.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_gtk.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Help_Dialog.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Help_Dialog_Dox.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Help_View.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_images_core.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Input.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Input_.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_JPEG_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_labeltype.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Light_Button.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_line_style.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_lock.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Menu.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Menu_.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Menu_add.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Menu_Bar.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Menu_Button.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Menu_global.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Menu_Window.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Multi_Label.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_open_uri.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_oval_box.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_overlay.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_overlay_visual.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Overlay_Window.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_own_colormap.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Pack.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Pixmap.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_plastic.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_PNG_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_PNM_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Positioner.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Preferences.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Progress.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_read_image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_rect.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Repeat_Button.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Return_Button.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Roller.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_rounded_box.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_round_box.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Round_Button.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Scroll.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Scrollbar.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_scroll_area.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_set_font.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_set_fonts.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_shadow_box.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Shared_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_shortcut.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_show_colormap.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Single_Window.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Slider.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_symbols.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Sys_Menu_Bar.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Tabs.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Text_Buffer.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Text_Display.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Text_Editor.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Tile.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Tiled_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Tooltip.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_utf8.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Valuator.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Value_Input.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Value_Output.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Value_Slider.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_vertex.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_visual.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Widget.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Window.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Window_fullscreen.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Window_hotspot.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Window_iconize.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_Wizard.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_x.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_XBM_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\Fl_XPM_Image.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\forms_bitmap.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\forms_compatability.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\forms_free.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\forms_fselect.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\forms_pixmap.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\forms_timer.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\freeglut_geometry.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\freeglut_stroke_mono_roman.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\freeglut_stroke_roman.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\freeglut_teapot.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\glut_compatability.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\glut_font.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\gl_draw.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\gl_start.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\screen_xywh.cxx">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\flstring.c">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_call_main.c">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\fl_utf.c">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\numericsort.c">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\scandir.c">
+			<Filter>src\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\vsnprintf.c">
+			<Filter>src\src</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\..\..\..\src\FL\Enumerations.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\filename.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Adjuster.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\fl_ask.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Bitmap.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_BMP_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Box.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Browser.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Browser_.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Cairo.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Cairo_Window.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Chart.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Check_Browser.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Check_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Choice.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Clock.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Color_Chooser.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Counter.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Dial.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Double_Window.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\fl_draw.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Export.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_File_Browser.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_File_Chooser.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_File_Icon.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_File_Input.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Fill_Dial.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Fill_Slider.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Float_Input.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_FormsBitmap.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_FormsPixmap.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Free.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_GIF_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Gl_Window.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Group.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Help_Dialog.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Help_View.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Hold_Browser.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Hor_Fill_Slider.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Hor_Nice_Slider.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Hor_Slider.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Hor_Value_Slider.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Input.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Input_.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Input_Choice.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Int_Input.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_JPEG_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Light_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Line_Dial.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Menu.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Menu_.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Menu_Bar.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Menu_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Menu_Item.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Menu_Window.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\fl_message.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Multiline_Input.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Multiline_Output.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Multi_Browser.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Multi_Label.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Nice_Slider.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Object.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Output.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Overlay_Window.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Pack.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Pixmap.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_PNG_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_PNM_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Positioner.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Preferences.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Progress.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Radio_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Radio_Light_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Radio_Round_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Repeat_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Return_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_RGB_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Roller.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Round_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Round_Clock.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Scroll.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Scrollbar.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Secret_Input.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Select_Browser.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Shared_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\fl_show_colormap.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\fl_show_input.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Simple_Counter.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Single_Window.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Slider.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Spinner.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Sys_Menu_Bar.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Tabs.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Text_Buffer.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Text_Display.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Text_Editor.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Tile.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Tiled_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Timer.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Toggle_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Toggle_Light_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Toggle_Round_Button.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Tooltip.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Valuator.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Value_Input.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Value_Output.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Value_Slider.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Widget.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Window.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_Wizard.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_XBM_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\Fl_XPM_Image.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\forms.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\glut.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\gl_draw.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\mac.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\win32.H">
+			<Filter>src\FL</Filter>
+		</None>
+		<None Include="..\..\..\..\..\src\FL\x.H">
+			<Filter>src\FL</Filter>
+		</None>
+	</ItemGroup>
+</Project>

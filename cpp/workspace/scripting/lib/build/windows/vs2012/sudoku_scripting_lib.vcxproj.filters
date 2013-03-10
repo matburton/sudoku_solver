@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="include">
+			<UniqueIdentifier>{A21ECCAD-2541-5B45-8EE2-A12DD534E207}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="include\sudoku_scripting_lib">
+			<UniqueIdentifier>{F5AAAD17-8B60-4C44-A223-851109E06A8D}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src">
+			<UniqueIdentifier>{B8513583-3093-B04C-AB61-EB52937D6DD9}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\sudoku_scripting_lib">
+			<UniqueIdentifier>{B2D73536-91B1-0647-9DBA-CB9DD3346B96}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\sudoku_scripting_lib\loader">
+			<UniqueIdentifier>{2DF4AF31-65FA-C542-80C0-A5EC8D12FD63}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\sudoku_scripting_lib\solutions">
+			<UniqueIdentifier>{74C6B529-B5C5-084F-B5B1-5DBBEC08FE8E}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\..\include\sudoku_scripting_lib\sudoku.hpp">
+			<Filter>include\sudoku_scripting_lib</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_scripting_lib\types.hpp">
+			<Filter>include\sudoku_scripting_lib</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\sudoku_scripting_lib\loader\vector_source.hpp">
+			<Filter>src\sudoku_scripting_lib\loader</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\sudoku_scripting_lib\solutions\cache_solutions.hpp">
+			<Filter>src\sudoku_scripting_lib\solutions</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\..\src\sudoku_scripting_lib\sudoku.cpp">
+			<Filter>src\sudoku_scripting_lib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\sudoku_scripting_lib\loader\vector_source.cpp">
+			<Filter>src\sudoku_scripting_lib\loader</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\sudoku_scripting_lib\solutions\cache_solutions.cpp">
+			<Filter>src\sudoku_scripting_lib\solutions</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\..\include\sudoku.i">
+			<Filter>include</Filter>
+		</None>
+	</ItemGroup>
+</Project>

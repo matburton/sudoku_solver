@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{8EBD1EF3-CDB6-5F49-A6D1-6CCA6616ED1F}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\src">
+			<UniqueIdentifier>{8D782A61-4C95-9F49-A28F-893897C56BF7}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\src\xutf8">
+			<UniqueIdentifier>{CCE52C31-B897-1241-8A4C-21165953ACBC}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\..\..\..\src\src\xutf8\case.c">
+			<Filter>src\src\xutf8</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\xutf8\is_right2left.c">
+			<Filter>src\src\xutf8</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\..\..\src\src\xutf8\is_spacing.c">
+			<Filter>src\src\xutf8</Filter>
+		</ClCompile>
+	</ItemGroup>
+</Project>

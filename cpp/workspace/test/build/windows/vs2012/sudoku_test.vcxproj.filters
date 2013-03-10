@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{14B3EA67-B325-FD4B-99F1-6BEAA3CB7778}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\loader">
+			<UniqueIdentifier>{32F41AC2-B230-D349-8BE5-56E817EDB86B}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\solutions">
+			<UniqueIdentifier>{A245685D-C023-B94F-9CE0-432BAA2C455E}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\..\src\test_types.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\loader\test_stoppable_loader.cpp">
+			<Filter>src\loader</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\loader\test_text_loader.cpp">
+			<Filter>src\loader</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\loader\test_thread_safe_loader.cpp">
+			<Filter>src\loader</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\test_multicast_solutions.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\test_stream_solutions.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\test_thread_safe_solutions.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+	</ItemGroup>
+</Project>

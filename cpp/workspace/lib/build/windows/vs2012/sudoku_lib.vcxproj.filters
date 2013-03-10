@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="include">
+			<UniqueIdentifier>{06C8DACF-257B-844A-A58B-8AAFDEEA5050}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="include\sudoku_lib">
+			<UniqueIdentifier>{8F027997-11EF-B64C-990B-F6FCAF928C9C}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="include\sudoku_lib\loader">
+			<UniqueIdentifier>{7259101A-11BA-F14E-A8EC-8EAC2418D6B9}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="include\sudoku_lib\solutions">
+			<UniqueIdentifier>{1E11C6B2-8DA2-B84A-A96E-DC67AE393237}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="include\sudoku_lib\worker">
+			<UniqueIdentifier>{891F9028-8056-4F49-B173-0F7DA0B8FE6F}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src">
+			<UniqueIdentifier>{B25240E9-FB6A-7745-BDCF-732E2E374102}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\loader">
+			<UniqueIdentifier>{ED715DDD-4DE1-DB4B-9ACC-DFD626D3A4D1}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\solutions">
+			<UniqueIdentifier>{9A096B61-CE56-4242-B7E2-9EC6D2B0AD53}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\worker">
+			<UniqueIdentifier>{7D6D08A5-A5A6-0A42-867C-B3A0870E7E35}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\worker\lua">
+			<UniqueIdentifier>{E8E73D7D-9225-ED48-83DC-637E692BAEF5}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\..\include\sudoku_lib\types.hpp">
+			<Filter>include\sudoku_lib</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\loader\iloader.hpp">
+			<Filter>include\sudoku_lib\loader</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\loader\itext_file.hpp">
+			<Filter>include\sudoku_lib\loader</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\loader\iup_front_loader.hpp">
+			<Filter>include\sudoku_lib\loader</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\loader\stoppable_loader.hpp">
+			<Filter>include\sudoku_lib\loader</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\loader\text_file.hpp">
+			<Filter>include\sudoku_lib\loader</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\loader\text_loader.hpp">
+			<Filter>include\sudoku_lib\loader</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\loader\thread_safe_loader.hpp">
+			<Filter>include\sudoku_lib\loader</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\solutions\async_solutions.hpp">
+			<Filter>include\sudoku_lib\solutions</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\solutions\isolutions.hpp">
+			<Filter>include\sudoku_lib\solutions</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\solutions\multicast_solutions.hpp">
+			<Filter>include\sudoku_lib\solutions</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\solutions\null_solutions.hpp">
+			<Filter>include\sudoku_lib\solutions</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\solutions\solution.hpp">
+			<Filter>include\sudoku_lib\solutions</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\solutions\sqlite_solutions.hpp">
+			<Filter>include\sudoku_lib\solutions</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\solutions\stream_solutions.hpp">
+			<Filter>include\sudoku_lib\solutions</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\solutions\thread_safe_solutions.hpp">
+			<Filter>include\sudoku_lib\solutions</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\worker\iworker.hpp">
+			<Filter>include\sudoku_lib\worker</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\worker\lua_worker.hpp">
+			<Filter>include\sudoku_lib\worker</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\include\sudoku_lib\worker\thread_worker.hpp">
+			<Filter>include\sudoku_lib\worker</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\..\src\types.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\loader\stoppable_loader.cpp">
+			<Filter>src\loader</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\loader\text_file.cpp">
+			<Filter>src\loader</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\loader\text_loader.cpp">
+			<Filter>src\loader</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\loader\thread_safe_loader.cpp">
+			<Filter>src\loader</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\async_solutions.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\multicast_solutions.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\null_solutions.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\solution.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\sqlite_solutions.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\stream_solutions.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\solutions\thread_safe_solutions.cpp">
+			<Filter>src\solutions</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\worker\lua_worker.cpp">
+			<Filter>src\worker</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\worker\thread_worker.cpp">
+			<Filter>src\worker</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\..\src\worker\lua\deductions.lua">
+			<Filter>src\worker\lua</Filter>
+		</None>
+		<None Include="..\..\..\src\worker\lua\disable_require.lua">
+			<Filter>src\worker\lua</Filter>
+		</None>
+		<None Include="..\..\..\src\worker\lua\enable_require.lua">
+			<Filter>src\worker\lua</Filter>
+		</None>
+		<None Include="..\..\..\src\worker\lua\grid.lua">
+			<Filter>src\worker\lua</Filter>
+		</None>
+		<None Include="..\..\..\src\worker\lua\interop.lua">
+			<Filter>src\worker\lua</Filter>
+		</None>
+		<None Include="..\..\..\src\worker\lua\iterators.lua">
+			<Filter>src\worker\lua</Filter>
+		</None>
+		<None Include="..\..\..\src\worker\lua\solvers.lua">
+			<Filter>src\worker\lua</Filter>
+		</None>
+		<None Include="..\..\..\src\worker\lua\square.lua">
+			<Filter>src\worker\lua</Filter>
+		</None>
+		<None Include="..\..\..\src\worker\lua\submodule.lua">
+			<Filter>src\worker\lua</Filter>
+		</None>
+	</ItemGroup>
+</Project>

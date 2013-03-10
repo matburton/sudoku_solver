@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{AF22BC7C-14F6-E84A-AD70-DE8817CCFEFA}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\Source">
+			<UniqueIdentifier>{D01665B3-4FFA-0E45-8ED6-05F9FA1B0553}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\Source\CParse">
+			<UniqueIdentifier>{0F6839FD-F40C-004A-B229-01AA881391DF}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\Source\DOH">
+			<UniqueIdentifier>{5BA1FED2-4C93-3B4C-AFEF-8E5050E05D09}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\Source\Include">
+			<UniqueIdentifier>{207599E5-D4A4-C944-8E93-571EDE1B1288}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\Source\Modules">
+			<UniqueIdentifier>{C39337EA-7867-8F4F-BF21-4323A0C9F354}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\Source\Preprocessor">
+			<UniqueIdentifier>{B7614DEC-90BC-864B-886D-4407C132E979}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\Source\Swig">
+			<UniqueIdentifier>{DE8F2466-7C64-C947-B172-B0FA99EEF21B}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\..\src\Source\CParse\cparse.h">
+			<Filter>src\Source\CParse</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\CParse\parser.h">
+			<Filter>src\Source\CParse</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\DOH\doh.h">
+			<Filter>src\Source\DOH</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\DOH\dohint.h">
+			<Filter>src\Source\DOH</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Include\swigwarn.h">
+			<Filter>src\Source\Include</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Modules\swigmod.h">
+			<Filter>src\Source\Modules</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Preprocessor\preprocessor.h">
+			<Filter>src\Source\Preprocessor</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Swig\swig.h">
+			<Filter>src\Source\Swig</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Swig\swigfile.h">
+			<Filter>src\Source\Swig</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Swig\swigopt.h">
+			<Filter>src\Source\Swig</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Swig\swigparm.h">
+			<Filter>src\Source\Swig</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Swig\swigscan.h">
+			<Filter>src\Source\Swig</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Swig\swigtree.h">
+			<Filter>src\Source\Swig</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\src\Source\Swig\swigwrap.h">
+			<Filter>src\Source\Swig</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\..\src\Source\CParse\cscanner.c">
+			<Filter>src\Source\CParse</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\CParse\parser.c">
+			<Filter>src\Source\CParse</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\CParse\templ.c">
+			<Filter>src\Source\CParse</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\CParse\util.c">
+			<Filter>src\Source\CParse</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\DOH\base.c">
+			<Filter>src\Source\DOH</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\DOH\file.c">
+			<Filter>src\Source\DOH</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\DOH\fio.c">
+			<Filter>src\Source\DOH</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\DOH\hash.c">
+			<Filter>src\Source\DOH</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\DOH\list.c">
+			<Filter>src\Source\DOH</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\DOH\memory.c">
+			<Filter>src\Source\DOH</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\DOH\string.c">
+			<Filter>src\Source\DOH</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\DOH\void.c">
+			<Filter>src\Source\DOH</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Preprocessor\cpp.c">
+			<Filter>src\Source\Preprocessor</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Preprocessor\expr.c">
+			<Filter>src\Source\Preprocessor</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\cwrap.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\deprecate.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\error.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\fragment.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\getopt.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\include.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\misc.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\naming.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\parms.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\scanner.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\stype.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\symbol.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\tree.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\typemap.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\typeobj.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\typesys.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\warn.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Swig\wrapfunc.c">
+			<Filter>src\Source\Swig</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\allegrocl.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\allocate.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\browser.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\cffi.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\chicken.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\clisp.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\contract.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\csharp.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\directors.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\emit.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\guile.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\java.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\lang.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\lua.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\main.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\modula3.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\module.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\mzscheme.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\ocaml.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\octave.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\overload.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\perl5.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\php.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\pike.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\python.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\r.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\ruby.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\s-exp.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\swigmain.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\tcl8.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\typepass.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\uffi.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\utils.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\src\Source\Modules\xml.cxx">
+			<Filter>src\Source\Modules</Filter>
+		</ClCompile>
+	</ItemGroup>
+</Project>
