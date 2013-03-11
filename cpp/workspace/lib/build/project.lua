@@ -6,7 +6,7 @@ kind     "StaticLib"
 files{"../include/sudoku_lib/**.hpp",
       "../src/**pp",
       "../src/**.lua"}
-      
+
 headerLinks{"boost"}
 
 links{"lua_library", "sqlite"}
