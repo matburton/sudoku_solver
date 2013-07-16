@@ -17,7 +17,7 @@ let split grid =
 
    let coordinatesToSplit = grid.AllCoords
                             |> List.map withPossibilityCount
-                            |> List.filter (fst >> (>) 1)
+                            |> List.filter ((<) 1 << fst)
                             |> List.minBy fst
                             |> snd
 

@@ -30,7 +30,7 @@ namespace SudokuSolver.Console
             {
                 while (exception != null)
                 {
-                    System.Console.WriteLine(exception.Message);
+                    System.Console.Error.WriteLine(exception.Message);
 
                     exception = exception.InnerException;
                 }
