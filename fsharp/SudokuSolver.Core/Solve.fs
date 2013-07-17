@@ -18,7 +18,7 @@ let solutions grid =
                       if isComplete grid then
 
                          yield  grid
-                         yield! (solutions' tail)
+                         yield! solutions' tail
 
                       else if isPossible grid then
 
@@ -27,9 +27,9 @@ let solutions grid =
                             |> List.partition isComplete
 
                          yield! complete
-                         yield! (solutions' (List.append incomplete tail))
+                         yield! solutions' (List.append incomplete tail)
 
-                      else yield! (solutions' tail)
+                      else yield! solutions' tail
    }
    
    solutions' [grid]

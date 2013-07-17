@@ -15,13 +15,11 @@ open SudokuSolver.Core.Square
 /// Order is as follows: [1; 2] and [3; 4]
 /// returns [[1; 3]; [2; 3]; [1; 3]; [2; 4]]
 ///
-let rec private permute listA listB =
+let rec private permute listA =
 
    let pairWith list i = List.map (fun j -> j, i) list
 
-   listB
-   |> List.map (pairWith listA)
-   |> List.concat
+   List.map (pairWith listA) >> List.concat
 
 /// Returns the coordinates for each sector in a random access matrix
 ///
@@ -48,6 +46,10 @@ let private getSectorCoords sectorSize =
 let internal emptyGrid =
 
    let emptyGrid' sectorSize =
+
+      if sectorSize < 1 then
+         failwith "Cannot create a grid with a sector size less than 1"
+
       let gridSize = sectorSize * sectorSize
       let square   = withPossibilities [1 .. gridSize]
       let row      = Array.create gridSize square
@@ -61,11 +63,7 @@ let internal emptyGrid =
 
    let classicEmptyGrid = emptyGrid' 3
 
-   fun sectorSize -> if sectorSize < 1 then
-                        failwith ("Cannot create a grid with a"
-                                  + " sector size less than 1")
-
-                     match sectorSize with
+   fun sectorSize -> match sectorSize with
                      | 3 -> classicEmptyGrid
                      | _ -> emptyGrid' sectorSize
 
@@ -76,12 +74,12 @@ let internal fromLine line =
 
    let setSquare grid (char, coord) =
       match char with
-      | '.'  -> grid
+      | '.'
       | '0'  -> grid
       | char -> let parsed, value = Int32.TryParse (string char)
                 
                 match parsed with
-                | false -> failwith ("Cound not parse " + string char)
+                | false -> failwith ("Could not parse " + string char)
                 | true  -> setSquare value coord grid
                 
    let lineLength      = String.length line

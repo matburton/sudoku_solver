@@ -6,7 +6,7 @@ open SudokuSolver.Core.Refine
 open SudokuSolver.Core.Square
 
 /// Returns true if the square at the given
-/// coordinates doesnt contain the supplied possibility
+/// coordinates doesn't contain the supplied possibility
 ///
 let private squareDoesntHave possibility grid coordinates =
 
@@ -18,7 +18,7 @@ let private squareDoesntHave possibility grid coordinates =
 let private mustBeValueByRow possibility grid (colIndex, rowIndex) =
    
    grid.Indexes
-   |> List.filter (not << ((=) colIndex))
+   |> List.filter (not << (=) colIndex)
    |> List.map    (fun index -> index, rowIndex)
    |> List.forall (squareDoesntHave possibility grid)
 
@@ -28,7 +28,7 @@ let private mustBeValueByRow possibility grid (colIndex, rowIndex) =
 let private mustBeValueByCol possibility grid (colIndex, rowIndex) =
    
    grid.Indexes
-   |> List.filter (not << ((=) rowIndex))
+   |> List.filter (not << (=) rowIndex)
    |> List.map    (fun index -> colIndex, index)
    |> List.forall (squareDoesntHave possibility grid)
 
@@ -38,11 +38,11 @@ let private mustBeValueByCol possibility grid (colIndex, rowIndex) =
 let private mustBeValueBySec possibility grid coordinates =
    
    getSectorCoordinates coordinates grid
-   |> List.filter (not << ((=) coordinates))
+   |> List.filter (not << (=) coordinates)
    |> List.forall (squareDoesntHave possibility grid)
 
 /// Returns the value that the square at the given coordinates must contain
-/// or None if a value couldn't be infered or if the square already has a value
+/// or None if a value couldn't be inferred or if the square already has a value
 ///
 let private deduceSquareValue grid coordinates =
 

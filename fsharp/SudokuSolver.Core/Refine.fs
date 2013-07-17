@@ -36,12 +36,11 @@ let rec private removePossibility possibility grid coordinates =
 /// Removes the given possibility from squares related to the
 /// one at the given coordinates missing only that exact square
 ///
-and private removeRelated possibility coordinates grid =
+and private removeRelated possibility coordinates =
 
-   grid
-   |> removeRowRelated possibility coordinates
-   |> removeColRelated possibility coordinates
-   |> removeSecRelated possibility coordinates
+      removeRowRelated possibility coordinates
+   >> removeColRelated possibility coordinates
+   >> removeSecRelated possibility coordinates
 
 /// Removes the given possibility from squares in the row 
 /// related to the square at the supplied coordinates
@@ -59,7 +58,7 @@ and private removeRowRelated possibility (colIndex, rowIndex) grid =
 and private removeColRelated possibility (colIndex, rowIndex) grid =
 
    grid.Indexes
-   |> List.filter (not << ((=) rowIndex))
+   |> List.filter (not << (=) rowIndex)
    |> List.map    (fun index -> colIndex, index)
    |> List.fold   (removePossibility possibility) grid
 
@@ -81,8 +80,8 @@ let setSquare value coordinates grid =
 
       failwith "Invalid square value"
 
-   if    fst coordinates < 0 || fst coordinates >= grid.GridSize
-      || snd coordinates < 0 || snd coordinates >= grid.GridSize then
+   if fst coordinates < 0 || fst coordinates >= grid.GridSize
+   || snd coordinates < 0 || snd coordinates >= grid.GridSize then
 
       failwith "Invalid grid coordinates"
    
