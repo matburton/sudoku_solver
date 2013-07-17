@@ -5,7 +5,6 @@ open SudokuSolver.Core.Square
 
 type Row = Square []
 
-///
 type Coord       = int * int
 type Coords      = Coord list
 type CoordsInCol = Coords []
