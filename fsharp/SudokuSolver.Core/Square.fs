@@ -10,13 +10,13 @@ type Square = Set<Possibility>
 /// Returns value of the square if it has only a 
 /// single possibility, otherwise returns None
 ///
-let getValue square = match Set.count square with
-                      | 1 -> Some (Set.maxElement square)
-                      | _ -> None
+let getValue (square : Square) = match Set.count square with
+                                 | 1 -> Some (Set.maxElement square)
+                                 | _ -> None
 
 /// Returns true if the given square has only a single possibility
 ///
-let isComplete square = getValue square |> Option.isSome
+let isComplete = getValue >> Option.isSome
 
 /// Returns true if the given square has at least one possibility
 ///
@@ -24,9 +24,9 @@ let isPossible square = not (Set.isEmpty square)
 
 /// Returns a string representing the squares value
 ///
-let toString (square : Square) = match getValue square with
-                                 | None       -> "."
-                                 | Some value -> string value
+let toString square = match getValue square with
+                      | None       -> "."
+                      | Some value -> string value
 
 /// Returns a square containing the given possibilities
 ///

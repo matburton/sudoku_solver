@@ -35,16 +35,14 @@ let private centerString desiredLength string =
 
 /// Returns a list with the given value inserted after each 'every' items
 ///
-let private insertEvery value every list =
+let rec private insertEvery value every col = seq {
 
-   let initEvery index item =
-      match index % every = 0 && not (index = 0) with
-      | false -> [item]
-      | true  -> [value; item]
-
-   list
-   |> List.mapi initEvery
-   |> List.concat
+      match Seq.length col <= every with
+      | true -> yield! col
+      | false-> yield! Seq.take every col
+                yield  value
+                yield! insertEvery value every (Seq.skip every col)
+}
 
 /// Returns a string which is a human readable representation of the grid
 ///
@@ -52,19 +50,17 @@ let toGridString grid =
 
    let maxValueLength = String.length (string(grid.GridSize))
 
-   let squareLength   = maxValueLength + 2
+   let sectorLength = maxValueLength * grid.SectorSize + grid.SectorSize - 1
 
-   let sectorDivider  = String.replicate (squareLength * grid.SectorSize) "-"
+   let dividerLine = String.replicate sectorLength "-"
+                     |> List.replicate grid.SectorSize
+                     |> String.concat "-+-"
 
-   let dividerLine    = String.concat "+" (List.replicate grid.SectorSize
-                                                          sectorDivider)
+   let rowToString = Array.map toString
+                     >> Array.map (centerString maxValueLength)
+                     >> insertEvery "|" grid.SectorSize
+                     >> String.concat " "
    grid.Rows
-   |> Array.map (Array.map toString)
-   |> Array.map (Array.map (centerString squareLength))
-   |> Array.map Array.toList
-   |> Array.map (insertEvery "|" grid.SectorSize)
-   |> Array.toList
-   |> insertEvery [dividerLine] grid.SectorSize
-   |> List.map (String.concat "")
-   |> List.map ((+) "\n")
-   |> String.concat String.Empty
+   |> Array.map rowToString
+   |> insertEvery dividerLine grid.SectorSize
+   |> String.concat "\n"

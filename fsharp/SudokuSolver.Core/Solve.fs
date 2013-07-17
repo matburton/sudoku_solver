@@ -9,27 +9,27 @@ open SudokuSolver.Core.Split
 //
 let solutions grid =
 
-   let rec solutions' grids =
-      seq {
-         match grids with
-         | []         -> yield! []
-         | grid::tail -> let grid = makeDeductions grid
+   let rec solutions' grids = seq {
+      
+      match grids with
+      | []         -> yield! []
+      | grid::tail -> let grid = makeDeductions grid
 
-                         if isComplete grid then
-                         
-                            yield  grid
-                            yield! (solutions' tail)
+                      if isComplete grid then
 
-                         else if isPossible grid then
+                         yield  grid
+                         yield! (solutions' tail)
 
-                            let complete, incomplete =
-                               split grid
-                               |> List.partition isComplete
+                      else if isPossible grid then
 
-                            yield! complete
-                            yield! (solutions' (List.append incomplete tail))
+                         let complete, incomplete =
+                            split grid
+                            |> List.partition isComplete
 
-                         else yield! (solutions' tail)
-      }
+                         yield! complete
+                         yield! (solutions' (List.append incomplete tail))
+
+                      else yield! (solutions' tail)
+   }
    
    solutions' [grid]
