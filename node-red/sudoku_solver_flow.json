@@ -8,8 +8,8 @@
     "repeat":"",
     "crontab":"",
     "once":false,
-    "x":203.5555648803711,
-    "y":31.66667366027832,
+    "x":199.26984405517578,
+    "y":44.523813247680664,
     "wires":[
       [
         "31bafc7f.ce76c4"
@@ -22,11 +22,12 @@
     "name":"Parse puzzle",
     "func":"\n// TODO: Turn the puzzle into a grid. This\n// requires having a global notion of a of \n// a grid complete with basic possibility\n// elimination functionality. This code will\n// have to live either outside the flow or be\n// added during the flow to the global context\n\n// TODO: In the future allow the puzzle to be\n// either a line or a grid array of arrays.\n// Each could be in their own function node\n\n// TODO: Take second branch if the puzzle is invalid\n\nreturn null;",
     "outputs":"2",
-    "x":513.5555419921875,
-    "y":51.88890075683594,
+    "x":509.2698211669922,
+    "y":64.74604034423828,
     "wires":[
       [
-        "a58a856b.5a7578"
+        "a58a856b.5a7578",
+        "fab7e7ba.054818"
       ],
       [
         "cc28df94.33d72"
@@ -39,8 +40,8 @@
     "name":"POST",
     "url":"/sudoku/puzzle/solve",
     "method":"post",
-    "x":58.555564880371094,
-    "y":55.66667366027832,
+    "x":54.26984405517578,
+    "y":68.52381324768066,
     "wires":[
       [
         "53c729de.ac38d8"
@@ -53,8 +54,8 @@
     "name":"PUT",
     "url":"/sudoku/puzzle/solve",
     "method":"put",
-    "x":58.555564880371094,
-    "y":95.66667366027832,
+    "x":54.26984405517578,
+    "y":108.52381324768066,
     "wires":[
       [
         "53c729de.ac38d8"
@@ -67,8 +68,8 @@
     "name":"Load grid code",
     "func":"\n// TODO: Perhaps the shared notion and\n// functionality of a grid should be\n// added to the global context here?\n\nreturn msg;",
     "outputs":1,
-    "x":357.44444274902344,
-    "y":51.888898849487305,
+    "x":353.1587219238281,
+    "y":64.74603843688965,
     "wires":[
       [
         "bb373141.93898"
@@ -81,11 +82,12 @@
     "name":"Refine top grid",
     "func":"\n// TODO: Here we need to find a refinement on the\n// first grid provided if it isn't already and is\n// still possible. Once a refinement is found the\n// first output can be taken to cause a refinement\n// loop. If no refinement is found the second\n// output should be taken to cause the grid to be\n// split. If the grid is complete or isn't\n// possible then second output should be taken\n\n// TODO: Is this doing to much?\n// Can we split the possible/complete checks into\n// their own nodes?\n\n// TODO: Can we split the deduction steps into their own nodes?\n\nreturn null;",
     "outputs":"2",
-    "x":743.5555419921875,
-    "y":171.888916015625,
+    "x":739.2698211669922,
+    "y":184.74605560302734,
     "wires":[
       [
-        "a58a856b.5a7578"
+        "a58a856b.5a7578",
+        "8d5132df.72aed"
       ],
       [
         "65685430.9163f4"
@@ -98,11 +100,12 @@
     "name":"Split top grid",
     "func":"\nreturn null;",
     "outputs":"1",
-    "x":924.5555419921875,
-    "y":177.888916015625,
+    "x":920.2698211669922,
+    "y":190.74605560302734,
     "wires":[
       [
-        "a58a856b.5a7578"
+        "a58a856b.5a7578",
+        "c047790a.3fb888"
       ]
     ]
   },
@@ -112,11 +115,12 @@
     "name":"Parse request",
     "func":"\nvar request = msg.req.body;\n\nmsg.payload = request.puzzle;\n\nreturn msg;",
     "outputs":1,
-    "x":200.5555648803711,
-    "y":72.66667366027832,
+    "x":196.26984405517578,
+    "y":85.52381324768066,
     "wires":[
       [
-        "31bafc7f.ce76c4"
+        "31bafc7f.ce76c4",
+        "186801db.e797fe"
       ]
     ]
   },
@@ -126,8 +130,8 @@
     "name":"Top grid complete?",
     "func":"\nreturn null;",
     "outputs":"2",
-    "x":747,
-    "y":46,
+    "x":742.7142791748047,
+    "y":58.857139587402344,
     "wires":[
       [
         "e79c6ce.f18639"
@@ -143,14 +147,15 @@
     "name":"Top grid possible?",
     "func":"\nreturn null;",
     "outputs":"2",
-    "x":567,
-    "y":189,
+    "x":562.7142791748047,
+    "y":201.85713958740234,
     "wires":[
       [
         "457c51c0.e5f4"
       ],
       [
-        "814c74a8.7eb388"
+        "814c74a8.7eb388",
+        "415aa01b.bea56"
       ]
     ]
   },
@@ -160,8 +165,8 @@
     "name":"Discard top grid",
     "func":"\nreturn null;",
     "outputs":1,
-    "x":854,
-    "y":217,
+    "x":849.7142791748047,
+    "y":229.85713958740234,
     "wires":[
       [
         "a8e13d13.571ec"
@@ -174,8 +179,8 @@
     "name":"Any grids left?",
     "func":"\nreturn null;",
     "outputs":"2",
-    "x":1030,
-    "y":217,
+    "x":1025.7142791748047,
+    "y":229.85713958740234,
     "wires":[
       [
         "a58a856b.5a7578"
@@ -191,11 +196,12 @@
     "name":"Format solution",
     "func":"\n// TODO: Should check if we have an open HTTP\n// request and take the second branch only if\n// there is one? Or can we just take it anyway?\n\nreturn null;",
     "outputs":1,
-    "x":948.2867431640625,
-    "y":40.139862060546875,
+    "x":944.0010223388672,
+    "y":52.99700164794922,
     "wires":[
       [
-        "1ce91733.e316e9"
+        "1ce91733.e316e9",
+        "b9065e5.f46f9a"
       ]
     ]
   },
@@ -205,11 +211,12 @@
     "name":"Negative response",
     "func":"\n// TODO: Should check if we have an open HTTP\n// request and take the second branch only if\n// there is one? Or can we just take it anyway?\n\nreturn null;",
     "outputs":1,
-    "x":1229,
-    "y":223,
+    "x":1224.7142791748047,
+    "y":235.85713958740234,
     "wires":[
       [
-        "1ce91733.e316e9"
+        "1ce91733.e316e9",
+        "9f80d123.607f3"
       ]
     ]
   },
@@ -217,8 +224,8 @@
     "id":"1ce91733.e316e9",
     "type":"http response",
     "name":"HTTP response",
-    "x":1145.0770263671875,
-    "y":39.76921844482422,
+    "x":1144.7913055419922,
+    "y":71.62635803222656,
     "wires":[
 
     ]
@@ -227,8 +234,8 @@
     "id":"14fd4a8b.eb02b5",
     "type":"http response",
     "name":"HTTP response",
-    "x":366,
-    "y":177,
+    "x":364.7142791748047,
+    "y":170.85713958740234,
     "wires":[
 
     ]
@@ -239,12 +246,109 @@
     "name":"Bad request",
     "func":"\nreturn null;",
     "outputs":"1",
-    "x":213,
-    "y":177,
+    "x":208.7142791748047,
+    "y":189.85713958740234,
     "wires":[
       [
-        "14fd4a8b.eb02b5"
+        "14fd4a8b.eb02b5",
+        "f71b04a3.08e4f8"
       ]
+    ]
+  },
+  {
+    "id":"186801db.e797fe",
+    "type":"debug",
+    "name":"Debug",
+    "active":true,
+    "complete":"false",
+    "x":334.7142791748047,
+    "y":102.85713958740234,
+    "wires":[
+
+    ]
+  },
+  {
+    "id":"f71b04a3.08e4f8",
+    "type":"debug",
+    "name":"Debug",
+    "active":true,
+    "complete":"false",
+    "x":344.7142791748047,
+    "y":209.85713958740234,
+    "wires":[
+
+    ]
+  },
+  {
+    "id":"415aa01b.bea56",
+    "type":"debug",
+    "name":"Debug",
+    "active":true,
+    "complete":"false",
+    "x":830.7142791748047,
+    "y":268.85713958740234,
+    "wires":[
+
+    ]
+  },
+  {
+    "id":"b9065e5.f46f9a",
+    "type":"debug",
+    "name":"Debug",
+    "active":true,
+    "complete":"false",
+    "x":1123.7142791748047,
+    "y":33.857139587402344,
+    "wires":[
+
+    ]
+  },
+  {
+    "id":"9f80d123.607f3",
+    "type":"debug",
+    "name":"Debug",
+    "active":true,
+    "complete":"false",
+    "x":1400.7142791748047,
+    "y":235.85713958740234,
+    "wires":[
+
+    ]
+  },
+  {
+    "id":"c047790a.3fb888",
+    "type":"debug",
+    "name":"Debug",
+    "active":true,
+    "complete":"false",
+    "x":1123.7142791748047,
+    "y":173.85713958740234,
+    "wires":[
+
+    ]
+  },
+  {
+    "id":"8d5132df.72aed",
+    "type":"debug",
+    "name":"Debug",
+    "active":true,
+    "complete":"false",
+    "x":941.7142791748047,
+    "y":124.85713958740234,
+    "wires":[
+
+    ]
+  },
+  {
+    "id":"fab7e7ba.054818",
+    "type":"debug",
+    "name":"Debug",
+    "active":true,
+    "complete":"false",
+    "x":665.7142791748047,
+    "y":18.571436882019043,
+    "wires":[
+
     ]
   }
 ]
