@@ -36,30 +36,20 @@ let rec private removePossibility possibility grid coordinates =
 /// Removes the given possibility from squares related to the
 /// one at the given coordinates missing only that exact square
 ///
-and private removeRelated possibility coordinates =
+and private removeRelated possibility (colIndex, rowIndex) =
 
-      removeRowRelated possibility coordinates
-   >> removeColRelated possibility coordinates
-   >> removeSecRelated possibility coordinates
+      removeLineRelated possibility colIndex (fun index -> index, rowIndex)
+   >> removeLineRelated possibility rowIndex (fun index -> colIndex, index)
+   >> removeSecRelated  possibility (colIndex, rowIndex)
 
-/// Removes the given possibility from squares in the row 
-/// related to the square at the supplied coordinates
+/// Removes the given possibility from squares in the line 
+/// related to the square at the calculated coordinates
 ///
-and private removeRowRelated possibility (colIndex, rowIndex) grid =
+and private removeLineRelated possibility index indexToCoordinates grid =
 
    grid.Indexes
-   |> List.filter (not << ((=) colIndex))
-   |> List.map    (fun index -> index, rowIndex)
-   |> List.fold   (removePossibility possibility) grid
-
-/// Removes the given possibility from squares in the column 
-/// related to the square at the supplied coordinates
-///
-and private removeColRelated possibility (colIndex, rowIndex) grid =
-
-   grid.Indexes
-   |> List.filter (not << (=) rowIndex)
-   |> List.map    (fun index -> colIndex, index)
+   |> List.filter (not << ((=) index))
+   |> List.map    indexToCoordinates
    |> List.fold   (removePossibility possibility) grid
 
 /// Removes the given possibility from squares in the sector 

@@ -12,24 +12,14 @@ let private squareDoesntHave possibility grid coordinates =
 
    not (contains possibility (getSquare coordinates grid))
 
-/// Returns true if the square at the given coordinates must be
-/// the supplied possibility by inspecting other squares in its row
+/// Returns true if the square at the calculated coordinates must be
+/// the supplied possibility by inspecting other squares in its line
 ///
-let private mustBeValueByRow possibility grid (colIndex, rowIndex) =
-   
-   grid.Indexes
-   |> List.filter (not << (=) colIndex)
-   |> List.map    (fun index -> index, rowIndex)
-   |> List.forall (squareDoesntHave possibility grid)
+let private mustBeValueByLine possibility grid index indexToCoordinates =
 
-/// Returns true if the square at the given coordinates must be the
-/// supplied possibility by inspecting other squares in its column
-///
-let private mustBeValueByCol possibility grid (colIndex, rowIndex) =
-   
    grid.Indexes
-   |> List.filter (not << (=) rowIndex)
-   |> List.map    (fun index -> colIndex, index)
+   |> List.filter (not << (=) index)
+   |> List.map    indexToCoordinates
    |> List.forall (squareDoesntHave possibility grid)
 
 /// Returns true if the square at the given coordinates must be the
@@ -48,10 +38,12 @@ let private deduceSquareValue grid coordinates =
 
    let square = getSquare coordinates grid
 
+   let colIndex, rowIndex = coordinates
+
    let mustBeValue possibility =
-         mustBeValueByRow possibility grid coordinates
-      || mustBeValueByCol possibility grid coordinates
-      || mustBeValueBySec possibility grid coordinates
+       mustBeValueByLine possibility grid colIndex (fun index -> index, rowIndex)
+    || mustBeValueByLine possibility grid rowIndex (fun index -> colIndex, index)
+    || mustBeValueBySec  possibility grid coordinates
 
    match not (isComplete square) && isPossible square with
    | false -> None
