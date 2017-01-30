@@ -1,0 +1,11 @@
+echo ""
+echo "*E[33mCompiling...*E[0m"
+echo ""
+draco sudoku_solver.d
+echo ""
+echo "*E[33mLinking...*E[0m"
+echo ""
+execute link:dr1 sudoku_solver
+echo ""
+echo "*E[33mDone*E[0m - the executable has been named *E[32msudoku_solver*E[0m"
+echo ""

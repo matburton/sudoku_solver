@@ -1,2 +1,9 @@
-bin/
-obj/
+*.info
+*.r
+c/
+devs/
+l/
+T/
+FastMemFirst
+PerfMon
+sudoku_solver

@@ -1,0 +1,17 @@
+c:SetPatch >NIL:
+Addbuffers df0: 10
+cd c:
+echo "*E[0;0H*E[J"
+echo "*E[33mSudoku solver compilation environment...*E[0m"
+Sys:FastMemFirst
+BindDrivers
+FF >NIL: -0
+resident CLI L:Shell-Seg SYSTEM pure add
+mount newcon:
+resident c:Execute pure
+resident c:CD pure
+resident c:Dir pure
+path add c:
+cd Sudokus:
+newshell "newcon:0/0/640/256/Sudokus"
+endcli >NIL:

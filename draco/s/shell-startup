@@ -1,0 +1,9 @@
+alias clear echo "*E[0;0H*E[J"
+clear
+echo "*E[33mSudoku solver compilation environment*E[0m"
+echo ""
+echo "Insert the Draco disk into another drive"
+echo "Once inserted: *E[32mconfigure*E[0m"
+echo ""
+alias configure execute configure
+Prompt "%S> "
