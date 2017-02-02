@@ -13,5 +13,5 @@ resident c:CD pure
 resident c:Dir pure
 path add c:
 cd Sudokus:
-newshell "newcon:0/0/640/256/Sudokus"
+newshell "newcon:18/0/622/256/Sudokus"
 endcli >NIL:

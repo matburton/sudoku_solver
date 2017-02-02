@@ -1,3 +1,4 @@
+run gauge
 alias clear echo "*E[0;0H*E[J"
 clear
 echo "*E[33mSudoku solver compilation environment*E[0m"
