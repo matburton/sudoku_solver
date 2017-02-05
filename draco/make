@@ -1,11 +1,11 @@
 echo ""
 echo "*E[33mCompiling...*E[0m"
 echo ""
-draco sudoku_solver.d sudoku_grid_by_bools.d
+draco sudoku_solver.d sudoku_grid_by_bools.d sudoku_printer.d
 echo ""
 echo "*E[33mLinking...*E[0m"
 echo ""
-execute link:dr2 sudoku_solver sudoku_grid_by_bools
+execute link:dr3 sudoku_solver sudoku_grid_by_bools sudoku_printer
 echo ""
 echo "*E[33mDone*E[0m - the executable has been named *E[32msudoku_solver*E[0m"
 echo ""
