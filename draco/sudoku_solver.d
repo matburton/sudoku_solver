@@ -55,7 +55,7 @@ corp;
 
 proc main() void:
     Grid_t grid;
-    *char pStateLine;
+    *char pStateLine, pGridString;
     MerrorSet(true);
     if setupGrid(&grid, 2) then
         removePossibilityAt(&grid, 1, 2, 2);
@@ -63,6 +63,9 @@ proc main() void:
         pStateLine := getStateLine(&grid);
         writeln(pStateLine);
         Mfree(pStateLine, CharsLen(pStateLine) + 1);
+        pGridString := getGridString(&grid);
+        writeln(pGridString);      
+        Mfree(pGridString, CharsLen(pGridString) + 1);
         freeGrid(&grid);
     fi;
 corp;
