@@ -77,6 +77,10 @@ proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void:
     (getSquarePointer(pGrid, x, y) + value - 1)* := false;
 corp;
 
+/* This doesn't need to be here in that it isn't specific to the
+   way we're storing possibilities but it is handy here as it's
+   used in multiple source files and we don't want duplictaed code
+*/
 proc getSquareValue(*Grid_t pGrid; uint x, y) uint:
     uint index, value;
     value := 0;
