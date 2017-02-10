@@ -148,12 +148,101 @@ corp;
 
 proc mergeLists(*GridList_t pFrontList, pBackList) *GridList_t:
     *GridList_t pNext;
+    if pFrontList = nil then
+        return pBackList
+    fi;
     pNext := pFrontList;
     while pNext*.gl_pNext ~= nil do
         pNext := pNext*.gl_pNext;
     od;
     pNext*.gl_pNext := pBackList;
     pFrontList
+corp;
+
+proc mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool:
+    uint indexX;
+    for indexX from 0 upto pGrid*.g_dimension - 1 do
+        if     indexX ~= x
+           and squareHasPossibility(pGrid, indexX, y, value) then
+            return false;
+        fi;
+    od;
+    true
+corp;
+
+proc mustBeValueByColumn(*Grid_t pGrid; uint x, y, value) bool:
+    uint indexY;
+    for indexY from 0 upto pGrid*.g_dimension - 1 do
+        if     indexY ~= y
+           and squareHasPossibility(pGrid, x, indexY, value) then
+            return false;
+        fi;
+    od;
+    true
+corp;
+
+proc mustBeValueBySector(*Grid_t pGrid; uint x, y, value) bool:
+    uint indexX, indexY, startX, startY;
+    startX := (x / pGrid*.g_sectorDimension) * pGrid*.g_sectorDimension;
+    startY := (y / pGrid*.g_sectorDimension) * pGrid*.g_sectorDimension;
+    for indexY from startY upto startY + pGrid*.g_sectorDimension - 1 do
+        for indexX from startX upto startX + pGrid*.g_sectorDimension - 1 do
+            if    (indexX ~= x or indexY ~= y)
+               and squareHasPossibility(pGrid, indexX, indexY, value) then
+                return false;
+            fi;
+        od;
+    od;  
+    true
+corp;
+
+/* Returns zero if no value could be deduced */
+proc getDeducedValueAt(*Grid_t pGrid; uint x, y) uint:
+    uint index;
+    if    getSquareValue(pGrid, x, y) ~= 0
+       or not isPossibleAt(pGrid, x, y) then
+       return 0;
+    fi;
+    for index from 1 upto pGrid*.g_dimension do
+        if    mustBeValueByRow   (pGrid, x, y, index)
+           or mustBeValueByColumn(pGrid, x, y, index)
+           or mustBeValueBySector(pGrid, x, y, index) then
+            return index;
+        fi;
+    od;
+    0
+corp;
+
+proc refineGrid(*Grid_t pGrid) void:
+    uint indexX, indexY, lastX, lastY, value;
+    bool isFirstSquare;
+    isFirstSquare := true;
+    indexX := 0;
+    indexY := 0;
+    while lastX ~= indexX or lastY ~= indexY do
+        value := getDeducedValueAt(pGrid, indexX, indexY);
+        if value ~= 0 then
+            setValueAt(pGrid, indexX, indexY, value);
+            if not isPossible(pGrid) then
+                return;
+            fi;
+        fi;
+        if value ~= 0 or isFirstSquare then
+            isFirstSquare := false;
+            lastX := indexX;
+            lastY := indexY;
+        fi;
+        if indexX < pGrid*.g_dimension - 1 then
+            indexX := indexX + 1;
+        else
+            indexX := 0;
+            if indexY < pGrid*.g_dimension - 1 then
+                indexY := indexY + 1;
+            else
+                indexY := 0;
+            fi;
+        fi;
+    od;
 corp;
 
 proc main() void:
@@ -170,7 +259,7 @@ proc main() void:
         free(pGridList);
         return;
     fi;
-    if not setupGrid(pGridList*.gl_pGrid, 2) then
+    if not setupGrid(pGridList*.gl_pGrid, 4) then
         free(pGridList*.gl_pGrid);
         free(pGridList);
     fi;
@@ -178,12 +267,15 @@ proc main() void:
     while pGridList ~= nil do
         pNext := pGridList;
         pGridList := pGridList*.gl_pNext;
+        refineGrid(pNext*.gl_pGrid);
         if isComplete(pNext*.gl_pGrid) then
             pString := getGridString(pNext*.gl_pGrid); 
             writeln(pString);
-            writeln("");
             Mfree(pString, CharsLen(pString) + 1);
+            writeln("");
         else
+            /* TODO: Change this so we chuck old grids
+                     until we can keep the new ones */
             if isPossible(pNext*.gl_pGrid) then
                 pGridList := mergeLists(splitGrid(pNext*.gl_pGrid),
                                         pGridList);
