@@ -126,17 +126,20 @@ proc splitGrid(*Grid_t pGrid) *GridList_t:
         if squareHasPossibility(pGrid, bestX, bestY, count) then
             pNext := new(GridList_t);
             if pNext = nil then
-                return pGridList;
+                freeGridList(pGridList);
+                return nil;
             fi;
             pNext*.gl_pGrid := new(Grid_t);
             if pNext*.gl_pGrid = nil then
                 free(pNext);
-                return pGridList;
+                freeGridList(pGridList);
+                return nil;
             fi;
             if not cloneGrid(pGrid, pNext*.gl_pGrid) then
                 free(pNext*.gl_pGrid);
                 free(pNext);
-                return pGridList;
+                freeGridList(pGridList);
+                return nil;
             fi;
             setValueAt(pNext*.gl_pGrid, bestX, bestY, count);
             pNext*.gl_pNext := pGridList;
@@ -245,6 +248,32 @@ proc refineGrid(*Grid_t pGrid) void:
     od;
 corp;
 
+/* Returns a list with a solution at the front
+   or nil if there are no more solutions */
+proc getNextSolution(*GridList_t pGridList) *GridList_t:
+    *GridList_t pNext;
+    while pGridList ~= nil do
+        refineGrid(pGridList*.gl_pGrid);
+        if isComplete(pGridList*.gl_pGrid) then
+            return pGridList;
+        else
+            /* TODO: Change to keep newest */
+            if isPossible(pGridList*.gl_pGrid) then
+                pGridList := mergeLists(splitGrid(pGridList*.gl_pGrid),
+                                        pGridList);
+            fi;
+        fi;
+        if pGridList ~= nil then
+            pNext := pGridList*.gl_pNext;
+            freeGrid(pGridList*.gl_pGrid);
+            free(pGridList*.gl_pGrid);
+            free(pGridList);
+            pGridList := pNext;
+        fi;
+    od;
+    nil
+corp;
+
 proc main() void:
     *char pString;
     *GridList_t pGridList, pNext;
@@ -259,31 +288,24 @@ proc main() void:
         free(pGridList);
         return;
     fi;
-    if not setupGrid(pGridList*.gl_pGrid, 4) then
+    if not setupGrid(pGridList*.gl_pGrid, 3) then
         free(pGridList*.gl_pGrid);
         free(pGridList);
     fi;
     writeln("");
-    while pGridList ~= nil do
-        pNext := pGridList;
-        pGridList := pGridList*.gl_pNext;
-        refineGrid(pNext*.gl_pGrid);
-        if isComplete(pNext*.gl_pGrid) then
-            pString := getGridString(pNext*.gl_pGrid); 
-            writeln(pString);
-            Mfree(pString, CharsLen(pString) + 1);
-            writeln("");
-        else
-            /* TODO: Change this so we chuck old grids
-                     until we can keep the new ones */
-            if isPossible(pNext*.gl_pGrid) then
-                pGridList := mergeLists(splitGrid(pNext*.gl_pGrid),
-                                        pGridList);
-            fi;
-        fi;
-        freeGrid(pNext*.gl_pGrid);
-        free(pNext*.gl_pGrid);
-        free(pNext);
+    while
+        pGridList := getNextSolution(pGridList);
+        pGridList ~= nil
+    do
+        pString := getGridString(pGridList*.gl_pGrid); 
+        writeln(pString);
+        Mfree(pString, CharsLen(pString) + 1);
+        writeln("");
+        pNext := pGridList*.gl_pNext;
+        freeGrid(pGridList*.gl_pGrid);
+        free(pGridList*.gl_pGrid);
+        free(pGridList);
+        pGridList := pNext;
     od;
     writeln("No further solutions");
 corp;

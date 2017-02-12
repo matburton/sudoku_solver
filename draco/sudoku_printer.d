@@ -1,6 +1,8 @@
 #sudoku_grid.g
 #drinc:util.g
 
+/* TODO: Allow printing of larger grids */
+
 proc insertDividerLine(*char pChar; *Grid_t pGrid) *char:
     uint index;
     for index from 1 upto pGrid*.g_dimension do
