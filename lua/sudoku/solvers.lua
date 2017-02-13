@@ -12,7 +12,9 @@ local resume = coroutine.resume
 local create = coroutine.create
 local yield  = coroutine.yield
 
-module("sudoku")
+sudoku = sudoku or {}
+
+_ENV = sudoku
 
 -- Returns a co-routine that finds solutions to a grid
 -- Every time it is resumed it returns a solution

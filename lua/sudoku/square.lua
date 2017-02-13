@@ -4,8 +4,6 @@
 -- time and memory hence you must use the ":" notation
 -- and only call methods to avoid corrupting the square
 
-require "sudoku.submodule"
-
 local error        = error
 local next         = next
 local pairs        = pairs
@@ -14,10 +12,12 @@ local setmetatable = setmetatable
 local insert = table.insert
 local sort   = table.sort
 
+local environment = {}
+
 -- This is a private sub-module and as such
 -- I don't feel the need to pollute the 
 -- parent module's namespace with this class
-submodule(...)
+_ENV = environment
 
 -- The table used to allow all 
 -- squares to use the same closures
@@ -134,3 +134,5 @@ function newPossibilitySquare(maxPossibility)
    
    return square
 end
+
+return environment

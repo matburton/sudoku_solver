@@ -3,17 +3,17 @@
 -- eliminate possibilities without splitting the grid
 -- These methods use knowledge of the grids bowles
 
-require "sudoku.submodule"
-
 local iterators = require "sudoku.iterators"
 
 local ipairs = ipairs
 local pairs  = pairs
 
+local environment = {}
+
 -- This is a private sub-module and as such
 -- I don't feel the need to pollute the 
 -- parent module's namespace with this class
-submodule(...)
+_ENV = environment
 
 -- Returns true if the given possibility
 -- has to be the value of the given square
@@ -149,3 +149,5 @@ function refineGrid(grid)
       end
    end
 end
+
+return environment

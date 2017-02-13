@@ -10,13 +10,15 @@ local len    = string.len
 local floor  = math.floor
 local ceil   = math.ceil
 
-module("sudoku")
+sudoku = sudoku or {}
+
+_ENV = sudoku
 
 -- Returns a line to divide the
 -- rows in different sectors
 local function getDividerLine(sectorDimension)
 
-   local maxValueLength = len(sectorDimension ^ 2)
+   local maxValueLength = len(floor(sectorDimension ^ 2))
 
    local charDivider   = "-"
    local sectorDivider = charDivider:rep(  sectorDimension
@@ -32,7 +34,7 @@ end
 -- Returns the current state of the grid as a string
 function getGridString(grid)
 
-   local maxValueLength = len(grid.m_sectorDimension ^ 2)
+   local maxValueLength = len(floor(grid.m_sectorDimension ^ 2))
    
    local dividerLine = getDividerLine(grid.m_sectorDimension)
    

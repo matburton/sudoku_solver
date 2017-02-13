@@ -11,7 +11,9 @@ local tonumber = tonumber
 
 local ceil = math.ceil
 
-module("sudoku")
+sudoku = sudoku or {}
+
+_ENV = sudoku
 
 -- Returns a grid with square values
 -- set from a line of square values

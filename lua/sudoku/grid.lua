@@ -14,7 +14,9 @@ local setmetatable = setmetatable
 
 local insert = table.insert
 
-module("sudoku")
+sudoku = sudoku or {}
+
+_ENV = sudoku
 
 -- Forward declare these methods
 -- as they use indirect recursion

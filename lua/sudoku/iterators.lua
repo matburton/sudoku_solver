@@ -2,14 +2,14 @@
 -- Methods to iterate over a subset of squares in a grid
 -- These methods use knowledge of the grids bowles
 
-require "sudoku.submodule"
-
 local floor = math.floor
+
+local environment = {}
 
 -- This is a private sub-module and as such
 -- I don't feel the need to pollute the 
 -- parent module's namespace with this class
-submodule(...)
+_ENV = environment
 
 -- Increment the iteration over all squares in a
 -- sector, used by the squaresInSector iterator
@@ -54,3 +54,5 @@ function squaresInSector(grid, columnIndex, rowIndex)
             startY = sectorY * grid.m_sectorDimension },
           { squareX = 1, squareY = 1 }
 end
+
+return environment

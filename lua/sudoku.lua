@@ -3,8 +3,6 @@ require "sudoku.parsers"
 require "sudoku.solvers"
 require "sudoku.printers"
 
-local sudoku = sudoku
-
 local print = print
 
 local time  = os.time
@@ -12,7 +10,9 @@ local clock = os.clock
 
 local resume = coroutine.resume
 
-module("sudoku")
+sudoku = sudoku or {}
+
+_ENV = sudoku
 
 -- Shortcut for solving a sudoku
 -- line, also prints the time taken
