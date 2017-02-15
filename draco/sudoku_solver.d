@@ -96,13 +96,17 @@ proc isComplete(*Grid_t pGrid) bool:
     true
 corp;
 
+proc freeGridEntry(*GridList_t pGridEntry) void:
+    freeGrid(pGridEntry*.gl_pGrid);
+    free(pGridEntry*.gl_pGrid);
+    free(pGridEntry);
+corp;
+
 proc freeGridList(*GridList_t pGridList) void:
     *GridList_t pNext;
     while pGridList ~= nil do
         pNext := pGridList*.gl_pNext;
-        freeGrid(pGridList*.gl_pGrid);
-        free(pGridList*.gl_pGrid);
-        free(pGridList);
+        freeGridEntry(pGridList);
         pGridList := pNext;
     od;
 corp;
@@ -151,9 +155,6 @@ corp;
 
 proc mergeLists(*GridList_t pFrontList, pBackList) *GridList_t:
     *GridList_t pNext;
-    if pFrontList = nil then
-        return pBackList
-    fi;
     pNext := pFrontList;
     while pNext*.gl_pNext ~= nil do
         pNext := pNext*.gl_pNext;
@@ -251,33 +252,43 @@ corp;
 /* Returns a list with a solution at the front
    or nil if there are no more solutions */
 proc getNextSolution(*GridList_t pGridList) *GridList_t:
-    *GridList_t pNext;
+    *GridList_t pNext, pSplits;
     while pGridList ~= nil do
         refineGrid(pGridList*.gl_pGrid);
         if isComplete(pGridList*.gl_pGrid) then
             return pGridList;
         else
-            /* TODO: Change to keep newest */
             if isPossible(pGridList*.gl_pGrid) then
-                pGridList := mergeLists(splitGrid(pGridList*.gl_pGrid),
-                                        pGridList);
+                while
+                    pSplits := splitGrid(pGridList*.gl_pGrid);
+                    pSplits = nil and pGridList*.gl_pNext ~= nil
+                do
+                    pNext := pGridList;
+                    while pNext*.gl_pNext*.gl_pNext ~= nil do
+                        pNext := pNext*.gl_pNext;
+                    od;
+                    freeGridEntry(pNext*.gl_pNext);
+                    pNext*.gl_pNext := nil;
+                od;
+                if pSplits = nil then
+                    freeGridEntry(pGridList);
+                    return nil;
+                fi;
+                pGridList := mergeLists(pSplits, pGridList);
             fi;
         fi;
-        if pGridList ~= nil then
-            pNext := pGridList*.gl_pNext;
-            freeGrid(pGridList*.gl_pGrid);
-            free(pGridList*.gl_pGrid);
-            free(pGridList);
-            pGridList := pNext;
-        fi;
+        pNext := pGridList*.gl_pNext;
+        freeGridEntry(pGridList);
+        pGridList := pNext;
     od;
     nil
 corp;
 
 proc main() void:
-    *char pString;
+    channel output text console;
     *GridList_t pGridList, pNext;
     MerrorSet(true);
+    open(console);
     pGridList := new(GridList_t);
     if pGridList = nil then
         return;
@@ -297,15 +308,12 @@ proc main() void:
         pGridList := getNextSolution(pGridList);
         pGridList ~= nil
     do
-        pString := getGridString(pGridList*.gl_pGrid); 
-        writeln(pString);
-        Mfree(pString, CharsLen(pString) + 1);
-        writeln("");
+        writeGridString(console, pGridList*.gl_pGrid);
+        writeln('\n');
         pNext := pGridList*.gl_pNext;
-        freeGrid(pGridList*.gl_pGrid);
-        free(pGridList*.gl_pGrid);
-        free(pGridList);
+        freeGridEntry(pGridList);
         pGridList := pNext;
     od;
     writeln("No further solutions");
+    close(console);
 corp;

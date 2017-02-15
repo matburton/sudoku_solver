@@ -1,6 +1,4 @@
 
-/* Returns nil if the grid could not be formatted as a string */
-extern getGridString(*Grid_t pGrid) *char;
+extern writeGridString(channel output text target; *Grid_t pGrid) void;
 
-/* Returns nil if the grid could not be formatted as a line */
-extern getStateLine(*Grid_t pGrid) *char;
+extern writeStateLine(channel output text target; *Grid_t pGrid) void;
