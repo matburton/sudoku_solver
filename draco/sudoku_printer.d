@@ -1,57 +1,73 @@
 #sudoku_grid.g
 #drinc:util.g
 
-/* TODO: Allow printing of larger grids */
-
-proc insertDividerLine(*char pChar; *Grid_t pGrid) *char:
+proc insertDividerLine(*char pChar; *Grid_t pGrid) void:
     uint index;
     for index from 1 upto pGrid*.g_dimension do
-        CharsCopyN(pChar, "---", 3);
-        if index ~= pGrid*.g_dimension then
-            (pChar + 3)* := '+';
+        if index = pGrid*.g_dimension then
+            CharsCopyN(pChar, "-\n", 2);
         else
-            (pChar + 3)* := '\n';
+            CharsCopyN(pChar, "--", 2);
+            if index % pGrid*.g_sectorDimension = 0 then
+                CharsCopyN(pChar + 2, "+-", 2);
+                pChar := pChar + 4;
+            else
+                pChar := pChar + 2;
+            fi;
         fi;
-        pChar := pChar + 4;
     od;
-    pChar
 corp;
 
 proc getSquareChar(*Grid_t pGrid; uint x, y) char:
     uint value;
     value := getSquareValue(pGrid, x, y);
-    if value >= 10 then
-        return 'A' - 10 + value;
+    if pGrid*.g_sectorDimension > 3 then
+        if value >= 10 then
+            return 'A' + value - 10;
+        fi; 
+        return '0' + value - 1;
     fi;
     '0' + value
 corp;
 
+proc insertRow(*char pChar; *Grid_t pGrid; uint y) void:
+    uint x;
+    for x from 1 upto pGrid*.g_dimension do
+        pChar* := getSquareChar(pGrid, x - 1, y);
+        if x = pGrid*.g_dimension then
+            (pChar + 1)* := '\n';
+        else
+            (pChar + 1)* := ' ';
+            if x % pGrid*.g_sectorDimension = 0 then
+                CharsCopyN(pChar + 2, "| ", 2);
+                pChar := pChar + 4;
+            else
+                pChar := pChar + 2;
+            fi;
+        fi;
+    od;
+corp;
+
 proc getGridString(*Grid_t pGrid) *char:
-    uint x, y;
+    uint width, height, x, y;
     *char pGridString, pChar;
-    if pGrid*.g_sectorDimension > 4 then
+    if pGrid*.g_sectorDimension > 6 then
         return nil;
     fi;
-    pGridString := Malloc(4 * pGrid*.g_dimension
-                          * (2 * pGrid*.g_dimension - 1));
+    width := 2 * pGrid*.g_dimension + 2 * pGrid*.g_sectorDimension - 2;
+    height := pGrid*.g_dimension + pGrid*.g_sectorDimension - 1;
+    pGridString := Malloc(width * height);
     if pGridString = nil then
         return nil;
     fi;
     pChar := pGridString;
     for y from 1 upto pGrid*.g_dimension do
-        for x from 1 upto pGrid*.g_dimension do
-            pChar* := ' ';
-            (pChar + 1)* := getSquareChar(pGrid, x - 1, y - 1);
-            (pChar + 2)* := ' ';
-            if x ~= pGrid*.g_dimension then
-                (pChar + 3)* := '|';
-            else
-                (pChar + 3)* := '\n';
-            fi;
-            pChar := pChar + 4;
-        od;
-        if y ~= pGrid*.g_dimension then
-            pChar := insertDividerLine(pChar, pGrid);
+        insertRow(pChar, pGrid, y - 1);
+        pChar := pChar + width;
+        if     y % pGrid*.g_sectorDimension = 0
+           and y ~= pGrid*.g_dimension then
+            insertDividerLine(pChar, pGrid);
+            pChar := pChar + width;
         fi;
     od;
     (pChar - 1)* := '\e';
@@ -61,7 +77,7 @@ corp;
 proc getStateLine(*Grid_t pGrid) *char:
     uint x, y, squareCount;
     *char pStateLine;
-    if pGrid*.g_sectorDimension > 4 then
+    if pGrid*.g_sectorDimension > 6 then
         return nil;
     fi;
     squareCount := pGrid*.g_dimension * pGrid*.g_dimension;
