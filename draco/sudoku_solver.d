@@ -89,20 +89,34 @@ proc isComplete(*Grid_t pGrid) bool:
     true
 corp;
 
-proc freeGridList(*Grid_t pGridList) void:
+proc freeFrontGrid(*Grid_t pGridList) *Grid_t:
     *Grid_t pNext;
-    while pGridList ~= nil do
-        pNext := pGridList*.g_pNext;
-        freeGrid(pGridList);
-        pGridList := pNext;
-    od;
+    pNext := pGridList*.g_pNext;
+    freeGrid(pGridList);
+    pNext
 corp;
 
-proc splitGrid(*Grid_t pGrid) *Grid_t:
+proc freeLastGrid(*Grid_t pGridList) *Grid_t:
+    *Grid_t pNext;
+    if pGridList*.g_pNext = nil then
+        freeGrid(pGridList);
+        return nil;
+    fi;
+    pNext := pGridList;
+    while pNext*.g_pNext*.g_pNext ~= nil do
+        pNext := pNext*.g_pNext;
+    od;
+    freeGrid(pNext*.g_pNext);
+    pNext*.g_pNext := nil;
+    pGridList
+corp;
+
+proc splitFirstGridToFront(*Grid_t pGridList) *Grid_t:
     uint x, y, count, bestX, bestY, bestCount;
-    *Grid_t pSplitList, pNewGrid;
+    *Grid_t pGrid, pNewGrid;
+    pGrid := pGridList;
+    pGridList := pGrid*.g_pNext;
     bestCount := 0;
-    pSplitList := nil;
     for y from 0 upto pGrid*.g_dimension - 1 do
         for x from 0 upto pGrid*.g_dimension - 1 do
             count := getPossibilityCountAt(pGrid, x, y);
@@ -115,17 +129,21 @@ proc splitGrid(*Grid_t pGrid) *Grid_t:
     od;
     for count from pGrid*.g_dimension downto 1 do
         if squareHasPossibility(pGrid, bestX, bestY, count) then
-            pNewGrid := cloneGrid(pGrid);
-            if pNewGrid = nil then
-                freeGridList(pSplitList);
-                return nil;
+            while
+                pNewGrid := cloneGrid(pGrid);
+                pNewGrid = nil and pGridList ~= nil
+            do
+                pGridList := freeLastGrid(pGridList);
+            od;
+            if pNewGrid ~= nil then
+                setValueAt(pNewGrid, bestX, bestY, count);
+                pNewGrid*.g_pNext := pGridList;
+                pGridList := pNewGrid;
             fi;
-            setValueAt(pNewGrid, bestX, bestY, count);
-            pNewGrid*.g_pNext := pSplitList;
-            pSplitList := pNewGrid;
         fi;
     od;
-    pSplitList
+    freeGrid(pGrid);
+    pGridList
 corp;
 
 proc mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool:
@@ -210,57 +228,30 @@ proc refineGrid(*Grid_t pGrid) void:
     od;
 corp;
 
-proc mergeLists(*Grid_t pFrontList, pBackList) void:
-    *Grid_t pNext;
-    pNext := pFrontList;
-    while pNext*.g_pNext ~= nil do
-        pNext := pNext*.g_pNext;
-    od;
-    pNext*.g_pNext := pBackList;
-corp;
-
 /* Returns a list with a solution at the front
    or nil if there are no more solutions */
 proc getNextSolution(*Grid_t pGridList) *Grid_t:
-    *Grid_t pNext;
     while pGridList ~= nil do
         refineGrid(pGridList);
         if isComplete(pGridList) then
             return pGridList;
         else
             if isPossible(pGridList) then
-                while
-                    pNext := splitGrid(pGridList);
-                    pNext = nil and pGridList*.g_pNext ~= nil
-                do
-                    pNext := pGridList;
-                    while pNext*.g_pNext*.g_pNext ~= nil do
-                        pNext := pNext*.g_pNext;
-                    od;
-                    freeGrid(pNext*.g_pNext);
-                    pNext*.g_pNext := nil;
-                od;
-                if pNext = nil then
-                    freeGrid(pGridList);
-                    return nil;
-                fi;
-                mergeLists(pNext, pGridList);
-                pGridList := pNext;
+                pGridList := splitFirstGridToFront(pGridList);
+            else
+                pGridList := freeFrontGrid(pGridList);
             fi;
         fi;
-        pNext := pGridList*.g_pNext;
-        freeGrid(pGridList);
-        pGridList := pNext;
     od;
     nil
 corp;
 
 proc main() void:
     channel output text console;
-    *Grid_t pGridList, pNext;
+    *Grid_t pGridList;
     MerrorSet(true);
     open(console);
-    pGridList := createGrid(3);
+    pGridList := createGrid(4);
     if pGridList = nil then
         writeln("Failed to create initial grid");
         return;
@@ -272,9 +263,7 @@ proc main() void:
     do
         writeGridString(console, pGridList);
         writeln('\n');
-        pNext := pGridList*.g_pNext;
-        freeGrid(pGridList);
-        pGridList := pNext;
+        pGridList := freeFrontGrid(pGridList);
     od;
     writeln("No further solutions found");
     close(console);

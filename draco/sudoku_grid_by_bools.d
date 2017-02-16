@@ -29,7 +29,6 @@ proc createGrid(uint sectorDimension) *Grid_t:
     fi;
     pGrid*.g_sectorDimension := sectorDimension;
     pGrid*.g_dimension := raiseToPower(sectorDimension, 2);
-    pGrid*.g_pNext := nil;
     possibilityCount := raiseToPower(pGrid*.g_dimension, 3);
     pGrid*.g_pSquarePossibilities := Malloc(possibilityCount);
     if pGrid*.g_pSquarePossibilities = nil then
@@ -39,6 +38,7 @@ proc createGrid(uint sectorDimension) *Grid_t:
     BlockFill(pGrid*.g_pSquarePossibilities,
               possibilityCount,
               pretend(true, byte));
+    pGrid*.g_pNext := nil;              
     pGrid
 corp;
 
@@ -60,6 +60,7 @@ proc cloneGrid(*Grid_t pGrid) *Grid_t:
     BlockCopy(pClone*.g_pSquarePossibilities,
               pGrid*.g_pSquarePossibilities,
               possibilityCount);
+    pClone*.g_pNext := nil;
     pClone
 corp;
 
@@ -93,7 +94,7 @@ corp;
 
 /* This doesn't need to be here in that it isn't specific to the
    way we're storing possibilities but it is handy here as it's
-   used in multiple source files and we don't want duplictaed code
+   used in multiple source files and we don't want duplicated code
 */
 proc getSquareValue(*Grid_t pGrid; uint x, y) uint:
     uint possibility, value;
