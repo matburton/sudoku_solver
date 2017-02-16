@@ -2,9 +2,10 @@
 
 type Grid_t = struct
 {
-    uint  g_sectorDimension;
-    uint  g_dimension;  
-    *bool g_pSquarePossibilities;
+    uint    g_sectorDimension;
+    uint    g_dimension;  
+    *bool   g_pSquarePossibilities;
+    *Grid_t g_pNext;
 };
 
 proc raiseToPower(uint base; uint exponent) uint:
@@ -16,43 +17,56 @@ proc raiseToPower(uint base; uint exponent) uint:
     total
 corp;
 
-proc setupGrid(*Grid_t pGrid; uint sectorDimension) bool:
-    bool result;
-    uint byteCount;
+proc createGrid(uint sectorDimension) *Grid_t:
+    *Grid_t pGrid;
+    uint possibilityCount;
     if sectorDimension = 0 or sectorDimension > 6 then
-        return false;
+        return nil;
+    fi;
+    pGrid := new(Grid_t);
+    if pGrid = nil then
+        return nil;
     fi;
     pGrid*.g_sectorDimension := sectorDimension;
     pGrid*.g_dimension := raiseToPower(sectorDimension, 2);
-    byteCount := raiseToPower(pGrid*.g_dimension, 3);
-    pGrid*.g_pSquarePossibilities := Malloc(byteCount);
+    pGrid*.g_pNext := nil;
+    possibilityCount := raiseToPower(pGrid*.g_dimension, 3);
+    pGrid*.g_pSquarePossibilities := Malloc(possibilityCount);
     if pGrid*.g_pSquarePossibilities = nil then
-        return false;
+        free(pGrid);
+        return nil;
     fi;
     BlockFill(pGrid*.g_pSquarePossibilities,
-              byteCount,
+              possibilityCount,
               pretend(true, byte));
-    true
+    pGrid
 corp;
 
-proc cloneGrid(*Grid_t pSource, pTarget) bool:
-    uint byteCount;
-    pTarget*.g_sectorDimension := pSource*.g_sectorDimension;
-    pTarget*.g_dimension := pSource*.g_dimension;
-    byteCount := raiseToPower(pSource*.g_dimension, 3);
-    pTarget*.g_pSquarePossibilities := Malloc(byteCount);
-    if pTarget*.g_pSquarePossibilities = nil then
-        return false;
+proc cloneGrid(*Grid_t pGrid) *Grid_t:
+    *Grid_t pClone;
+    uint possibilityCount;
+    pClone := new(Grid_t);
+    if pClone = nil then
+        return nil;
     fi;
-    BlockCopy(pTarget*.g_pSquarePossibilities,
-              pSource*.g_pSquarePossibilities,
-              byteCount);
-    true
+    pClone*.g_sectorDimension := pGrid*.g_sectorDimension;
+    pClone*.g_dimension := pGrid*.g_dimension;
+    possibilityCount := raiseToPower(pGrid*.g_dimension, 3);
+    pClone*.g_pSquarePossibilities := Malloc(possibilityCount);
+    if pClone*.g_pSquarePossibilities = nil then
+        free(pClone);
+        return nil;
+    fi;
+    BlockCopy(pClone*.g_pSquarePossibilities,
+              pGrid*.g_pSquarePossibilities,
+              possibilityCount);
+    pClone
 corp;
 
 proc freeGrid(*Grid_t pGrid) void:
     Mfree(pGrid*.g_pSquarePossibilities,
           raiseToPower(pGrid*.g_dimension, 3));
+    free(pGrid);
 corp;
 
 proc getSquarePointer(*Grid_t pGrid; uint x, y) *bool:
@@ -82,14 +96,14 @@ corp;
    used in multiple source files and we don't want duplictaed code
 */
 proc getSquareValue(*Grid_t pGrid; uint x, y) uint:
-    uint index, value;
+    uint possibility, value;
     value := 0;
-    for index from 1 upto pGrid*.g_dimension do
-        if squareHasPossibility(pGrid, x, y, index) then
+    for possibility from 1 upto pGrid*.g_dimension do
+        if squareHasPossibility(pGrid, x, y, possibility) then
             if value > 0 then
                 return 0;
             else
-                value := index;
+                value := possibility;
             fi;
         fi;
     od;

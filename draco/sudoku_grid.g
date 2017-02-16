@@ -1,17 +1,19 @@
 
 type Grid_t = struct
 {
-    uint   g_sectorDimension;
-    uint   g_dimension;  
-    arbptr g_pImpl;
+    uint    g_sectorDimension;
+    uint    g_dimension;  
+    arbptr  g_pImpl;
+    *Grid_t g_pNext; /* Invasive linked list */
 };
 
-/* Returns false is the grid couldn't be setup for any reason */
-extern setupGrid(*Grid_t pGrid; uint sectorDimension) bool;
+/* Returns nil if the grid couldn't be created for any reason */
+extern createGrid(uint sectorDimension) *Grid_t;
 
-/* Returns false is the grid couldn't be cloned for any reason */
-extern cloneGrid(*Grid_t pSource, pTarget) bool;
+/* Returns nil if the grid couldn't be cloned for any reason */
+extern cloneGrid(*Grid_t pGrid) *Grid_t;
 
+/* Doesn't free other grids in list */
 extern freeGrid(*Grid_t pGrid) void;
 
 extern setSquareValue(*Grid_t pGrid; uint x, y, value) void;

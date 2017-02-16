@@ -9,13 +9,13 @@ proc getSquareChar(*Grid_t pGrid; uint x, y) char:
     if value = 0 then
         return '.';
     fi;
-    if pGrid*.g_sectorDimension > 3 then
-        if value >= 10 then
-            return 'A' + value - 10;
-        fi; 
-        return '0' + value - 1;
+    if pGrid*.g_sectorDimension <= 3 then
+        return '0' + value;
     fi;
-    '0' + value
+    if value >= 10 then
+        return 'A' + value - 10;
+    fi; 
+    '0' + value - 1
 corp;
 
 proc writeDividerLine(channel output text target; *Grid_t pGrid) void:
@@ -46,7 +46,7 @@ proc writeRow(channel output text target; *Grid_t pGrid; uint y) void:
 corp;
 
 proc writeGridString(channel output text target; *Grid_t pGrid) void:
-    uint x, y;
+    uint y;
     if pGrid*.g_sectorDimension > 6 then
         write(target; TOO_LARGE_EXCUSE);
     fi;
@@ -62,7 +62,7 @@ proc writeGridString(channel output text target; *Grid_t pGrid) void:
 corp;
 
 proc writeStateLine(channel output text target; *Grid_t pGrid) void:
-    uint x, y, squareCount;
+    uint x, y;
     if pGrid*.g_sectorDimension > 6 then
         write(target; TOO_LARGE_EXCUSE);
     else
