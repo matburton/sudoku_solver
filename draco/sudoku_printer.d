@@ -12,8 +12,8 @@ proc getSquareChar(*Grid_t pGrid; uint x, y) char:
     if pGrid*.g_sectorDimension <= 3 then
         return '0' + value;
     fi;
-    if value >= 10 then
-        return 'A' + value - 10;
+    if value >= 11 then
+        return 'A' + value - 11;
     fi; 
     '0' + value - 1
 corp;
