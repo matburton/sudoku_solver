@@ -1,12 +1,7 @@
+#sudoku_grid.g
 #drinc:util.g
 
-type Grid_t = struct
-{
-    uint    g_sectorDimension;
-    uint    g_dimension;  
-    *bool   g_pSquarePossibilities;
-    *Grid_t g_pNext;
-};
+uint POSSIBILITY_OFFSET = sizeof(Grid_t);
 
 proc raiseToPower(uint base; uint exponent) uint:
     uint total, index;   
@@ -19,60 +14,54 @@ corp;
 
 proc createGrid(uint sectorDimension) *Grid_t:
     *Grid_t pGrid;
-    uint possibilityCount;
+    uint dimension, possibilityCount;
+    if (sizeof(bool) ~= sizeof(byte)) then
+        error("Grid implementation needs sizeof(bool) = sizeof(byte)");
+    fi;
     if sectorDimension = 0 or sectorDimension > 6 then
         return nil;
     fi;
-    pGrid := new(Grid_t);
+    dimension := raiseToPower(sectorDimension, 2);
+    possibilityCount := raiseToPower(dimension, 3);
+    pGrid := pretend(Malloc(sizeof(Grid_t) + possibilityCount), *Grid_t);
     if pGrid = nil then
         return nil;
     fi;
     pGrid*.g_sectorDimension := sectorDimension;
-    pGrid*.g_dimension := raiseToPower(sectorDimension, 2);
-    possibilityCount := raiseToPower(pGrid*.g_dimension, 3);
-    pGrid*.g_pSquarePossibilities := Malloc(possibilityCount);
-    if pGrid*.g_pSquarePossibilities = nil then
-        free(pGrid);
-        return nil;
-    fi;
-    BlockFill(pGrid*.g_pSquarePossibilities,
+    pGrid*.g_dimension := dimension;
+    pGrid*.g_pNext := nil;
+    BlockFill(pGrid + POSSIBILITY_OFFSET,
               possibilityCount,
               pretend(true, byte));
-    pGrid*.g_pNext := nil;              
     pGrid
 corp;
 
 proc cloneGrid(*Grid_t pGrid) *Grid_t:
     *Grid_t pClone;
     uint possibilityCount;
-    pClone := new(Grid_t);
+    possibilityCount := raiseToPower(pGrid*.g_dimension, 3);
+    pClone := pretend(Malloc(sizeof(Grid_t) + possibilityCount), *Grid_t);
     if pClone = nil then
         return nil;
     fi;
     pClone*.g_sectorDimension := pGrid*.g_sectorDimension;
     pClone*.g_dimension := pGrid*.g_dimension;
-    possibilityCount := raiseToPower(pGrid*.g_dimension, 3);
-    pClone*.g_pSquarePossibilities := Malloc(possibilityCount);
-    if pClone*.g_pSquarePossibilities = nil then
-        free(pClone);
-        return nil;
-    fi;
-    BlockCopy(pClone*.g_pSquarePossibilities,
-              pGrid*.g_pSquarePossibilities,
-              possibilityCount);
     pClone*.g_pNext := nil;
+    BlockCopy(pClone + POSSIBILITY_OFFSET,
+              pGrid + POSSIBILITY_OFFSET,
+              possibilityCount);
     pClone
 corp;
 
 proc freeGrid(*Grid_t pGrid) void:
-    Mfree(pGrid*.g_pSquarePossibilities,
-          raiseToPower(pGrid*.g_dimension, 3));
-    free(pGrid);
+    Mfree(pGrid, sizeof(Grid_t) + raiseToPower(pGrid*.g_dimension, 3));
 corp;
 
 proc getSquarePointer(*Grid_t pGrid; uint x, y) *bool:
-    pGrid*.g_pSquarePossibilities
-    + (((y * pGrid*.g_dimension) + x) * pGrid*.g_dimension)
+    pretend(pGrid
+            + POSSIBILITY_OFFSET
+            + (((y * pGrid*.g_dimension) + x) * pGrid*.g_dimension),
+            *bool)
 corp;
 
 proc setSquareValue(*Grid_t pGrid; uint x, y, value) void:
