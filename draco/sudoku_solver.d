@@ -55,21 +55,11 @@ proc getPossibilityCountAt(*Grid_t pGrid; uint x, y) uint:
     count
 corp;
 
-proc isPossibleAt(*Grid_t pGrid; uint x, y) bool:
-    uint possibility;
-    for possibility from 1 upto pGrid*.g_dimension do
-        if squareHasPossibility(pGrid, x, y, possibility) then
-            return true;
-        fi;
-    od;
-    false
-corp;
-
 proc isPossible(*Grid_t pGrid) bool:
     uint x, y;
     for y from 0 upto pGrid*.g_dimension - 1 do
         for x from 0 upto pGrid*.g_dimension - 1 do
-            if not isPossibleAt(pGrid, x, y) then
+            if not isSquarePossible(pGrid, x, y) then
                 return false;
             fi;
         od;
@@ -187,7 +177,7 @@ corp;
 proc getDeducedValueAt(*Grid_t pGrid; uint x, y) uint:
     uint value;
     if    getSquareValue(pGrid, x, y) ~= 0
-       or not isPossibleAt(pGrid, x, y) then
+       or not isSquarePossible(pGrid, x, y) then
        return 0;
     fi;
     for value from 1 upto pGrid*.g_dimension do
@@ -240,12 +230,11 @@ proc getNextSolution(*Grid_t pGridList; ulong returnAfterSeconds) *Grid_t:
         refineGrid(pGridList);
         if isComplete(pGridList) then
             return pGridList;
+        fi;
+        if isPossible(pGridList) then
+            pGridList := splitFirstGridToFront(pGridList);
         else
-            if isPossible(pGridList) then
-                pGridList := splitFirstGridToFront(pGridList);
-            else
-                pGridList := freeFrontGrid(pGridList);
-            fi;
+            pGridList := freeFrontGrid(pGridList);
         fi;
     od;
     nil

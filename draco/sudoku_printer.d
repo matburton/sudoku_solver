@@ -3,19 +3,27 @@
 
 *char TOO_LARGE_EXCUSE = "Can't write-out large grid";
 
-proc getSquareChar(*Grid_t pGrid; uint x, y) char:
+proc writeSquareValue(channel output text target;
+                      *Grid_t pGrid; uint x, y) void:
     uint value;
     value := getSquareValue(pGrid, x, y);
     if value = 0 then
-        return '.';
+        if isSquarePossible(pGrid, x, y) then
+            write(target; '.');
+        else
+            write(target; "\(27)[33m\(216)\(27)[0m");
+        fi;
+    else
+        if pGrid*.g_sectorDimension <= 3 then
+            write(target; '0' + value);
+        else
+            if value >= 11 then
+                write(target; 'A' + value - 11);
+            else
+                write(target; '0' + value - 1);
+            fi; 
+        fi;
     fi;
-    if pGrid*.g_sectorDimension <= 3 then
-        return '0' + value;
-    fi;
-    if value >= 11 then
-        return 'A' + value - 11;
-    fi; 
-    '0' + value - 1
 corp;
 
 proc writeDividerLine(channel output text target; *Grid_t pGrid) void:
@@ -36,7 +44,7 @@ corp;
 proc writeRow(channel output text target; *Grid_t pGrid; uint y) void:
     uint x;
     for x from 1 upto pGrid*.g_dimension do
-        write(target; getSquareChar(pGrid, x - 1, y));
+        writeSquareValue(target, pGrid, x - 1, y);
         if x ~= pGrid*.g_dimension then
             write(target; ' ');
             if x % pGrid*.g_sectorDimension = 0 then
@@ -70,7 +78,7 @@ proc writeStateLine(channel output text target; *Grid_t pGrid) void:
     else
         for y from 0 upto pGrid*.g_dimension - 1 do
             for x from 0 upto pGrid*.g_dimension - 1 do
-                write(target; getSquareChar(pGrid, x, y));
+                writeSquareValue(target, pGrid, x, y);
             od;
         od;
     fi;

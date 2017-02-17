@@ -110,3 +110,13 @@ proc getSquareValue(*Grid_t pGrid; uint x, y) uint:
     od;
     value
 corp;
+
+proc isSquarePossible(*Grid_t pGrid; uint x, y) bool:
+    uint possibility;
+    for possibility from 1 upto pGrid*.g_dimension do
+        if squareHasPossibility(pGrid, x, y, possibility) then
+            return true;
+        fi;
+    od;
+    false
+corp;

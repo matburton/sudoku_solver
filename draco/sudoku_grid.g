@@ -25,3 +25,5 @@ extern removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void;
 
 /* Returns 0 if the square has multiple possibilities or no possibilities */
 extern getSquareValue(*Grid_t pGrid; uint x, y) uint;
+
+extern isSquarePossible(*Grid_t pGrid; uint x, y) bool;
