@@ -230,8 +230,13 @@ corp;
 
 /* Returns a list with a solution at the front
    or nil if there are no more solutions */
-proc getNextSolution(*Grid_t pGridList) *Grid_t:
+proc getNextSolution(*Grid_t pGridList; ulong returnAfterSeconds) *Grid_t:
+    ulong startTime;
+    startTime := GetCurrentTime();
     while pGridList ~= nil do
+        if GetCurrentTime() - startTime >= returnAfterSeconds then
+            return pGridList;
+        fi;
         refineGrid(pGridList);
         if isComplete(pGridList) then
             return pGridList;
@@ -247,24 +252,32 @@ proc getNextSolution(*Grid_t pGridList) *Grid_t:
 corp;
 
 proc main() void:
+    bool solutionFound;
     channel output text console;
     *Grid_t pGridList;
     MerrorSet(true);
     open(console);
+    solutionFound := false;
     pGridList := createGrid(4);
     if pGridList = nil then
         writeln("Failed to create initial grid");
         return;
     fi;
-    writeln("");
     while
-        pGridList := getNextSolution(pGridList);
+        pGridList := getNextSolution(pGridList, 15);
         pGridList ~= nil
     do
-        writeGridString(console, pGridList);
-        writeln('\n');
-        pGridList := freeFrontGrid(pGridList);
+        if isComplete(pGridList) then
+            writeln("\n\n\(27)[33mSolution\(27)[0m");
+            writeGridString(console, pGridList);
+            pGridList := freeFrontGrid(pGridList);
+            solutionFound := true;
+        else
+            if solutionFound = false then
+                writeln("\n\n\(27)[32mCurrent grid being refined\(27)[0m");
+                writeGridString(console, pGridList);
+            fi;
+        fi;
     od;
-    writeln("No further solutions found");
     close(console);
 corp;
