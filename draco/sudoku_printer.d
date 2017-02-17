@@ -20,9 +20,10 @@ corp;
 
 proc writeDividerLine(channel output text target; *Grid_t pGrid) void:
     uint x;
+    write("\(27)[32m");
     for x from 1 upto pGrid*.g_dimension do
         if x = pGrid*.g_dimension then
-            write(target; "-\n");
+            write(target; "-\(27)[0m\n");
         else
             write(target; "--");
             if x % pGrid*.g_sectorDimension = 0 then
@@ -39,7 +40,7 @@ proc writeRow(channel output text target; *Grid_t pGrid; uint y) void:
         if x ~= pGrid*.g_dimension then
             write(target; ' ');
             if x % pGrid*.g_sectorDimension = 0 then
-                write(target; "| ");
+                write(target; "\(27)[32m|\(27)[0m ");
             fi;
         fi;
     od;
@@ -59,6 +60,7 @@ proc writeGridString(channel output text target; *Grid_t pGrid) void:
             fi;
         fi;
     od;
+    LineFlush();
 corp;
 
 proc writeStateLine(channel output text target; *Grid_t pGrid) void:
@@ -72,4 +74,5 @@ proc writeStateLine(channel output text target; *Grid_t pGrid) void:
             od;
         od;
     fi;
+    LineFlush();
 corp;
