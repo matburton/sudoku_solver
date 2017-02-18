@@ -234,6 +234,9 @@ proc getNextSolution(*Grid_t pGridList; ulong returnAfterSeconds) *Grid_t:
         if isPossible(pGridList) then
             pGridList := splitFirstGridToFront(pGridList);
         else
+            if GetCurrentTime() - startTime >= returnAfterSeconds then
+                return pGridList;
+            fi;
             pGridList := freeFrontGrid(pGridList);
         fi;
     od;
@@ -247,7 +250,7 @@ proc main() void:
     MerrorSet(true);
     open(console);
     solutionFound := false;
-    pGridList := createGrid(4);
+    pGridList := createGrid(5);
     if pGridList = nil then
         writeln("Failed to create initial grid");
         return;
@@ -263,8 +266,14 @@ proc main() void:
             solutionFound := true;
         else
             if solutionFound = false then
-                writeln("\n\n\(27)[32mCurrent grid being refined\(27)[0m");
-                writeGridString(console, pGridList);
+                if isPossible(pGridList) then
+                    writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
+                    writeGridString(console, pGridList);
+                else
+                    writeln("\n\n\(27)[32mBacktracking from impossible grid\(27)[0m");
+                    writeGridString(console, pGridList);
+                    pGridList := freeFrontGrid(pGridList);
+                fi;
             fi;
         fi;
     od;
