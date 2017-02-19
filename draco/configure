@@ -1,8 +1,17 @@
-path Draco:c add
-assign drinc: Draco:drinc
-assign drlib: Draco:drlib
-assign link: Draco:s
-echo ""
-echo "Now to compile: *E[32mmake*E[0m"
-echo ""
-alias make execute make
+alias configure execute configure
+assign >NIL: exists Draco:
+IF WARN
+   echo ""
+   echo "Insert the Draco disk into another drive"
+   echo "Once inserted: *E[32mconfigure*E[0m"
+   echo ""
+ELSE
+   path Draco:c add
+   assign drinc: Draco:drinc
+   assign drlib: Draco:drlib
+   assign link: Draco:s
+   echo ""
+   echo "To compile: *E[32mmake*E[0m"
+   echo ""
+   alias make execute make
+ENDIF
