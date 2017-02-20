@@ -278,6 +278,7 @@ proc writeCounters(*Grid_t pGridList; *Counters_t pCounters) void:
     writeln("Grids in list:                ", gridCount);
     write  ("Elapsed time:                 ");
     writeTimePeriod(GetCurrentTime() - pCounters*.c_StartTime);
+    writeln("Grids created via splitting:  ", pCounters*.c_GridSplits);
     writeln("Impossible grids encountered: ", pCounters*.c_ImpossibleGrids);
     writeln("Grids lost due to low memory: ", pCounters*.c_GridsLost);   
     write  ("Solutions found:              ", pCounters*.c_Solutions);
