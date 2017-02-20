@@ -9,6 +9,5 @@ FF >NIL: -0
 resident CLI L:Shell-Seg SYSTEM pure add
 mount newcon:
 path add c:
-cd Sudokus:
 newshell "newcon:18/0/622/256/Sudokus"
 endcli >NIL:

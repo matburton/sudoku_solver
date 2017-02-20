@@ -1,3 +1,4 @@
+cd Sudokus:
 run gauge
 alias clear echo "*E[0;0H*E[J"
 clear

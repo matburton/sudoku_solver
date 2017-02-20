@@ -1,5 +1,7 @@
 #sudoku_grid.g
 #sudoku_printer.g
+#drinc:exec/tasks.g
+#drinc:libraries/dos.g
 #drinc:util.g
 
 extern removePossibilityAt(*Grid_t pGrid; uint x, y, value) void;
@@ -84,6 +86,12 @@ proc freeFrontGrid(*Grid_t pGridList) *Grid_t:
     pNext := pGridList*.g_pNext;
     freeGrid(pGridList);
     pNext
+corp;
+
+proc freeGridList(*Grid_t pGridList) void:
+    while pGridList ~= nil do
+        pGridList := freeFrontGrid(pGridList);
+    od;
 corp;
 
 proc freeLastGrid(*Grid_t pGridList) *Grid_t:
@@ -218,46 +226,40 @@ proc refineGrid(*Grid_t pGrid) void:
     od;
 corp;
 
-/* Returns a list with a solution at the front
-   or nil if there are no more solutions */
-proc getNextSolution(*Grid_t pGridList; ulong returnAfterSeconds) *Grid_t:
-    ulong startTime;
-    startTime := GetCurrentTime();
-    while pGridList ~= nil do
-        if GetCurrentTime() - startTime >= returnAfterSeconds then
-            return pGridList;
-        fi;
-        refineGrid(pGridList);
-        if isComplete(pGridList) then
-            return pGridList;
-        fi;
-        if isPossible(pGridList) then
-            pGridList := splitFirstGridToFront(pGridList);
-        else
-            if GetCurrentTime() - startTime >= returnAfterSeconds then
-                return pGridList;
-            fi;
-            pGridList := freeFrontGrid(pGridList);
-        fi;
-    od;
-    nil
+/* Returns nil if there are no more solutions */
+/* Caller must free front grid if complete before re-calling */
+proc advanceSolving(*Grid_t pGridList) *Grid_t:
+    if not isPossible(pGridList) then
+        pGridList := freeFrontGrid(pGridList);
+    fi;
+    refineGrid(pGridList);
+    if not isComplete(pGridList) and isPossible(pGridList) then
+        pGridList := splitFirstGridToFront(pGridList);
+    fi;
+    pGridList
+corp;
+
+proc BreakSignaled() bool:
+    SetSignal(0, 0) & SIGBREAKF_CTRL_C ~= 0
 corp;
 
 proc main() void:
     bool solutionFound;
     channel output text console;
     *Grid_t pGridList;
+    ulong lastReportTime;
     MerrorSet(true);
     open(console);
     solutionFound := false;
-    pGridList := createGrid(5);
+    pGridList := createGrid(4);
     if pGridList = nil then
         writeln("Failed to create initial grid");
         return;
     fi;
+    lastReportTime := GetCurrentTime();
     while
-        pGridList := getNextSolution(pGridList, 15);
-        pGridList ~= nil
+        pGridList := advanceSolving(pGridList);
+        pGridList ~= nil and not BreakSignaled()
     do
         if isComplete(pGridList) then
             writeln("\n\n\(27)[33mSolution\(27)[0m");
@@ -265,17 +267,18 @@ proc main() void:
             pGridList := freeFrontGrid(pGridList);
             solutionFound := true;
         else
-            if solutionFound = false then
+            if not solutionFound and GetCurrentTime() - lastReportTime >= 15 then
                 if isPossible(pGridList) then
                     writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
-                    writeGridString(console, pGridList);
                 else
-                    writeln("\n\n\(27)[32mBacktracking from impossible grid\(27)[0m");
-                    writeGridString(console, pGridList);
-                    pGridList := freeFrontGrid(pGridList);
+                    write("\n\n\(27)[32mBacktracking from");
+                    writeln("impossible grid\(27)[0m");
                 fi;
+                writeGridString(console, pGridList);
+                lastReportTime := GetCurrentTime();
             fi;
         fi;
     od;
+    freeGridList(pGridList);
     close(console);
 corp;
