@@ -4,6 +4,15 @@
 #drinc:libraries/dos.g
 #drinc:util.g
 
+type Counters_t = struct
+{
+    ulong c_StartTime;
+    ulong c_GridSplits;
+    ulong c_ImpossibleGrids;
+    ulong c_GridsLost;
+    ulong c_Solutions;
+};
+
 extern removePossibilityAt(*Grid_t pGrid; uint x, y, value) void;
 
 proc removePossibilitiesRelatedTo(*Grid_t pGrid; uint x, y, value) void:
@@ -109,7 +118,8 @@ proc freeLastGrid(*Grid_t pGridList) *Grid_t:
     pGridList
 corp;
 
-proc splitFirstGridToFront(*Grid_t pGridList) *Grid_t:
+proc splitFirstGridToFront(*Grid_t pGridList;
+                           *Counters_t pCounters) *Grid_t:
     uint x, y, count, bestX, bestY, bestCount;
     *Grid_t pGrid, pNewGrid;
     pGrid := pGridList;
@@ -132,11 +142,13 @@ proc splitFirstGridToFront(*Grid_t pGridList) *Grid_t:
                 pNewGrid = nil and pGridList ~= nil
             do
                 pGridList := freeLastGrid(pGridList);
+                pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
             od;
             if pNewGrid ~= nil then
                 setValueAt(pNewGrid, bestX, bestY, count);
                 pNewGrid*.g_pNext := pGridList;
                 pGridList := pNewGrid;
+                pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
             fi;
         fi;
     od;
@@ -228,54 +240,98 @@ corp;
 
 /* Returns nil if there are no more solutions */
 /* Caller must free front grid if complete before re-calling */
-proc advanceSolving(*Grid_t pGridList) *Grid_t:
+proc advanceSolving(*Grid_t pGridList; *Counters_t pCounters) *Grid_t:
     if not isPossible(pGridList) then
         pGridList := freeFrontGrid(pGridList);
+        pCounters*.c_ImpossibleGrids := pCounters*.c_ImpossibleGrids + 1;
     fi;
     refineGrid(pGridList);
     if not isComplete(pGridList) and isPossible(pGridList) then
-        pGridList := splitFirstGridToFront(pGridList);
+        pGridList := splitFirstGridToFront(pGridList, pCounters);
     fi;
     pGridList
 corp;
 
-proc BreakSignaled() bool:
+proc breakSignaled() bool:
     SetSignal(0, 0) & SIGBREAKF_CTRL_C ~= 0
 corp;
 
+proc writeTimePeriod(ulong seconds) void:
+    if seconds / 3600 < 10 then
+        write('0');
+    fi;
+    write(seconds / 3600);
+    seconds := seconds % 3600;
+    write(":", (seconds / 60):-2);
+    seconds := seconds % 60;
+    writeln(":", seconds:-2);
+corp;
+
+proc writeCounters(*Grid_t pGridList; *Counters_t pCounters) void:
+    uint gridCount;
+    gridCount := 0;
+    while pGridList ~= nil do
+        gridCount := gridCount + 1;
+        pGridList := pGridList*.g_pNext;
+    od;
+    write("\n\n");
+    writeln("Grids in list:                ", gridCount);
+    write  ("Elapsed time:                 ");
+    writeTimePeriod(GetCurrentTime() - pCounters*.c_StartTime);
+    writeln("Impossible grids encountered: ", pCounters*.c_ImpossibleGrids);
+    writeln("Grids lost due to low memory: ", pCounters*.c_GridsLost);   
+    write  ("Solutions found:              ", pCounters*.c_Solutions);
+    LineFlush();
+corp;
+
 proc main() void:
-    bool solutionFound;
     channel output text console;
     *Grid_t pGridList;
+    Counters_t counters;
     ulong lastReportTime;
+    bool lastReportedCounters;
     MerrorSet(true);
     open(console);
-    solutionFound := false;
-    pGridList := createGrid(4);
+    pGridList := createGrid(5);
     if pGridList = nil then
         writeln("Failed to create initial grid");
         return;
     fi;
+    write("\nSearching for ", pGridList*.g_dimension,
+          " x ", pGridList*.g_dimension, " solutions...");
+    LineFlush();
+    counters.c_StartTime := GetCurrentTime();
+    counters.c_GridSplits := 0;
+    counters.c_ImpossibleGrids := 0;
+    counters.c_GridsLost := 0;
+    counters.c_Solutions := 0;
     lastReportTime := GetCurrentTime();
+    lastReportedCounters := true;
     while
-        pGridList := advanceSolving(pGridList);
-        pGridList ~= nil and not BreakSignaled()
+        pGridList := advanceSolving(pGridList, &counters);
+        pGridList ~= nil and not breakSignaled()
     do
         if isComplete(pGridList) then
             writeln("\n\n\(27)[33mSolution\(27)[0m");
             writeGridString(console, pGridList);
             pGridList := freeFrontGrid(pGridList);
-            solutionFound := true;
+            counters.c_Solutions := counters.c_Solutions + 1;
         else
-            if not solutionFound and GetCurrentTime() - lastReportTime >= 15 then
-                if isPossible(pGridList) then
-                    writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
+            if counters.c_Solutions = 0
+                and GetCurrentTime() - lastReportTime >= 15 then
+                if lastReportedCounters then
+                    if isPossible(pGridList) then
+                        writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
+                    else
+                        write("\n\n\(27)[32mBacktracking from");
+                        writeln("impossible grid\(27)[0m");
+                    fi;
+                    writeGridString(console, pGridList);
                 else
-                    write("\n\n\(27)[32mBacktracking from");
-                    writeln("impossible grid\(27)[0m");
+                    writeCounters(pGridList, &counters);
                 fi;
-                writeGridString(console, pGridList);
                 lastReportTime := GetCurrentTime();
+                lastReportedCounters := not lastReportedCounters;
             fi;
         fi;
     od;
