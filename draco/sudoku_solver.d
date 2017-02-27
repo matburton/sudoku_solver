@@ -90,76 +90,6 @@ proc isComplete(*Grid_t pGrid) bool:
     true
 corp;
 
-proc freeFrontGrid(*Grid_t pGridList) *Grid_t:
-    *Grid_t pNext;
-    pNext := pGridList*.g_pNext;
-    freeGrid(pGridList);
-    pNext
-corp;
-
-proc freeGridList(*Grid_t pGridList) void:
-    while pGridList ~= nil do
-        pGridList := freeFrontGrid(pGridList);
-    od;
-corp;
-
-proc splitFirstGridToFront(*Grid_t pGridList;
-                           *Counters_t pCounters) *Grid_t:
-    uint x, y, count, bestX, bestY, bestCount, index;
-    *Grid_t pGrid, pCloneGrid, pNext;
-    pGrid := pGridList;
-    pGridList := pGrid*.g_pNext;
-    bestCount := 0;
-    for y from 0 upto pGrid*.g_dimension - 1 do
-        for x from 0 upto pGrid*.g_dimension - 1 do
-            count := getPossibilityCountAt(pGrid, x, y);
-            if count > bestCount then
-                bestCount := count;
-                bestX := x;
-                bestY := y;
-            fi;
-        od;
-    od;
-    index := pGrid*.g_dimension;
-    count := 0;
-    while count < bestCount do
-        if squareHasPossibility(pGrid, bestX, bestY, index) then
-            count := count + 1;
-            if count = bestCount then
-                pCloneGrid := pGrid;
-            else
-                pCloneGrid := cloneGrid(pGrid);
-                if pCloneGrid = nil and pGridList ~= nil then
-                    pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
-                    if pGridList*.g_pNext = nil then
-                        pCloneGrid := pGridList;
-                        cloneIntoGrid(pGrid, pCloneGrid);
-                        pGridList := nil;
-                    else
-                        pNext := pGridList;
-                        while pNext*.g_pNext*.g_pNext ~= nil do
-                            pNext := pNext*.g_pNext;
-                        od;
-                        pCloneGrid := pNext*.g_pNext;
-                        cloneIntoGrid(pGrid, pCloneGrid);
-                        pNext*.g_pNext := nil;
-                    fi;                
-                fi;
-            fi;
-            if pCloneGrid ~= nil then
-                pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
-                setValueAt(pCloneGrid, bestX, bestY, index);
-                pCloneGrid*.g_pNext := pGridList;
-                pGridList := pCloneGrid;
-            else
-                pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
-            fi;
-        fi;
-        index := index - 1;
-    od;
-    pGridList
-corp;
-
 proc mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool:
     uint indexX;
     for indexX from 0 upto pGrid*.g_dimension - 1 do
@@ -242,6 +172,84 @@ proc refineGrid(*Grid_t pGrid) void:
     od;
 corp;
 
+proc detachFrontGrid(*Grid_t pGridList) *Grid_t:
+    if pGridList*.g_pNext = pGridList then
+        return nil;
+    fi;
+    pGridList*.g_pNext*.g_pPrevious := pGridList*.g_pPrevious;
+    pGridList*.g_pPrevious*.g_pNext := pGridList*.g_pNext;
+    pGridList*.g_pNext
+corp;
+
+proc freeFrontGrid(*Grid_t pGridList) *Grid_t:
+    *Grid_t pGrid;
+    pGrid := pGridList;
+    pGridList := detachFrontGrid(pGridList);
+    freeGrid(pGrid);
+    pGridList
+corp;
+
+proc freeGridList(*Grid_t pGridList) void:
+    while pGridList ~= nil do
+        pGridList := freeFrontGrid(pGridList);
+    od;
+corp;
+
+proc splitFirstGridToFront(*Grid_t pGridList;
+                           *Counters_t pCounters) *Grid_t:
+    uint x, y, count, bestX, bestY, bestCount, index;
+    *Grid_t pGrid, pCloneGrid;
+    pGrid := pGridList;
+    pGridList := detachFrontGrid(pGridList);
+    bestCount := 0;
+    for y from 0 upto pGrid*.g_dimension - 1 do
+        for x from 0 upto pGrid*.g_dimension - 1 do
+            count := getPossibilityCountAt(pGrid, x, y);
+            if count > bestCount then
+                bestCount := count;
+                bestX := x;
+                bestY := y;
+            fi;
+        od;
+    od;
+    index := pGrid*.g_dimension;
+    count := 0;
+    while count < bestCount do
+        if squareHasPossibility(pGrid, bestX, bestY, index) then
+            count := count + 1;
+            if count = bestCount then
+                pCloneGrid := pGrid;
+            else
+                pCloneGrid := cloneGrid(pGrid);
+                if pCloneGrid = nil then
+                    pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
+                    if pGridList ~= nil then
+                        pCloneGrid := pGridList*.g_pPrevious;
+                        pGridList := detachFrontGrid(pGridList*.g_pPrevious);
+                        cloneIntoGrid(pGrid, pCloneGrid);
+                    fi;
+                fi;
+            fi;
+            if pCloneGrid ~= nil then
+                pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
+                setValueAt(pCloneGrid, bestX, bestY, index);
+                if pGridList = nil then
+                    pCloneGrid*.g_pNext := pCloneGrid;
+                    pCloneGrid*.g_pPrevious := pCloneGrid;
+                else
+                    pCloneGrid*.g_pNext := pGridList;
+                    pCloneGrid*.g_pPrevious := pGridList*.g_pPrevious;
+                    pGridList*.g_pPrevious*.g_pNext := pCloneGrid;
+                    pGridList*.g_pPrevious := pCloneGrid;
+                fi;
+                pGridList := pCloneGrid;
+            fi;
+        fi;
+        index := index - 1;
+    od;
+    pGridList
+corp;
+
 /* Returns nil if there are no more solutions */
 /* Caller must free front grid if complete before re-calling */
 proc advanceSolving(*Grid_t pGridList; *Counters_t pCounters) *Grid_t:
@@ -277,15 +285,26 @@ proc writeTimePeriod(ulong seconds) void:
     writeln(":", seconds:-2);
 corp;
 
-proc writeCounters(*Grid_t pGridList; *Counters_t pCounters) void:
+proc countGrids(*Grid_t pGridList) uint:
+    *Grid_t pNext;
     uint gridCount;
-    gridCount := 0;
-    while pGridList ~= nil do
+    if pGridList = nil then
+        return 0;
+    fi;
+    gridCount := 1;
+    pNext := pGridList;
+    while
+        pNext := pNext*.g_pNext;
+        pNext ~= pGridList
+    do
         gridCount := gridCount + 1;
-        pGridList := pGridList*.g_pNext;
     od;
-    write("\n\n");
-    writeln("Grids in list:                ", gridCount);
+    gridCount
+corp;
+
+proc writeCounters(*Grid_t pGridList; *Counters_t pCounters) void:
+    write  ("\n\n");
+    writeln("Grids in list:                ", countGrids(pGridList));
     write  ("Elapsed time:                 ");
     writeTimePeriod(GetCurrentTime() - pCounters*.c_StartTime);
     writeln("Grids created via splitting:  ", pCounters*.c_GridSplits);

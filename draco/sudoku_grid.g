@@ -3,7 +3,8 @@ type Grid_t = struct
 {
     uint    g_sectorDimension;
     uint    g_dimension;  
-    *Grid_t g_pNext; /* Invasive linked list */
+    *Grid_t g_pNext; /* Invasive circular doubly linked list */
+    *Grid_t g_pPrevious;
 };
 
 /* Returns nil if the grid couldn't be created for any reason */

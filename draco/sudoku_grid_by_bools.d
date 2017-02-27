@@ -29,7 +29,8 @@ proc createGrid(uint sectorDimension) *Grid_t:
     fi;
     pGrid*.g_sectorDimension := sectorDimension;
     pGrid*.g_dimension := dimension;
-    pGrid*.g_pNext := nil;
+    pGrid*.g_pNext := pGrid;
+    pGrid*.g_pPrevious := pGrid;
     BlockFill(pGrid + POSSIBILITY_OFFSET,
               possibilityCount,
               pretend(true, byte));
@@ -45,7 +46,6 @@ proc cloneGrid(*Grid_t pGrid) *Grid_t:
         return nil;
     fi;
     BlockCopy(pClone, pGrid, sizeof(Grid_t) + possibilityCount);
-    pClone*.g_pNext := nil;
     pClone
 corp;
 
@@ -53,7 +53,6 @@ proc cloneIntoGrid(*Grid_t pSource, pTarget) void:
     BlockCopy(pTarget,
               pSource,
               sizeof(Grid_t) + raiseToPower(pSource*.g_dimension, 3));
-    pTarget*.g_pNext := nil;
 corp;
 
 proc freeGrid(*Grid_t pGrid) void:
