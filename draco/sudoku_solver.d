@@ -103,25 +103,10 @@ proc freeGridList(*Grid_t pGridList) void:
     od;
 corp;
 
-proc freeLastGrid(*Grid_t pGridList) *Grid_t:
-    *Grid_t pNext;
-    if pGridList*.g_pNext = nil then
-        freeGrid(pGridList);
-        return nil;
-    fi;
-    pNext := pGridList;
-    while pNext*.g_pNext*.g_pNext ~= nil do
-        pNext := pNext*.g_pNext;
-    od;
-    freeGrid(pNext*.g_pNext);
-    pNext*.g_pNext := nil;
-    pGridList
-corp;
-
 proc splitFirstGridToFront(*Grid_t pGridList;
                            *Counters_t pCounters) *Grid_t:
-    uint x, y, count, bestX, bestY, bestCount;
-    *Grid_t pGrid, pNewGrid;
+    uint x, y, count, bestX, bestY, bestCount, index;
+    *Grid_t pGrid, pCloneGrid, pNext;
     pGrid := pGridList;
     pGridList := pGrid*.g_pNext;
     bestCount := 0;
@@ -135,24 +120,41 @@ proc splitFirstGridToFront(*Grid_t pGridList;
             fi;
         od;
     od;
-    for count from pGrid*.g_dimension downto 1 do
-        if squareHasPossibility(pGrid, bestX, bestY, count) then
-            while
-                pNewGrid := cloneGrid(pGrid);
-                pNewGrid = nil and pGridList ~= nil
-            do
-                pGridList := freeLastGrid(pGridList);
-                pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
-            od;
-            if pNewGrid ~= nil then
-                setValueAt(pNewGrid, bestX, bestY, count);
-                pNewGrid*.g_pNext := pGridList;
-                pGridList := pNewGrid;
+    index := pGrid*.g_dimension;
+    count := 0;
+    while count < bestCount do
+        if squareHasPossibility(pGrid, bestX, bestY, index) then
+            count := count + 1;
+            if count = bestCount then
+                pCloneGrid := pGrid;
+            else
+                pCloneGrid := cloneGrid(pGrid);
+                if pCloneGrid = nil and pGridList ~= nil then
+                    if pGridList*.g_pNext = nil then
+                        pCloneGrid := pGridList;
+                        cloneIntoGrid(pGrid, pCloneGrid);
+                        pGridList := nil;
+                    else
+                        pNext := pGridList;
+                        while pNext*.g_pNext*.g_pNext ~= nil do
+                            pNext := pNext*.g_pNext;
+                        od;
+                        pCloneGrid := pNext*.g_pNext;
+                        cloneIntoGrid(pGrid, pCloneGrid);
+                        pNext*.g_pNext := nil;
+                    fi;                
+                    pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
+                fi;
+            fi;
+            if pCloneGrid ~= nil then
+                setValueAt(pCloneGrid, bestX, bestY, index);
+                pCloneGrid*.g_pNext := pGridList;
+                pGridList := pCloneGrid;
                 pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
             fi;
         fi;
+        index := index - 1;
     od;
-    freeGrid(pGrid);
     pGridList
 corp;
 
@@ -241,6 +243,9 @@ corp;
 /* Returns nil if there are no more solutions */
 /* Caller must free front grid if complete before re-calling */
 proc advanceSolving(*Grid_t pGridList; *Counters_t pCounters) *Grid_t:
+    if pGridList = nil then
+        return nil;
+    fi;
     if not isPossible(pGridList) then
         pGridList := freeFrontGrid(pGridList);
         pCounters*.c_ImpossibleGrids := pCounters*.c_ImpossibleGrids + 1;
@@ -321,12 +326,7 @@ proc main() void:
             if counters.c_Solutions = 0
                 and GetCurrentTime() - lastReportTime >= 15 then
                 if lastReportedCounters then
-                    if isPossible(pGridList) then
-                        writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
-                    else
-                        write("\n\n\(27)[32mBacktracking from");
-                        writeln("impossible grid\(27)[0m");
-                    fi;
+                    writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
                     writeGridString(console, pGridList);
                 else
                     writeCounters(pGridList, &counters);

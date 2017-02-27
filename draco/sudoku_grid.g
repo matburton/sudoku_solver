@@ -12,6 +12,9 @@ extern createGrid(uint sectorDimension) *Grid_t;
 /* Returns nil if the grid couldn't be cloned for any reason */
 extern cloneGrid(*Grid_t pGrid) *Grid_t;
 
+/* Source and target are assumed to have the same dimensions */
+extern cloneIntoGrid(*Grid_t pSource, pTarget) void;
+
 /* Doesn't free other grids in list */
 extern freeGrid(*Grid_t pGrid) void;
 

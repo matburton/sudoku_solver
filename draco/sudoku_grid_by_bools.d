@@ -44,13 +44,16 @@ proc cloneGrid(*Grid_t pGrid) *Grid_t:
     if pClone = nil then
         return nil;
     fi;
-    pClone*.g_sectorDimension := pGrid*.g_sectorDimension;
-    pClone*.g_dimension := pGrid*.g_dimension;
+    BlockCopy(pClone, pGrid, sizeof(Grid_t) + possibilityCount);
     pClone*.g_pNext := nil;
-    BlockCopy(pClone + POSSIBILITY_OFFSET,
-              pGrid + POSSIBILITY_OFFSET,
-              possibilityCount);
     pClone
+corp;
+
+proc cloneIntoGrid(*Grid_t pSource, pTarget) void:
+    BlockCopy(pTarget,
+              pSource,
+              sizeof(Grid_t) + raiseToPower(pSource*.g_dimension, 3));
+    pTarget*.g_pNext := nil;
 corp;
 
 proc freeGrid(*Grid_t pGrid) void:
