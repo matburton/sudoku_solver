@@ -130,6 +130,7 @@ proc splitFirstGridToFront(*Grid_t pGridList;
             else
                 pCloneGrid := cloneGrid(pGrid);
                 if pCloneGrid = nil and pGridList ~= nil then
+                    pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
                     if pGridList*.g_pNext = nil then
                         pCloneGrid := pGridList;
                         cloneIntoGrid(pGrid, pCloneGrid);
@@ -143,14 +144,15 @@ proc splitFirstGridToFront(*Grid_t pGridList;
                         cloneIntoGrid(pGrid, pCloneGrid);
                         pNext*.g_pNext := nil;
                     fi;                
-                    pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
                 fi;
             fi;
             if pCloneGrid ~= nil then
+                pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
                 setValueAt(pCloneGrid, bestX, bestY, index);
                 pCloneGrid*.g_pNext := pGridList;
                 pGridList := pCloneGrid;
-                pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
+            else
+                pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
             fi;
         fi;
         index := index - 1;
@@ -247,8 +249,11 @@ proc advanceSolving(*Grid_t pGridList; *Counters_t pCounters) *Grid_t:
         return nil;
     fi;
     if not isPossible(pGridList) then
-        pGridList := freeFrontGrid(pGridList);
         pCounters*.c_ImpossibleGrids := pCounters*.c_ImpossibleGrids + 1;
+        pGridList := freeFrontGrid(pGridList);
+        if pGridList = nil then
+            return nil;
+        fi;
     fi;
     refineGrid(pGridList);
     if not isComplete(pGridList) and isPossible(pGridList) then
@@ -318,10 +323,10 @@ proc main() void:
         pGridList ~= nil and not breakSignaled()
     do
         if isComplete(pGridList) then
+            counters.c_Solutions := counters.c_Solutions + 1;
             writeln("\n\n\(27)[33mSolution\(27)[0m");
             writeGridString(console, pGridList);
             pGridList := freeFrontGrid(pGridList);
-            counters.c_Solutions := counters.c_Solutions + 1;
         else
             if counters.c_Solutions = 0
                 and GetCurrentTime() - lastReportTime >= 15 then
