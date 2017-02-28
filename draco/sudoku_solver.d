@@ -233,16 +233,21 @@ proc splitFirstGridToFront(*Grid_t pGridList;
             if pCloneGrid ~= nil then
                 pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
                 setValueAt(pCloneGrid, bestX, bestY, index);
-                if pGridList = nil then
-                    pCloneGrid*.g_pNext := pCloneGrid;
-                    pCloneGrid*.g_pPrevious := pCloneGrid;
+                if not isPossible(pCloneGrid) then
+                    pCounters*.c_ImpossibleGrids := pCounters*.c_ImpossibleGrids + 1;
+                    freeGrid(pCloneGrid);
                 else
-                    pCloneGrid*.g_pNext := pGridList;
-                    pCloneGrid*.g_pPrevious := pGridList*.g_pPrevious;
-                    pGridList*.g_pPrevious*.g_pNext := pCloneGrid;
-                    pGridList*.g_pPrevious := pCloneGrid;
+                    if pGridList = nil then
+                        pCloneGrid*.g_pNext := pCloneGrid;
+                        pCloneGrid*.g_pPrevious := pCloneGrid;
+                    else
+                        pCloneGrid*.g_pNext := pGridList;
+                        pCloneGrid*.g_pPrevious := pGridList*.g_pPrevious;
+                        pGridList*.g_pPrevious*.g_pNext := pCloneGrid;
+                        pGridList*.g_pPrevious := pCloneGrid;
+                    fi;
+                    pGridList := pCloneGrid;
                 fi;
-                pGridList := pCloneGrid;
             fi;
         fi;
         index := index - 1;
