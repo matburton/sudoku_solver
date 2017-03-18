@@ -83,19 +83,17 @@ proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void:
     (getSquarePointer(pGrid, x, y) + value - 1)* := false;
 corp;
 
-/* This doesn't need to be here in that it isn't specific to the
-   way we're storing possibilities but it is handy here as it's
-   used in multiple source files and we don't want duplicated code
-*/
 proc getSquareValue(*Grid_t pGrid; uint x, y) uint:
     uint possibility, value;
+    *bool pSquare;
     value := 0;
-    for possibility from 1 upto pGrid*.g_dimension do
-        if squareHasPossibility(pGrid, x, y, possibility) then
+    pSquare := getSquarePointer(pGrid, x, y);
+    for possibility from 0 upto pGrid*.g_dimension - 1 do
+        if (pSquare + possibility)* then
             if value > 0 then
                 return 0;
             else
-                value := possibility;
+                value := possibility + 1;
             fi;
         fi;
     od;
@@ -104,8 +102,10 @@ corp;
 
 proc isSquarePossible(*Grid_t pGrid; uint x, y) bool:
     uint possibility;
-    for possibility from 1 upto pGrid*.g_dimension do
-        if squareHasPossibility(pGrid, x, y, possibility) then
+    *bool pSquare;
+    pSquare := getSquarePointer(pGrid, x, y);
+    for possibility from 0 upto pGrid*.g_dimension - 1 do
+        if (pSquare + possibility)* then
             return true;
         fi;
     od;

@@ -11,9 +11,11 @@ type Grid_t = struct
 extern createGrid(uint sectorDimension) *Grid_t;
 
 /* Returns nil if the grid couldn't be cloned for any reason */
+/* This also clones the list pointers */
 extern cloneGrid(*Grid_t pGrid) *Grid_t;
 
 /* Source and target are assumed to have the same dimensions */
+/* This also clones the list pointers */
 extern cloneIntoGrid(*Grid_t pSource, pTarget) void;
 
 /* Doesn't free other grids in list */

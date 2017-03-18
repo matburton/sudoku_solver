@@ -80,8 +80,8 @@ corp;
 
 proc isComplete(*Grid_t pGrid) bool:
     uint x, y;
-    for y from 0 upto pGrid*.g_dimension - 1 do
-        for x from 0 upto pGrid*.g_dimension - 1 do
+    for y from pGrid*.g_dimension - 1 downto 0 do
+        for x from pGrid*.g_dimension - 1 downto 0 do
             if getPossibilityCountAt(pGrid, x, y) ~= 1 then
                 return false;
             fi;
@@ -195,6 +195,7 @@ proc freeGridList(*Grid_t pGridList) void:
     od;
 corp;
 
+/* must not be called with complete or impossible grids */
 proc splitFirstGridToFront(*Grid_t pGridList;
                            *Counters_t pCounters) *Grid_t:
     uint x, y, count, bestX, bestY, bestCount, index;
@@ -205,10 +206,12 @@ proc splitFirstGridToFront(*Grid_t pGridList;
     for y from 0 upto pGrid*.g_dimension - 1 do
         for x from 0 upto pGrid*.g_dimension - 1 do
             count := getPossibilityCountAt(pGrid, x, y);
-            if count > bestCount then
-                bestCount := count;
-                bestX := x;
-                bestY := y;
+            if count > 1 then
+                if bestCount = 0 or count < bestCount then
+                    bestCount := count;
+                    bestX := x;
+                    bestY := y;
+                fi;
             fi;
         od;
     od;
@@ -365,6 +368,8 @@ proc main() void:
             fi;
         fi;
     od;
+    writeCounters(pGridList, &counters);
+    writeln("\n");
     freeGridList(pGridList);
     close(console);
 corp;
