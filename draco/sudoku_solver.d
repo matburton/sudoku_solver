@@ -55,17 +55,6 @@ proc setValueAt(*Grid_t pGrid; uint x, y, value) void:
     removePossibilitiesRelatedTo(pGrid, x, y, value);
 corp;
 
-proc getPossibilityCountAt(*Grid_t pGrid; uint x, y) uint:
-    uint possibility, count;
-    count := 0;
-    for possibility from 1 upto pGrid*.g_dimension do
-        if squareHasPossibility(pGrid, x, y, possibility) then
-            count := count + 1;
-        fi;
-    od;
-    count
-corp;
-
 proc isPossible(*Grid_t pGrid) bool:
     uint x, y;
     for y from 0 upto pGrid*.g_dimension - 1 do
@@ -82,7 +71,7 @@ proc isComplete(*Grid_t pGrid) bool:
     uint x, y;
     for y from pGrid*.g_dimension - 1 downto 0 do
         for x from pGrid*.g_dimension - 1 downto 0 do
-            if getPossibilityCountAt(pGrid, x, y) ~= 1 then
+            if getPossibilityCount(pGrid, x, y) ~= 1 then
                 return false;
             fi;
         od;
@@ -205,7 +194,7 @@ proc splitFirstGridToFront(*Grid_t pGridList;
     bestCount := 0;
     for y from 0 upto pGrid*.g_dimension - 1 do
         for x from 0 upto pGrid*.g_dimension - 1 do
-            count := getPossibilityCountAt(pGrid, x, y);
+            count := getPossibilityCount(pGrid, x, y);
             if count > 1 then
                 if bestCount = 0 or count < bestCount then
                     bestCount := count;
@@ -293,26 +282,9 @@ proc writeTimePeriod(ulong seconds) void:
     writeln(":", seconds:-2);
 corp;
 
-proc countGrids(*Grid_t pGridList) uint:
-    *Grid_t pNext;
-    uint gridCount;
-    if pGridList = nil then
-        return 0;
-    fi;
-    gridCount := 1;
-    pNext := pGridList;
-    while
-        pNext := pNext*.g_pNext;
-        pNext ~= pGridList
-    do
-        gridCount := gridCount + 1;
-    od;
-    gridCount
-corp;
-
-proc writeCounters(*Grid_t pGridList; *Counters_t pCounters) void:
+proc writeCounters(*Counters_t pCounters) void:
     write  ("\n\n");
-    writeln("Grids in list:                ", countGrids(pGridList));
+    writeln("Grids in memory:              ", gridsInMemory);
     write  ("Elapsed time:                 ");
     writeTimePeriod(GetCurrentTime() - pCounters*.c_StartTime);
     writeln("Grids created via splitting:  ", pCounters*.c_GridSplits);
@@ -328,9 +300,10 @@ proc main() void:
     Counters_t counters;
     ulong lastReportTime;
     bool lastReportedCounters;
+    gridsInMemory := 0;
     MerrorSet(true);
     open(console);
-    pGridList := createGrid(5);
+    pGridList := createGrid(3);
     if pGridList = nil then
         writeln("Failed to create initial grid");
         return;
@@ -348,27 +321,26 @@ proc main() void:
     while
         pGridList := advanceSolving(pGridList, &counters);
         pGridList ~= nil and not breakSignaled()
+        and counters.c_Solutions = 0
     do
         if isComplete(pGridList) then
             counters.c_Solutions := counters.c_Solutions + 1;
             writeln("\n\n\(27)[33mSolution\(27)[0m");
             writeGridString(console, pGridList);
             pGridList := freeFrontGrid(pGridList);
-        else
-            if counters.c_Solutions = 0
-                and GetCurrentTime() - lastReportTime >= 15 then
-                if lastReportedCounters then
-                    writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
-                    writeGridString(console, pGridList);
-                else
-                    writeCounters(pGridList, &counters);
-                fi;
-                lastReportTime := GetCurrentTime();
-                lastReportedCounters := not lastReportedCounters;
+        elif counters.c_Solutions = 0
+             and GetCurrentTime() - lastReportTime >= 15 then
+            if lastReportedCounters then
+                writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
+                writeGridString(console, pGridList);
+            else
+                writeCounters(&counters);
             fi;
+            lastReportTime := GetCurrentTime();
+            lastReportedCounters := not lastReportedCounters;
         fi;
     od;
-    writeCounters(pGridList, &counters);
+    writeCounters(&counters);
     writeln("\n");
     freeGridList(pGridList);
     close(console);

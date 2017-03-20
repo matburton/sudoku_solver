@@ -7,6 +7,8 @@ type Grid_t = struct
     *Grid_t g_pPrevious;
 };
 
+uint gridsInMemory; 
+
 /* Returns nil if the grid couldn't be created for any reason */
 extern createGrid(uint sectorDimension) *Grid_t;
 
@@ -27,6 +29,8 @@ extern squareHasPossibility(*Grid_t pGrid; uint x, y, value) bool;
 
 /* Returns true if the possibility was present before it was removed */
 extern removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void;
+
+extern getPossibilityCount(*Grid_t pGrid; uint x, y) uint;
 
 /* Returns 0 if the square has multiple possibilities or no possibilities */
 extern getSquareValue(*Grid_t pGrid; uint x, y) uint;

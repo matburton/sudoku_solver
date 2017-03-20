@@ -15,7 +15,7 @@ corp;
 proc createGrid(uint sectorDimension) *Grid_t:
     *Grid_t pGrid;
     uint dimension, possibilityCount;
-    if (sizeof(bool) ~= sizeof(byte)) then
+    if sizeof(bool) ~= sizeof(byte) then
         error("Grid implementation needs sizeof(bool) = sizeof(byte)");
     fi;
     if sectorDimension = 0 or sectorDimension > 6 then
@@ -34,6 +34,7 @@ proc createGrid(uint sectorDimension) *Grid_t:
     BlockFill(pGrid + POSSIBILITY_OFFSET,
               possibilityCount,
               pretend(true, byte));
+    gridsInMemory := gridsInMemory + 1;
     pGrid
 corp;
 
@@ -46,6 +47,7 @@ proc cloneGrid(*Grid_t pGrid) *Grid_t:
         return nil;
     fi;
     BlockCopy(pClone, pGrid, sizeof(Grid_t) + possibilityCount);
+    gridsInMemory := gridsInMemory + 1;
     pClone
 corp;
 
@@ -57,30 +59,45 @@ corp;
 
 proc freeGrid(*Grid_t pGrid) void:
     Mfree(pGrid, sizeof(Grid_t) + raiseToPower(pGrid*.g_dimension, 3));
+    gridsInMemory := gridsInMemory - 1;
 corp;
 
 proc getSquarePointer(*Grid_t pGrid; uint x, y) *bool:
-    pretend(pGrid
-            + POSSIBILITY_OFFSET
-            + (((y * pGrid*.g_dimension) + x) * pGrid*.g_dimension),
-            *bool)
+    pretend(pGrid, *bool)
+    + POSSIBILITY_OFFSET
+    + (((y * pGrid*.g_dimension) + x) * pGrid*.g_dimension)
 corp;
 
 proc setSquareValue(*Grid_t pGrid; uint x, y, value) void:
-    uint index;
     *bool pSquare;
     pSquare := getSquarePointer(pGrid, x, y);
-    for index from 1 upto pGrid*.g_dimension do
-        (pSquare + index - 1)* := index = value;
-    od;
+    BlockFill(pSquare, pGrid*.g_dimension, pretend(false, byte));
+    (pSquare + value - 1)* := true;
 corp;
 
 proc squareHasPossibility(*Grid_t pGrid; uint x, y, value) bool:
-    (getSquarePointer(pGrid, x, y) + value - 1)*
+    /* Inlined getSquarePointer */
+    (pretend(pGrid, *bool)
+     + POSSIBILITY_OFFSET
+     + (((y * pGrid*.g_dimension) + x) * pGrid*.g_dimension)
+     + value - 1)*
 corp;
 
 proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void:
     (getSquarePointer(pGrid, x, y) + value - 1)* := false;
+corp;
+
+proc getPossibilityCount(*Grid_t pGrid; uint x, y) uint:
+    uint possibility, count;
+    *bool pSquare;
+    count := 0;
+    pSquare := getSquarePointer(pGrid, x, y);
+    for possibility from 0 upto pGrid*.g_dimension - 1 do
+        if (pSquare + possibility)* then
+            count := count + 1;
+        fi;
+    od;
+    count
 corp;
 
 proc getSquareValue(*Grid_t pGrid; uint x, y) uint:

@@ -16,12 +16,10 @@ proc writeSquareValue(channel output text target;
     else
         if pGrid*.g_sectorDimension <= 3 then
             write(target; '0' + value);
+        elif value >= 11 then
+            write(target; 'A' + value - 11);
         else
-            if value >= 11 then
-                write(target; 'A' + value - 11);
-            else
-                write(target; '0' + value - 1);
-            fi; 
+            write(target; '0' + value - 1);
         fi;
     fi;
 corp;
