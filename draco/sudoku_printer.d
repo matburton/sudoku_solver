@@ -8,7 +8,7 @@ proc writeSquareValue(channel output text target;
     uint value;
     value := getSquareValue(pGrid, x, y);
     if value = 0 then
-        if isSquarePossible(pGrid, x, y) then
+        if getPossibilityCount(pGrid, x, y) > 0 then
             write(target; '.');
         else
             write(target; "\(27)[33m\(216)\(27)[0m");

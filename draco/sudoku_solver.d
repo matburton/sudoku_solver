@@ -4,6 +4,11 @@
 #drinc:libraries/dos.g
 #drinc:util.g
 
+/* TODO: Is puzzle solving faster or slower with the imp hack? */
+
+/* TODO: Would whether the next grid to split is not the
+         first incomplete one be a good way to turn on refine */
+
 type Counters_t = struct
 {
     ulong c_StartTime;
@@ -39,11 +44,9 @@ proc removePossibilitiesRelatedTo(*Grid_t pGrid; uint x, y, value) void:
 corp;
 
 proc removePossibilityAt(*Grid_t pGrid; uint x, y, value) void:
-    bool hadPossibility;
-    hadPossibility := squareHasPossibility(pGrid, x, y, value);
-    removeSquarePossibility(pGrid, x, y, value);
-    if hadPossibility then
-        value := getSquareValue(pGrid, x, y);
+    if squareHasPossibility(pGrid, x, y, value) then
+        removeSquarePossibility(pGrid, x, y, value);
+        value := getSquareValue(pGrid, x, y); /* TODO: Decache this */
         if value ~= 0 then
             removePossibilitiesRelatedTo(pGrid, x, y, value);
         fi;
@@ -55,30 +58,7 @@ proc setValueAt(*Grid_t pGrid; uint x, y, value) void:
     removePossibilitiesRelatedTo(pGrid, x, y, value);
 corp;
 
-proc isPossible(*Grid_t pGrid) bool:
-    uint x, y;
-    for y from 0 upto pGrid*.g_dimension - 1 do
-        for x from 0 upto pGrid*.g_dimension - 1 do
-            if not isSquarePossible(pGrid, x, y) then
-                return false;
-            fi;
-        od;
-    od;
-    true
-corp;
-
-proc isComplete(*Grid_t pGrid) bool:
-    uint x, y;
-    for y from pGrid*.g_dimension - 1 downto 0 do
-        for x from pGrid*.g_dimension - 1 downto 0 do
-            if getPossibilityCount(pGrid, x, y) ~= 1 then
-                return false;
-            fi;
-        od;
-    od;
-    true
-corp;
-
+/* TODO: Push these down and use pointer bumping somehow? */
 proc mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool:
     uint indexX;
     for indexX from 0 upto pGrid*.g_dimension - 1 do
@@ -119,17 +99,15 @@ corp;
 /* Returns zero if no value could be deduced */
 proc getDeducedValueAt(*Grid_t pGrid; uint x, y) uint:
     uint value;
-    if    getSquareValue(pGrid, x, y) ~= 0
-       or not isSquarePossible(pGrid, x, y) then
-       return 0;
+    if getPossibilityCount(pGrid, x, y) > 1 then
+        for value from 1 upto pGrid*.g_dimension do
+            if    mustBeValueByRow   (pGrid, x, y, value)
+               or mustBeValueByColumn(pGrid, x, y, value)
+               or mustBeValueBySector(pGrid, x, y, value) then
+                return value;
+            fi;
+        od;
     fi;
-    for value from 1 upto pGrid*.g_dimension do
-        if    mustBeValueByRow   (pGrid, x, y, value)
-           or mustBeValueByColumn(pGrid, x, y, value)
-           or mustBeValueBySector(pGrid, x, y, value) then
-            return value;
-        fi;
-    od;
     0
 corp;
 
@@ -260,7 +238,9 @@ proc advanceSolving(*Grid_t pGridList; *Counters_t pCounters) *Grid_t:
             return nil;
         fi;
     fi;
-    refineGrid(pGridList);
+    if pCounters*.c_ImpossibleGrids > 0 then
+        refineGrid(pGridList);
+    fi;
     if not isComplete(pGridList) and isPossible(pGridList) then
         pGridList := splitFirstGridToFront(pGridList, pCounters);
     fi;
@@ -303,7 +283,7 @@ proc main() void:
     gridsInMemory := 0;
     MerrorSet(true);
     open(console);
-    pGridList := createGrid(3);
+    pGridList := createGrid(5);
     if pGridList = nil then
         writeln("Failed to create initial grid");
         return;
