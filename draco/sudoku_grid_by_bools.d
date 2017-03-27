@@ -9,6 +9,8 @@ type GridCache_t = struct
 {
     uint gc_totalSize;
     uint gc_squareSize;
+    uint gc_impossibleSquares;
+    uint gc_incompleteSquares;
 };
 
 type SquareCache_t = struct
@@ -50,6 +52,8 @@ proc createGrid(uint sectorDimension) *Grid_t:
     pGridCache := pretend(pGrid + sizeof(Grid_t), *GridCache_t);
     pGridCache*.gc_totalSize := totalSize;
     pGridCache*.gc_squareSize := squareSize;
+    pGridCache*.gc_impossibleSquares := 0;
+    pGridCache*.gc_incompleteSquares := dimension * dimension;    
     BlockFill(pGrid + SQUARES_OFFSET,
               totalSize - SQUARES_OFFSET,
               pretend(true, byte));
@@ -89,10 +93,17 @@ corp;
 
 proc setSquareValue(*Grid_t pGrid; uint x, y, value) void:
     *bool pSquare;
-    *SquareCache_t pCache@pSquare;
-    pCache := getSquarePointer(pGrid, x, y);
-    pCache*.sc_possibilityCount := 1;   
-    BlockFill(pCache + sizeof(SquareCache_t),
+    *SquareCache_t pSquareCache@pSquare;
+    *GridCache_t pGridCache;
+    pSquareCache := getSquarePointer(pGrid, x, y);
+    pGridCache := pretend(pGrid + sizeof(Grid_t), *GridCache_t);
+    if pSquareCache*.sc_possibilityCount = 0 then
+        pGridCache*.gc_impossibleSquares := pGridCache*.gc_impossibleSquares - 1;
+    elif pSquareCache*.sc_possibilityCount > 1 then
+        pGridCache*.gc_incompleteSquares := pGridCache*.gc_incompleteSquares - 1;
+    fi;
+    pSquareCache*.sc_possibilityCount := 1;   
+    BlockFill(pSquareCache + sizeof(SquareCache_t),
               pGrid*.g_dimension,
               pretend(false, byte));
     (pSquare + sizeof(SquareCache_t) + value - 1)* := true;
@@ -108,13 +119,21 @@ corp;
 
 proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) boid:
     *bool pSquare;
-    *SquareCache_t pCache@pSquare;  
-    pCache := getSquarePointer(pGrid, x, y);
+    *SquareCache_t pSquareCache@pSquare;  
+    *GridCache_t pGridCache;
+    pSquareCache := getSquarePointer(pGrid, x, y);
     if not (pSquare + sizeof(SquareCache_t) + value - 1)* then
         return false;
     fi;
     (pSquare + sizeof(SquareCache_t) + value - 1)* := false;
-    pCache*.sc_possibilityCount := pCache*.sc_possibilityCount - 1;
+    pSquareCache*.sc_possibilityCount := pSquareCache*.sc_possibilityCount - 1;
+    pGridCache := pretend(pGrid + sizeof(Grid_t), *GridCache_t);
+    if pSquareCache*.sc_possibilityCount = 0 then
+        pGridCache*.gc_impossibleSquares := pGridCache*.gc_impossibleSquares + 1;
+        pGridCache*.gc_incompleteSquares := pGridCache*.gc_incompleteSquares + 1;
+    elif pSquareCache*.sc_possibilityCount = 1 then
+        pGridCache*.gc_incompleteSquares := pGridCache*.gc_incompleteSquares - 1;
+    fi;
     true
 corp;
 
@@ -124,10 +143,10 @@ corp;
 
 proc getSquareValue(*Grid_t pGrid; uint x, y) uint:
     *bool pSquare;
-    *SquareCache_t pCache@pSquare;  
+    *SquareCache_t pSquareCache@pSquare;  
     uint possibility;
-    pCache := getSquarePointer(pGrid, x, y);
-    if pCache*.sc_possibilityCount ~= 1 then
+    pSquareCache := getSquarePointer(pGrid, x, y);
+    if pSquareCache*.sc_possibilityCount ~= 1 then
         return 0;
     fi;
     pSquare := pSquare + sizeof(SquareCache_t);
@@ -140,31 +159,9 @@ proc getSquareValue(*Grid_t pGrid; uint x, y) uint:
 corp;
 
 proc isPossible(*Grid_t pGrid) bool:
-    *uint pCachePossibilityCount;
-    *GridCache_t pGridCache;
-    pGridCache := pretend(pGrid + sizeof(Grid_t), *GridCache_t);
-    for pCachePossibilityCount
-        from pretend(pGrid + SQUARES_OFFSET, *uint)
-        by pGridCache*.gc_squareSize
-        upto pretend(pGrid + pGridCache*.gc_totalSize - 1, *uint) do
-        if pCachePossibilityCount* = 0 then
-            return false;
-        fi;
-    od;
-    true
+    pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_impossibleSquares = 0
 corp;
 
 proc isComplete(*Grid_t pGrid) bool:
-    *uint pCachePossibilityCount;
-    *GridCache_t pGridCache;
-    pGridCache := pretend(pGrid + sizeof(Grid_t), *GridCache_t);
-    for pCachePossibilityCount
-        from pretend(pGrid + pGridCache*.gc_totalSize - pGridCache*.gc_squareSize, *uint)
-        by pGridCache*.gc_squareSize
-        downto pretend(pGrid + SQUARES_OFFSET, *uint) do
-        if pCachePossibilityCount* ~= 1 then
-            return false;
-        fi;
-    od;
-    true
+    pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_incompleteSquares = 0
 corp;
