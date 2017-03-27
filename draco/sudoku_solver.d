@@ -99,7 +99,8 @@ corp;
 /* Returns zero if no value could be deduced */
 proc getDeducedValueAt(*Grid_t pGrid; uint x, y) uint:
     uint value;
-    if getPossibilityCount(pGrid, x, y) > 1 then
+    value := getPossibilityCount(pGrid, x, y);
+    if value > 1 and value < pGrid*.g_sectorDimension then
         for value from 1 upto pGrid*.g_dimension do
             if squareHasPossibility(pGrid, x, y, value)
                and (   mustBeValueByRow   (pGrid, x, y, value)
@@ -239,9 +240,7 @@ proc advanceSolving(*Grid_t pGridList; *Counters_t pCounters) *Grid_t:
             return nil;
         fi;
     fi;
-    if pCounters*.c_ImpossibleGrids > 0 then
-        refineGrid(pGridList);
-    fi;
+    refineGrid(pGridList);
     if not isComplete(pGridList) and isPossible(pGridList) then
         pGridList := splitFirstGridToFront(pGridList, pCounters);
     fi;
@@ -310,7 +309,7 @@ proc main() void:
             writeGridString(console, pGridList);
             pGridList := freeFrontGrid(pGridList);
         elif counters.c_Solutions = 0
-             and GetCurrentTime() - lastReportTime >= 15 then
+             and GetCurrentTime() - lastReportTime >= 3 then
             if lastReportedCounters then
                 writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
                 writeGridString(console, pGridList);
