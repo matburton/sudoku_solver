@@ -5,15 +5,14 @@
 
 proc writeSquareValue(channel output text target;
                       *Grid_t pGrid; uint x, y) void:
-    uint value;
-    value := getSquareValue(pGrid, x, y);
-    if value = 0 then
-        if getPossibilityCount(pGrid, x, y) > 0 then
-            write(target; '.');
-        else
-            write(target; "\(27)[33m\(216)\(27)[0m");
-        fi;
+    uint possibilities, value;
+    possibilities := getPossibilityCount(pGrid, x, y);
+    if possibilities > 1 then
+        write(target; '.');
+    elif possibilities = 0 then
+        write(target; "\(27)[33m\(216)\(27)[0m");
     else
+        value := getSquareValue(pGrid, x, y);
         if pGrid*.g_sectorDimension <= 3 then
             write(target; '0' + value);
         elif value >= 11 then
