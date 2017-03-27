@@ -4,11 +4,6 @@
 #drinc:libraries/dos.g
 #drinc:util.g
 
-/* TODO: Is puzzle solving faster or slower with the imp hack? */
-
-/* TODO: Would whether the next grid to split is not the
-         first incomplete one be a good way to turn on refine */
-
 type Counters_t = struct
 {
     ulong c_StartTime;
@@ -46,7 +41,7 @@ corp;
 proc removePossibilityAt(*Grid_t pGrid; uint x, y, value) void:
     if squareHasPossibility(pGrid, x, y, value) then
         removeSquarePossibility(pGrid, x, y, value);
-        value := getSquareValue(pGrid, x, y); /* TODO: Decache this */
+        value := getSquareValue(pGrid, x, y);
         if value ~= 0 then
             removePossibilitiesRelatedTo(pGrid, x, y, value);
         fi;
@@ -309,7 +304,7 @@ proc main() void:
             writeGridString(console, pGridList);
             pGridList := freeFrontGrid(pGridList);
         elif counters.c_Solutions = 0
-             and GetCurrentTime() - lastReportTime >= 3 then
+             and GetCurrentTime() - lastReportTime >= 15 then
             if lastReportedCounters then
                 writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
                 writeGridString(console, pGridList);
