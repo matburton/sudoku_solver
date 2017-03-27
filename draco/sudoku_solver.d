@@ -101,9 +101,10 @@ proc getDeducedValueAt(*Grid_t pGrid; uint x, y) uint:
     uint value;
     if getPossibilityCount(pGrid, x, y) > 1 then
         for value from 1 upto pGrid*.g_dimension do
-            if    mustBeValueByRow   (pGrid, x, y, value)
-               or mustBeValueByColumn(pGrid, x, y, value)
-               or mustBeValueBySector(pGrid, x, y, value) then
+            if squareHasPossibility(pGrid, x, y, value)
+               and (   mustBeValueByRow   (pGrid, x, y, value)
+                    or mustBeValueByColumn(pGrid, x, y, value)
+                    or mustBeValueBySector(pGrid, x, y, value)) then
                 return value;
             fi;
         od;
