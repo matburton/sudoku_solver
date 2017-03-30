@@ -15,7 +15,7 @@ type GridCache_t = struct
 
 type SquareCache_t = struct
 {
-    uint sc_possibilityCount;
+    ushort sc_possibilityCount;
 };
 
 uint SQUARES_OFFSET = sizeof(Grid_t) + sizeof(GridCache_t);
@@ -34,11 +34,11 @@ proc createGrid(uint sectorDimension) *Grid_t:
     if sizeof(bool) ~= sizeof(byte) then
         error("Grid implementation needs sizeof(bool) = sizeof(byte)");
     fi;
+    if sectorDimension > 5 then /* We currently overflow pointers */
+        return nil;             /* with sector size 6 or greater */
+    fi;                         /* and bigger types slows it down */
     dimension := sectorDimension * sectorDimension;  
     squareSize := sizeof(SquareCache_t) + dimension;
-    if squareSize % 2 = 1 then
-        squareSize := squareSize + 1;
-    fi;
     totalSize := sizeof(Grid_t) + sizeof(GridCache_t)
                + dimension * dimension * squareSize;
     pGrid := pretend(Malloc(totalSize), *Grid_t);
