@@ -94,8 +94,7 @@ corp;
 /* Returns zero if no value could be deduced */
 proc getDeducedValueAt(*Grid_t pGrid; uint x, y) uint:
     uint value;
-    value := getPossibilityCount(pGrid, x, y);
-    if value > 1 and value < pGrid*.g_sectorDimension then
+    if getPossibilityCount(pGrid, x, y) = 2 then
         for value from 1 upto pGrid*.g_dimension do
             if squareHasPossibility(pGrid, x, y, value)
                and (   mustBeValueByRow   (pGrid, x, y, value)
