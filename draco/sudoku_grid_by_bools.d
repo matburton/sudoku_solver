@@ -228,7 +228,6 @@ proc mustBeValueBySector(*Grid_t pGrid; uint x, y, value) bool:
              + ((value - 1) / BITS_PER_PACK) * sizeof(uint);
     mask := pretend(1, uint) << ((value - 1) % BITS_PER_PACK);
     bumpSize := squareSize * (dimension - sectorDimension + 1);
-    /* TODO: Rather than ignore bump over row and col squares? */
     ignoreIndex := ((y % sectorDimension) * sectorDimension) + (x % sectorDimension);
     for index from 0 upto pGrid*.g_dimension - 1 do
         if index ~= ignoreIndex and pSquare* & mask ~= 0 then
