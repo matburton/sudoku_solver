@@ -37,3 +37,9 @@ extern getSquareValue(*Grid_t pGrid; uint x, y) uint;
 extern isPossible(*Grid_t pGrid) bool;
 
 extern isComplete(*Grid_t pGrid) bool;
+
+extern mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool;
+
+extern mustBeValueByColumn(*Grid_t pGrid; uint x, y, value) bool;
+
+extern mustBeValueBySector(*Grid_t pGrid; uint x, y, value) bool;

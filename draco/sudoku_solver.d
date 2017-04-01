@@ -53,48 +53,11 @@ proc setValueAt(*Grid_t pGrid; uint x, y, value) void:
     removePossibilitiesRelatedTo(pGrid, x, y, value);
 corp;
 
-/* TODO: Push these down and use pointer bumping somehow? */
-proc mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool:
-    uint indexX;
-    for indexX from 0 upto pGrid*.g_dimension - 1 do
-        if     indexX ~= x
-           and squareHasPossibility(pGrid, indexX, y, value) then
-            return false;
-        fi;
-    od;
-    true
-corp;
-
-proc mustBeValueByColumn(*Grid_t pGrid; uint x, y, value) bool:
-    uint indexY;
-    for indexY from 0 upto pGrid*.g_dimension - 1 do
-        if     indexY ~= y
-           and squareHasPossibility(pGrid, x, indexY, value) then
-            return false;
-        fi;
-    od;
-    true
-corp;
-
-proc mustBeValueBySector(*Grid_t pGrid; uint x, y, value) bool:
-    uint indexX, indexY, startX, startY;
-    startX := (x / pGrid*.g_sectorDimension) * pGrid*.g_sectorDimension;
-    startY := (y / pGrid*.g_sectorDimension) * pGrid*.g_sectorDimension;
-    for indexY from startY upto startY + pGrid*.g_sectorDimension - 1 do
-        for indexX from startX upto startX + pGrid*.g_sectorDimension - 1 do
-            if    (indexX ~= x or indexY ~= y)
-               and squareHasPossibility(pGrid, indexX, indexY, value) then
-                return false;
-            fi;
-        od;
-    od;  
-    true
-corp;
-
 /* Returns zero if no value could be deduced */
 proc getDeducedValueAt(*Grid_t pGrid; uint x, y) uint:
     uint value;
-    if getPossibilityCount(pGrid, x, y) = 2 then
+    value := getPossibilityCount(pGrid, x, y);
+    if value > 1 and value <= 3 then
         for value from 1 upto pGrid*.g_dimension do
             if squareHasPossibility(pGrid, x, y, value)
                and (   mustBeValueByRow   (pGrid, x, y, value)

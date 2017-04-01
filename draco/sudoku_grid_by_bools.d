@@ -178,3 +178,67 @@ corp;
 proc isComplete(*Grid_t pGrid) bool:
     pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_incompleteSquares = 0
 corp;
+
+proc mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool:
+    uint squareSize, mask, index;
+    *uint pSquare;
+    squareSize := pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_squareSize;    
+    pSquare := pretend(pGrid + SQUARES_OFFSET, *uint)
+             + y * pGrid*.g_dimension * squareSize
+             + sizeof(SquareCache_t)
+             + ((value - 1) / BITS_PER_PACK) * sizeof(uint);
+    mask := pretend(1, uint) << ((value - 1) % BITS_PER_PACK);
+    for index from 0 upto pGrid*.g_dimension - 1 do
+        if index ~= x and pSquare* & mask ~= 0 then
+            return false;
+        fi;
+        pSquare := pSquare + squareSize;
+    od;
+    true
+corp;
+
+proc mustBeValueByColumn(*Grid_t pGrid; uint x, y, value) bool:
+    uint bumpSize, mask, index;
+    *uint pSquare;
+    bumpSize := pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_squareSize;    
+    pSquare := pretend(pGrid + SQUARES_OFFSET, *uint)
+             + x * bumpSize + sizeof(SquareCache_t)
+             + ((value - 1) / BITS_PER_PACK) * sizeof(uint);
+    mask := pretend(1, uint) << ((value - 1) % BITS_PER_PACK);
+    bumpSize := bumpSize * pGrid*.g_dimension;
+    for index from 0 upto pGrid*.g_dimension - 1 do
+        if index ~= y and pSquare* & mask ~= 0 then
+            return false;
+        fi;
+        pSquare := pSquare + bumpSize;
+    od;
+    true
+corp;
+
+proc mustBeValueBySector(*Grid_t pGrid; uint x, y, value) bool:
+    uint squareSize, dimension, sectorDimension, bumpSize, mask, index, ignoreIndex;
+    *uint pSquare;
+    squareSize := pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_squareSize;
+    dimension := pGrid*.g_dimension;
+    sectorDimension := pGrid*.g_sectorDimension;
+    pSquare := pretend(pGrid + SQUARES_OFFSET, *uint)
+             + (((y / sectorDimension) * sectorDimension) * pGrid*.g_dimension
+             + ((x / sectorDimension) * sectorDimension)) * squareSize
+             + sizeof(SquareCache_t)
+             + ((value - 1) / BITS_PER_PACK) * sizeof(uint);
+    mask := pretend(1, uint) << ((value - 1) % BITS_PER_PACK);
+    bumpSize := squareSize * (dimension - sectorDimension + 1);
+    /* TODO: Rather than ignore bump over row and col squares? */
+    ignoreIndex := ((y % sectorDimension) * sectorDimension) + (x % sectorDimension);
+    for index from 0 upto pGrid*.g_dimension - 1 do
+        if index ~= ignoreIndex and pSquare* & mask ~= 0 then
+            return false;
+        fi;
+        if (index + 1) % sectorDimension ~= 0 then
+            pSquare := pSquare + squareSize;
+        else
+            pSquare := pSquare + bumpSize;
+        fi;
+    od;
+    true
+corp;
