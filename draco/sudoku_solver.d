@@ -56,8 +56,7 @@ corp;
 /* Returns zero if no value could be deduced */
 proc getDeducedValueAt(*Grid_t pGrid; uint x, y) uint:
     uint value;
-    value := getPossibilityCount(pGrid, x, y);
-    if value > 1 and value <= 3 then
+    if getPossibilityCount(pGrid, x, y) > 1 then
         for value from 1 upto pGrid*.g_dimension do
             if squareHasPossibility(pGrid, x, y, value)
                and (   mustBeValueByRow   (pGrid, x, y, value)
@@ -121,10 +120,40 @@ proc freeGridList(*Grid_t pGridList) void:
     od;
 corp;
 
+proc attachToFrontIfPossible(*Grid_t pGridList, pGrid;
+							 *Counters_t pCounters) *Grid_t:
+	if not isPossible(pGrid) then
+		pCounters*.c_ImpossibleGrids := pCounters*.c_ImpossibleGrids + 1;
+		freeGrid(pGrid);
+		return pGridList;
+	fi;
+	if pGridList = nil then
+		pGrid*.g_pNext := pGrid;
+		pGrid*.g_pPrevious := pGrid;
+	else
+		pGrid*.g_pNext := pGridList;
+		pGrid*.g_pPrevious := pGridList*.g_pPrevious;
+		pGridList*.g_pPrevious*.g_pNext := pGrid;
+		pGridList*.g_pPrevious := pGrid;
+	fi;
+	pGrid
+corp;
+
+/* TODO: Move this down into squares code */
+proc getAPossibilityAt(*Grid_t pGrid; uint x, y) uint:
+	uint index;
+	for index from 1 upto pGrid*.g_dimension do
+        if squareHasPossibility(pGrid, x, y, index) then
+			return index;
+		fi;
+	od;
+	0
+corp;
+
 /* must not be called with complete or impossible grids */
 proc splitFirstGridToFront(*Grid_t pGridList;
                            *Counters_t pCounters) *Grid_t:
-    uint x, y, count, bestX, bestY, bestCount, index;
+    uint x, y, count, bestX, bestY, bestCount, possibility;
     *Grid_t pGrid, pCloneGrid;
     pGrid := pGridList;
     pGridList := detachFrontGrid(pGridList);
@@ -141,47 +170,23 @@ proc splitFirstGridToFront(*Grid_t pGridList;
             fi;
         od;
     od;
-    index := pGrid*.g_dimension;
-    count := 0;
-    while count < bestCount do
-        if squareHasPossibility(pGrid, bestX, bestY, index) then
-            count := count + 1;
-            if count = bestCount then
-                pCloneGrid := pGrid;
-            else
-                pCloneGrid := cloneGrid(pGrid);
-                if pCloneGrid = nil then
-                    pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
-                    if pGridList ~= nil then
-                        pCloneGrid := pGridList*.g_pPrevious;
-                        pGridList := detachFrontGrid(pGridList*.g_pPrevious);
-                        cloneIntoGrid(pGrid, pCloneGrid);
-                    fi;
-                fi;
-            fi;
-            if pCloneGrid ~= nil then
-                pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
-                setValueAt(pCloneGrid, bestX, bestY, index);
-                if not isPossible(pCloneGrid) then
-                    pCounters*.c_ImpossibleGrids := pCounters*.c_ImpossibleGrids + 1;
-                    freeGrid(pCloneGrid);
-                else
-                    if pGridList = nil then
-                        pCloneGrid*.g_pNext := pCloneGrid;
-                        pCloneGrid*.g_pPrevious := pCloneGrid;
-                    else
-                        pCloneGrid*.g_pNext := pGridList;
-                        pCloneGrid*.g_pPrevious := pGridList*.g_pPrevious;
-                        pGridList*.g_pPrevious*.g_pNext := pCloneGrid;
-                        pGridList*.g_pPrevious := pCloneGrid;
-                    fi;
-                    pGridList := pCloneGrid;
-                fi;
-            fi;
-        fi;
-        index := index - 1;
-    od;
-    pGridList
+	possibility := getAPossibilityAt(pGrid, bestX, bestY);
+	pCloneGrid := cloneGrid(pGrid);
+	if pCloneGrid = nil then
+		pCounters*.c_GridsLost := pCounters*.c_GridsLost + 1;
+		if pGridList ~= nil then
+			pCloneGrid := pGridList*.g_pPrevious;
+			pGridList := detachFrontGrid(pGridList*.g_pPrevious);
+			cloneIntoGrid(pGrid, pCloneGrid);
+		fi;
+	fi;
+    if pCloneGrid ~= nil then
+        pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
+        removePossibilityAt(pCloneGrid, bestX, bestY, possibility);
+        pGridList := attachToFrontIfPossible(pGridList, pCloneGrid, pCounters);
+    fi;
+	setValueAt(pGrid, bestX, bestY, possibility);
+	attachToFrontIfPossible(pGridList, pGrid, pCounters)
 corp;
 
 /* Returns nil if there are no more solutions */
@@ -240,7 +245,7 @@ proc main() void:
     gridsInMemory := 0;
     MerrorSet(true);
     open(console);
-    pGridList := createGrid(5);
+    pGridList := createGrid(4);
     if pGridList = nil then
         writeln("Failed to create initial grid");
         return;
