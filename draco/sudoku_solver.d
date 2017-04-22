@@ -139,7 +139,6 @@ proc attachToFrontIfPossible(*Grid_t pGridList, pGrid;
 	pGrid
 corp;
 
-/* TODO: Move this down into squares code */
 proc getAPossibilityAt(*Grid_t pGrid; uint x, y) uint:
 	uint index;
 	for index from 1 upto pGrid*.g_dimension do

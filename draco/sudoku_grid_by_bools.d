@@ -1,7 +1,7 @@
 #sudoku_grid.g
 #drinc:util.g
 
-/* TODO: Reduce the size of the grid, avoid overflows */
+/* TODO: Avoid overflows */
 
 /* Disassemble and check if there's any optimisations to be had */
 
@@ -128,12 +128,12 @@ corp;
 
 proc getSquareValueImpl(*Grid_t pGrid; uint x, y) uint:
     uint possibility;
-    for possibility from 0 upto pGrid*.g_dimension - 2 do
-        if squareHasPossibility(pGrid, x, y, possibility + 1) then
-            return possibility + 1;
+    for possibility from 1 upto pGrid*.g_dimension - 1 do
+        if squareHasPossibility(pGrid, x, y, possibility) then
+            return possibility;
         fi;
     od;
-    pGrid*.g_dimension
+    possibility
 corp;
 
 proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void:
