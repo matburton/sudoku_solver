@@ -23,11 +23,7 @@ uint SQUARES_OFFSET = sizeof(Grid_t) + sizeof(GridCache_t);
 
 uint BITS_PER_PACK = sizeof(uint) * 8;
 
-proc getSquarePointer(*Grid_t pGrid; uint x, y) *SquareCache_t:
-    pretend(pGrid + SQUARES_OFFSET, *SquareCache_t)
-    + (y * pGrid*.g_dimension + x)
-    * pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_squareSize
-corp;
+extern getSquarePointer(*Grid_t pGrid; uint x, y) *SquareCache_t;
 
 proc createGrid(uint sectorDimension) *Grid_t:
     uint dimension, squareSize, totalSize, x, y;

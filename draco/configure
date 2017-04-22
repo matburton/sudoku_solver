@@ -9,7 +9,6 @@ ELSE
    path Draco:c add
    assign drinc: Draco:drinc
    assign drlib: Draco:drlib
-   assign link: Draco:s
    echo ""
    echo "To compile: *E[32mmake*E[0m"
    echo ""
