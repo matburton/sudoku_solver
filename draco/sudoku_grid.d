@@ -159,14 +159,6 @@ proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void:
     fi;
 corp;
 
-proc isPossible(*Grid_t pGrid) bool:
-    pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_impossibleSquares = 0
-corp;
-
-proc isComplete(*Grid_t pGrid) bool:
-    pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_incompleteSquares = 0
-corp;
-
 proc mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool:
     uint squareSize, mask, index;
     *uint pSquare;
