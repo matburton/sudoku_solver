@@ -1,9 +1,3 @@
 *.r
 *.o
-c/
-devs/
-l/
-T/
-FastMemFirst
-PerfMon
 sudoku_solver
