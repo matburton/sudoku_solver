@@ -159,14 +159,6 @@ proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void:
     fi;
 corp;
 
-proc getPossibilityCount(*Grid_t pGrid; uint x, y) uint:
-    getSquarePointer(pGrid, x, y)*.sc_possibilityCount
-corp;
-
-proc getSquareValue(*Grid_t pGrid; uint x, y) uint:
-    getSquarePointer(pGrid, x, y)*.sc_squareValue
-corp;
-
 proc isPossible(*Grid_t pGrid) bool:
     pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_impossibleSquares = 0
 corp;

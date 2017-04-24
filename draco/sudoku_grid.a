@@ -1,6 +1,4 @@
 
-	xdef      getSquarePointer
-
 return macro
 	move.l    (sp)+,a0
     addq.l    \1,sp
@@ -8,6 +6,7 @@ return macro
 	endm
 
 getSquareOffset macro
+	moveq     #0,d0
 	move.w    4(sp),d0
     move.l    8(sp),a0
     mulu.w    2(a0),d0
@@ -16,9 +15,26 @@ getSquareOffset macro
 	add.w     #20,d0
 	endm
 
+	xdef      getSquarePointer
 getSquarePointer      
     getSquareOffset
     add.l     a0,d0
     return    #8
+
+getSquareCachedValue macro
+	getSquareOffset
+    add.l     d0,a0
+	moveq     #0,d0
+	move.b    \1(a0),d0
+    return    #8
+	endm
+
+	xdef      getPossibilityCount
+getPossibilityCount
+	getSquareCachedValue 0
+
+	xdef      getSquareValue
+getSquareValue
+	getSquareCachedValue 1
 
 end
