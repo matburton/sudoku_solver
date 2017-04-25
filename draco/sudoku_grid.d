@@ -74,15 +74,9 @@ proc cloneGrid(*Grid_t pGrid) *Grid_t:
     if pClone = nil then
         return nil;
     fi;
-    BlockCopy(pClone, pGrid, totalSize);
+    cloneIntoGrid(pGrid, pClone);
     gridsInMemory := gridsInMemory + 1;
     pClone
-corp;
-
-proc cloneIntoGrid(*Grid_t pSource, pTarget) void:
-    BlockCopy(pTarget,
-              pSource,
-              pretend(pSource + sizeof(Grid_t), *GridCache_t)*.gc_totalSize);
 corp;
 
 proc freeGrid(*Grid_t pGrid) void:

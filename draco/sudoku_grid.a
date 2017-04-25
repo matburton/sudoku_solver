@@ -1,5 +1,6 @@
 
         xdef    getSquarePointer
+        xdef    cloneIntoGrid
         xdef    getPossibilityCount
         xdef    getSquareValue
         xdef    isPossible
@@ -19,6 +20,16 @@ getSquareOffset macro
 getSquarePointer      
         getSquareOffset
         add.l   a1,d0
+        jmp     (a0)
+        
+cloneIntoGrid
+        movem.l (sp)+,d0/a0/a1
+        move.w  12(a1),d1
+        lsr.w   #1,d1
+        dbt     d1,cigexit
+cigloop move.w  (a1)+,(a0)+
+        dbf     d1,cigloop
+cigexit move.l  d0,a0
         jmp     (a0)
 
 getSquareCachedValue macro
