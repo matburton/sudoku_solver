@@ -1,7 +1,7 @@
 
         xdef    getSquarePointer
         xdef    cloneIntoGrid
-        ;xdef    squareHasPossibility
+        xdef    squareHasPossibility
         xdef    getPossibilityCount
         xdef    getSquareValue
         xdef    isPossible
@@ -9,7 +9,8 @@
 
 getSquareOffset macro
         moveq   #0,d0
-        movem.w (sp)+,d0/d1
+        move.w  (sp)+,d0
+        move.w  (sp)+,d1
         move.l  (sp)+,a1
         mulu    2(a1),d0
         add.w   d1,d0
@@ -33,23 +34,24 @@ cigloop move.w  (a1)+,(a0)+
 cigexit move.l  d0,a0
         jmp     (a0)
         
-; TODO: Swap to bytes for bitsets
-;squareHasPossibility
-;        move.l  (sp)+,a0
-;        move.w  (sp)+,d1
-;        swap    d1
-;        getSquareOffset 2
-;        add.l   d0,a1
-;        move.w  #0,d1
-;        swap    d1
-;        subq.w  #1,d1
-;        move.l  d1,d0
-;        lsr.w   #3,d1
-;        add.l   d1,a1
-;        and.w   #8-1,d0
-;        btst.l  d0,(a1)
-;        seq     d0
-;        jmp     (a0)
+squareHasPossibility
+        move.l  (sp)+,a0
+        move.w  (sp)+,d1
+        swap    d1
+        getSquareOffset 2
+        add.l   d0,a1
+        move.w  #0,d1
+        swap    d1
+        subq.w  #1,d1
+        move.l  d1,d0
+        lsr.w   #4,d1
+        lsl.w   #1,d1
+        add.l   d1,a1
+        and.w   #16-1,d0
+        move.w  (a1),d1
+        btst.l  d0,d1
+        sne     d0
+        jmp     (a0)
 
 getSquareCachedValue macro
         move.l  (sp)+,a0

@@ -103,16 +103,6 @@ proc setSquareValue(*Grid_t pGrid; uint x, y, value) void:
     pSquare* := pSquare* | (pretend(1, uint) << ((value - 1) % BITS_PER_PACK));
 corp;
 
-proc squareHasPossibility(*Grid_t pGrid; uint x, y, value) bool:
-    /* Inlined getSquarePointer */
-    (pretend(pGrid + SQUARES_OFFSET, *uint)
-     + (y * pGrid*.g_dimension + x)
-     * pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_squareSize
-     + sizeof(SquareCache_t)
-     + ((value - 1) / BITS_PER_PACK) * sizeof(uint))*
-    & (pretend(1, uint) << ((value - 1) % BITS_PER_PACK)) ~= 0
-corp;
-
 proc getSquareValueImpl(*Grid_t pGrid; uint x, y) uint:
     uint possibility;
     for possibility from 1 upto pGrid*.g_dimension - 1 do
