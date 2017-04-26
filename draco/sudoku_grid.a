@@ -40,16 +40,14 @@ squareHasPossibility
         swap    d1
         getSquareOffset 2
         add.l   d0,a1
-        move.w  #0,d1
+        clr.w   d1
         swap    d1
         subq.w  #1,d1
         move.l  d1,d0
-        lsr.w   #4,d1
-        lsl.w   #1,d1
+        lsr.w   #3,d1
         add.l   d1,a1
-        and.w   #16-1,d0
-        move.w  (a1),d1
-        btst.l  d0,d1
+        and.w   #8-1,d0
+        btst.b  d0,(a1)
         sne     d0
         jmp     (a0)
 

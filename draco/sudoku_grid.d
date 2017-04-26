@@ -21,7 +21,7 @@ type SquareCache_t = struct
 
 uint SQUARES_OFFSET = sizeof(Grid_t) + sizeof(GridCache_t);
 
-uint BITS_PER_PACK = sizeof(uint) * 8;
+uint BITS_PER_PACK = sizeof(byte) * 8;
 
 extern getSquarePointer(*Grid_t pGrid; uint x, y) *SquareCache_t;
 
@@ -35,9 +35,10 @@ proc createGrid(uint sectorDimension) *Grid_t:
     fi;                         /* and bigger types slows it down */
     dimension := sectorDimension * sectorDimension;  
     squareSize := sizeof(SquareCache_t)
-                + (((dimension - 1) / BITS_PER_PACK) + 1) * sizeof(uint);
+                + ((dimension - 1) / BITS_PER_PACK) + 1;
     totalSize := sizeof(Grid_t) + sizeof(GridCache_t)
                + dimension * dimension * squareSize;
+    totalSize := totalSize + (totalSize % 2);
     pGrid := pretend(Malloc(totalSize), *Grid_t);
     if pGrid = nil then
         return nil;
@@ -82,7 +83,7 @@ proc freeGrid(*Grid_t pGrid) void:
 corp;
 
 proc setSquareValue(*Grid_t pGrid; uint x, y, value) void:
-    *uint pSquare;
+    *byte pSquare;
     *SquareCache_t pSquareCache@pSquare;
     *GridCache_t pGridCache;
     pSquareCache := getSquarePointer(pGrid, x, y);
@@ -98,9 +99,8 @@ proc setSquareValue(*Grid_t pGrid; uint x, y, value) void:
     BlockFill(pSquareCache + sizeof(SquareCache_t),
               pGridCache*.gc_squareSize - sizeof(SquareCache_t),
               0x0);
-    pSquare := pSquare + sizeof(SquareCache_t)
-             + ((value - 1) / BITS_PER_PACK) * sizeof(uint);
-    pSquare* := pSquare* | (pretend(1, uint) << ((value - 1) % BITS_PER_PACK));
+    pSquare := pSquare + sizeof(SquareCache_t) + (value - 1) / BITS_PER_PACK;
+    pSquare* := pSquare* | (pretend(1, byte) << ((value - 1) % BITS_PER_PACK));
 corp;
 
 proc getSquareValueImpl(*Grid_t pGrid; uint x, y) uint:
@@ -114,15 +114,15 @@ proc getSquareValueImpl(*Grid_t pGrid; uint x, y) uint:
 corp;
 
 proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void:
-    *uint pSquare;
-    uint squareValue;
-    uint mask;
+    *byte pSquare;
+    byte squareValue;
+    byte mask;
     *SquareCache_t pSquareCache;
     *GridCache_t pGridCache;  
     pSquareCache := getSquarePointer(pGrid, x, y);
-    pSquare := pretend(pSquareCache, *uint) + sizeof(SquareCache_t)
-             + ((value - 1) / BITS_PER_PACK) * sizeof(uint);
-    mask := pretend(1, uint) << ((value - 1) % BITS_PER_PACK);
+    pSquare := pretend(pSquareCache, *byte) + sizeof(SquareCache_t)
+             + (value - 1) / BITS_PER_PACK;
+    mask := pretend(1, byte) << ((value - 1) % BITS_PER_PACK);
     squareValue := pSquare*;
     if squareValue | mask = 0 then
         return;
@@ -141,14 +141,15 @@ proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void:
 corp;
 
 proc mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool:
-    uint squareSize, mask, index;
-    *uint pSquare;
+    uint squareSize, index;
+    *byte pSquare;
+    byte mask;
     squareSize := pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_squareSize;    
-    pSquare := pretend(pGrid + SQUARES_OFFSET, *uint)
+    pSquare := pretend(pGrid + SQUARES_OFFSET, *byte)
              + y * pGrid*.g_dimension * squareSize
              + sizeof(SquareCache_t)
-             + ((value - 1) / BITS_PER_PACK) * sizeof(uint);
-    mask := pretend(1, uint) << ((value - 1) % BITS_PER_PACK);
+             + (value - 1) / BITS_PER_PACK;
+    mask := pretend(1, byte) << ((value - 1) % BITS_PER_PACK);
     for index from 0 upto pGrid*.g_dimension - 1 do
         if index ~= x and pSquare* & mask ~= 0 then
             return false;
@@ -159,13 +160,14 @@ proc mustBeValueByRow(*Grid_t pGrid; uint x, y, value) bool:
 corp;
 
 proc mustBeValueByColumn(*Grid_t pGrid; uint x, y, value) bool:
-    uint bumpSize, mask, index;
-    *uint pSquare;
+    uint bumpSize, index;
+    *byte pSquare;
+    byte mask;
     bumpSize := pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_squareSize;    
-    pSquare := pretend(pGrid + SQUARES_OFFSET, *uint)
+    pSquare := pretend(pGrid + SQUARES_OFFSET, *byte)
              + x * bumpSize + sizeof(SquareCache_t)
-             + ((value - 1) / BITS_PER_PACK) * sizeof(uint);
-    mask := pretend(1, uint) << ((value - 1) % BITS_PER_PACK);
+             + (value - 1) / BITS_PER_PACK;
+    mask := pretend(1, byte) << ((value - 1) % BITS_PER_PACK);
     bumpSize := bumpSize * pGrid*.g_dimension;
     for index from 0 upto pGrid*.g_dimension - 1 do
         if index ~= y and pSquare* & mask ~= 0 then
@@ -177,17 +179,18 @@ proc mustBeValueByColumn(*Grid_t pGrid; uint x, y, value) bool:
 corp;
 
 proc mustBeValueBySector(*Grid_t pGrid; uint x, y, value) bool:
-    uint squareSize, dimension, sectorDimension, bumpSize, mask, index, ignoreIndex;
-    *uint pSquare;
+    uint squareSize, dimension, sectorDimension, bumpSize, index, ignoreIndex;
+    byte mask;
+    *byte pSquare;
     squareSize := pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_squareSize;
     dimension := pGrid*.g_dimension;
     sectorDimension := pGrid*.g_sectorDimension;
-    pSquare := pretend(pGrid + SQUARES_OFFSET, *uint)
+    pSquare := pretend(pGrid + SQUARES_OFFSET, *byte)
              + (((y / sectorDimension) * sectorDimension) * pGrid*.g_dimension
              + ((x / sectorDimension) * sectorDimension)) * squareSize
              + sizeof(SquareCache_t)
-             + ((value - 1) / BITS_PER_PACK) * sizeof(uint);
-    mask := pretend(1, uint) << ((value - 1) % BITS_PER_PACK);
+             + (value - 1) / BITS_PER_PACK;
+    mask := pretend(1, byte) << ((value - 1) % BITS_PER_PACK);
     bumpSize := squareSize * (dimension - sectorDimension + 1);
     ignoreIndex := ((y % sectorDimension) * sectorDimension) + (x % sectorDimension);
     for index from 0 upto pGrid*.g_dimension - 1 do
