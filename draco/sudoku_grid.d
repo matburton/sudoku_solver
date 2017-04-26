@@ -67,10 +67,7 @@ corp;
 
 proc cloneGrid(*Grid_t pGrid) *Grid_t:
     arbptr pClone;
-    uint totalSize;
-    totalSize := pretend(pGrid + sizeof(Grid_t), *GridCache_t)*
-                .gc_totalSize;
-    pClone := Malloc(totalSize);
+    pClone := Malloc(pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_totalSize);
     if pClone = nil then
         return nil;
     fi;

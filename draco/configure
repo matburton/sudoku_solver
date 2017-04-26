@@ -14,3 +14,7 @@ ELSE
    echo ""
    alias make execute make
 ENDIF
+assign >NIL: exists git:
+IF NOT WARN
+    cd git:
+ENDIF
