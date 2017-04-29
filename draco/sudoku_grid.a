@@ -24,14 +24,33 @@ getSquarePointer
         add.l   a1,d0
         jmp     (a0)
         
+DMACONR equ     $dff002
+DMACON  equ     $dff096
+BLTCON0 equ     $dff040
+BLTAMOD equ     $dff064
+BLTAFWM equ     $dff044
+BLTAPTH equ     $dff050
+BLTDPTH equ     $dff054
+BLTSIZE equ     $dff058
+      
 cloneIntoGrid
-        movem.l (sp)+,d0/a0/a1
+        move.w  #$8400,DMACON
+        move.l  (sp)+,a0
+        move.l  (sp)+,d0
+        move.l  (sp)+,a1       
+        tst     DMACONR
+cigrdy  btst    #6,DMACONR
+        bne.b   cigrdy
+        move.l  #$09f00000,BLTCON0
+        move.l  #0,BLTAMOD
+        move.l  #$ffffffff,BLTAFWM
+        move.l  a1,BLTAPTH
+        move.l  d0,BLTDPTH
         move.w  12(a1),d1
-        lsr.w   #1,d1
-        dbt     d1,cigexit
-cigloop move.w  (a1)+,(a0)+
-        dbf     d1,cigloop
-cigexit move.l  d0,a0
+        lsl.w   #5,d1
+        addq.w  #1,d1
+        move.w  d1,BLTSIZE
+        move.w  #$0400,DMACON
         jmp     (a0)
         
 squareHasPossibility

@@ -1,4 +1,6 @@
 #sudoku_grid.g
+#drinc:exec/memory.g
+#drinc:exec/tasks.g
 #drinc:util.g
 
 /* TODO: Avoid overflows */
@@ -39,7 +41,7 @@ proc createGrid(uint sectorDimension) *Grid_t:
     totalSize := sizeof(Grid_t) + sizeof(GridCache_t)
                + dimension * dimension * squareSize;
     totalSize := totalSize + (totalSize % 2);
-    pGrid := pretend(Malloc(totalSize), *Grid_t);
+    pGrid := pretend(AllocMem(totalSize, MEMF_CHIP), *Grid_t);
     if pGrid = nil then
         return nil;
     fi;
@@ -68,11 +70,15 @@ corp;
 
 proc cloneGrid(*Grid_t pGrid) *Grid_t:
     arbptr pClone;
-    pClone := Malloc(pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_totalSize);
+    pClone := AllocMem(pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_totalSize, MEMF_CHIP);
     if pClone = nil then
         return nil;
     fi;
+    Forbid();
+    Disable();
     cloneIntoGrid(pGrid, pClone);
+    Enable();
+    Permit();
     gridsInMemory := gridsInMemory + 1;
     pClone
 corp;
