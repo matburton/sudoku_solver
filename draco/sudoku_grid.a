@@ -1,6 +1,6 @@
 
         xdef    getSquarePointer
-        xdef    cloneIntoGrid
+        xdef    cloneChipMemoryGrid
         xdef    squareHasPossibility
         xdef    getPossibilityCount
         xdef    getSquareValue
@@ -33,13 +33,13 @@ BLTAPTH equ     $dff050
 BLTDPTH equ     $dff054
 BLTSIZE equ     $dff058
       
-cloneIntoGrid
+cloneChipMemoryGrid
         move.w  #$8400,DMACON
         move.l  (sp)+,a0
         move.l  (sp)+,d0
-        move.l  (sp)+,a1       
-        tst     DMACONR
-cigrdy  btst    #6,DMACONR
+        move.l  (sp)+,a1
+        tst.b   DMACONR
+cigrdy  btst.b  #6,DMACONR
         bne.b   cigrdy
         move.l  #$09f00000,BLTCON0
         move.l  #0,BLTAMOD
@@ -47,8 +47,8 @@ cigrdy  btst    #6,DMACONR
         move.l  a1,BLTAPTH
         move.l  d0,BLTDPTH
         move.w  12(a1),d1
-        lsl.w   #5,d1
-        addq.w  #1,d1
+        lsl.w   #4,d1
+        addq.w  #2,d1
         move.w  d1,BLTSIZE
         move.w  #$0400,DMACON
         jmp     (a0)

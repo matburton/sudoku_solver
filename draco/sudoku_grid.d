@@ -27,6 +27,8 @@ uint BITS_PER_PACK = sizeof(byte) * 8;
 
 extern getSquarePointer(*Grid_t pGrid; uint x, y) *SquareCache_t;
 
+extern cloneChipMemoryGrid(*Grid_t pGrid, pClone) void;
+
 proc createGrid(uint sectorDimension) *Grid_t:
     uint dimension, squareSize, totalSize, x, y;
     *Grid_t pGrid;
@@ -40,7 +42,7 @@ proc createGrid(uint sectorDimension) *Grid_t:
                 + ((dimension - 1) / BITS_PER_PACK) + 1;
     totalSize := sizeof(Grid_t) + sizeof(GridCache_t)
                + dimension * dimension * squareSize;
-    totalSize := totalSize + (totalSize % 2);
+    totalSize := totalSize + (totalSize % 4);
     pGrid := pretend(AllocMem(totalSize, MEMF_CHIP), *Grid_t);
     if pGrid = nil then
         return nil;
@@ -74,13 +76,17 @@ proc cloneGrid(*Grid_t pGrid) *Grid_t:
     if pClone = nil then
         return nil;
     fi;
-    Forbid();
-    Disable();
     cloneIntoGrid(pGrid, pClone);
-    Enable();
-    Permit();
     gridsInMemory := gridsInMemory + 1;
     pClone
+corp;
+
+proc cloneIntoGrid(*Grid_t pGrid, pClone) void:
+    Forbid();
+    Disable();
+    cloneChipMemoryGrid(pGrid, pClone);
+    Enable();
+    Permit();
 corp;
 
 proc freeGrid(*Grid_t pGrid) void:
