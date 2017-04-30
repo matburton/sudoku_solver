@@ -15,6 +15,8 @@ type Counters_t = struct
 
 extern removePossibilityAt(*Grid_t pGrid; uint x, y, value) void;
 
+extern blockUntilBlitterIdle() void;
+
 proc removePossibilitiesRelatedTo(*Grid_t pGrid; uint x, y, value) void:
     uint indexX, indexY, startX, startY;
     for indexX from 0 upto pGrid*.g_dimension - 1 do
@@ -120,13 +122,7 @@ proc freeGridList(*Grid_t pGridList) void:
     od;
 corp;
 
-proc attachToFrontIfPossible(*Grid_t pGridList, pGrid;
-                             *Counters_t pCounters) *Grid_t:
-    if not isPossible(pGrid) then
-        pCounters*.c_ImpossibleGrids := pCounters*.c_ImpossibleGrids + 1;
-        freeGrid(pGrid);
-        return pGridList;
-    fi;
+proc attachToFront(*Grid_t pGridList, pGrid) *Grid_t:
     if pGridList = nil then
         pGrid*.g_pNext := pGrid;
         pGrid*.g_pPrevious := pGrid;
@@ -181,11 +177,15 @@ proc splitFirstGridToFront(*Grid_t pGridList;
     fi;
     if pCloneGrid ~= nil then
         pCounters*.c_GridSplits := pCounters*.c_GridSplits + 1;
-        removePossibilityAt(pCloneGrid, bestX, bestY, possibility);
-        pGridList := attachToFrontIfPossible(pGridList, pCloneGrid, pCounters);
+        pGridList := attachToFront(pGridList, pCloneGrid);
+    fi;
+    pGridList := attachToFront(pGridList, pGrid);
+    blockUntilBlitterIdle();
+    if pCloneGrid ~= nil then
+        removePossibilityAt(pCloneGrid, bestX, bestY, possibility);    
     fi;
     setValueAt(pGrid, bestX, bestY, possibility);
-    attachToFrontIfPossible(pGridList, pGrid, pCounters)
+    pGridList
 corp;
 
 /* Returns nil if there are no more solutions */

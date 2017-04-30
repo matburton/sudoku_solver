@@ -1,21 +1,36 @@
 
         xdef    getSquarePointer
+        xdef    blockUntilBlitterIdle
         xdef    cloneChipMemoryGrid
         xdef    squareHasPossibility
         xdef    getPossibilityCount
         xdef    getSquareValue
         xdef    isPossible
         xdef    isComplete
+        
+GrdSize equ     12
+GrdCace equ     8
+SqrCace equ     2
+
+DimSize equ     2
+
+TotSize equ     0
+SqrSize equ     2
+ImpSqrs equ     4
+IncSqrs equ     6
+
+PosCont equ     0
+SqrVal  equ     1
 
 getSquareOffset macro
         moveq   #0,d0
         move.w  (sp)+,d0
         move.w  (sp)+,d1
         move.l  (sp)+,a1
-        mulu    2(a1),d0
+        mulu    SqrSize(a1),d0
         add.w   d1,d0
-        mulu    14(a1),d0
-        add.w   #\1+20,d0
+        mulu    GrdSize+DimSize(a1),d0
+        add.w   #\1+GrdSize+GrdCace,d0
         endm
 
 getSquarePointer
@@ -24,7 +39,9 @@ getSquarePointer
         add.l   a1,d0
         jmp     (a0)
         
-DMACONR equ     $dff002
+BLTSET  equ     $8000
+BLTCLR  equ     $0000
+BLTPRI  equ     $0400
 DMACON  equ     $dff096
 BLTCON0 equ     $dff040
 BLTAMOD equ     $dff064
@@ -32,32 +49,39 @@ BLTAFWM equ     $dff044
 BLTAPTH equ     $dff050
 BLTDPTH equ     $dff054
 BLTSIZE equ     $dff058
+
+blockUntilBlitterIdle
+        move.l  (sp)+,a0
+        move.w  #BLTSET|BLTPRI,DMACON
+        move.w  #BLTCLR|BLTPRI,DMACON
+        jmp     (a0)
       
 cloneChipMemoryGrid
-        move.w  #$8400,DMACON
-        move.l  (sp)+,a0
-        move.l  (sp)+,d0
-        move.l  (sp)+,a1
-        tst.b   DMACONR
-cigrdy  btst.b  #6,DMACONR
-        bne.b   cigrdy
+        movem.l (sp)+,d0/a0/a1
+        move.l  (a1)+,(a0)+
+        move.l  (a1)+,(a0)+
+        move.l  (a1)+,(a0)+
+        move.w  #BLTSET|BLTPRI,DMACON
+        move.w  #BLTCLR|BLTPRI,DMACON
         move.l  #$09f00000,BLTCON0
         move.l  #0,BLTAMOD
         move.l  #$ffffffff,BLTAFWM
         move.l  a1,BLTAPTH
-        move.l  d0,BLTDPTH
-        move.w  12(a1),d1
+        move.l  a0,BLTDPTH
+        move.w  TotSize(a1),d1
+        sub.w   #GrdSize,d1
         lsl.w   #4,d1
         addq.w  #2,d1
         move.w  d1,BLTSIZE
-        move.w  #$0400,DMACON
+        ;move.w  #BLTCLR|BLTPRI,DMACON
+        move.l  d0,a0
         jmp     (a0)
         
 squareHasPossibility
         move.l  (sp)+,a0
         move.w  (sp)+,d1
         swap    d1
-        getSquareOffset 2
+        getSquareOffset SqrCace
         add.l   d0,a1
         clr.w   d1
         swap    d1
@@ -80,22 +104,22 @@ getSquareCachedValue macro
         endm
 
 getPossibilityCount
-        getSquareCachedValue 0
+        getSquareCachedValue PosCont
 
 getSquareValue
-        getSquareCachedValue 1
+        getSquareCachedValue SqrVal
 
 isGridCachedValueZero macro
         movem.l (sp)+,a0/a1
-        tst.w   \1+12(a1)
+        tst.w   \1+GrdSize(a1)
         seq     d0
         jmp     (a0)
         endm
 
 isPossible
-        isGridCachedValueZero 4
+        isGridCachedValueZero ImpSqrs
         
 isComplete
-        isGridCachedValueZero 6
+        isGridCachedValueZero IncSqrs
 
 end
