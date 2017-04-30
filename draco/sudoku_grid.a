@@ -6,8 +6,9 @@
         xdef    getSquareValue
         xdef    isPossible
         xdef    isComplete
-        
-        xref    CopyMemQuick
+
+SysBase             equ 4
+_LVOCopyMemQuick    equ -630
 
 getSquareOffset macro
         moveq   #0,d0
@@ -27,12 +28,17 @@ getSquarePointer
         jmp     (a0)
         
 cloneIntoGrid
+        move.l  (sp)+,d1
+        move.l  (sp)+,a1
         move.l  (sp)+,a0
-        move.l  4(sp),a1
-        move.w  12(a1),-(sp)
-        move.w  #0,-(sp)
-        move.l  a0,-(sp)
-        jmp     CopyMemQuick
+        moveq   #0,d0
+        move.w  12(a0),d0
+        move.l  d1,-(sp)
+        move.l  a6,-(sp)
+        move.l  SysBase,a6
+        jsr     _LVOCopyMemQuick(a6)
+        move.l  (sp)+,a6
+        rts
         
 squareHasPossibility
         move.l  (sp)+,a0
