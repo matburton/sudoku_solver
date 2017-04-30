@@ -38,7 +38,7 @@ proc createGrid(uint sectorDimension) *Grid_t:
                 + ((dimension - 1) / BITS_PER_PACK) + 1;
     totalSize := sizeof(Grid_t) + sizeof(GridCache_t)
                + dimension * dimension * squareSize;
-    totalSize := totalSize + (totalSize % 2);
+    totalSize := totalSize + (totalSize % 4);
     pGrid := pretend(Malloc(totalSize), *Grid_t);
     if pGrid = nil then
         return nil;

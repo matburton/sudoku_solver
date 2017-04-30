@@ -10,6 +10,7 @@ echo ""
 echo "*E[33mLinking...*E[0m"
 echo ""
 blink drlib:drstart.o+sudoku_solver.r+sudoku_grid.r+sudoku_grid.o+sudoku_printer.r lib drlib:drio.lib+drlib:draco.lib+drlib:dos.lib+drlib:exec.lib to sudoku_solver smallcode
+copy sudoku_solver "Sudoku Solver"
 echo ""
 echo "*E[33mDone*E[0m - the executable has been named *E[32msudoku_solver*E[0m"
 echo ""
