@@ -4,12 +4,9 @@ c:SetPatch >NIL:
 Addbuffers df0: 10
 cd c:
 Sys:System/FastMemFirst
-BindDrivers
 FF >NIL: -0
 resident CLI L:Shell-Seg SYSTEM pure add
 mount newcon:
-;
-failat 11
 path add c:
 Sys:System/SetMap gb
 newshell "newcon:0/0/640/256/Sudokus"
