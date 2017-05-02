@@ -1,0 +1,2 @@
+path add Sudokus:c
+newshell "newcon:0/0/640/256/Sudokus" from s/shell-startup

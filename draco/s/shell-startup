@@ -1,7 +1,9 @@
 cd Sudokus:
-run gauge
 alias clear echo "*E[0;0H*E[J"
 clear
 echo "*E[33mSudoku solver build environment*E[0m"
+alias exit endcli
+alias quit endcli
+run >NIL: mclock
 execute configure
 Prompt "%S> "
