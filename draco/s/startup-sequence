@@ -1,5 +1,6 @@
-c:echo "*E[0;0H*E[J"
-c:echo "*E[33mSudoku solver build environment...*E[0m"
+c:resident c:echo pure
+echo "*E[0;0H*E[J"
+echo "*E[33mSudoku solver build environment...*E[0m"
 c:SetPatch >NIL:
 Addbuffers df0: 10
 cd c:
@@ -7,7 +8,7 @@ Sys:System/FastMemFirst
 FF >NIL: -0
 resident CLI L:Shell-Seg SYSTEM pure add
 mount newcon:
-path add c:
+path c: add
 Sys:System/SetMap gb
 newshell "newcon:0/0/640/256/Sudokus"
 endcli >NIL:

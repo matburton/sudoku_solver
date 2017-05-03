@@ -1,0 +1,34 @@
+alias endcli
+IF NOT EXISTS ram:t
+    BindDrivers
+    SetClock >NIL: load
+    resident c:Execute pure
+    
+    ; In-lined StartupII to avoid temporary files
+    resident c:Resident pure
+    resident c:List pure
+    resident c:CD pure
+    resident c:Mount pure
+    resident c:Assign pure
+    resident c:Makedir pure  
+    makedir ram:t
+    assign T: ram:t
+    makedir ram:env
+    assign ENV: ram:env
+    makedir ram:clipboards
+    assign CLIPS: ram:clipboards
+    mount speak:
+    mount aux:
+    mount pipe:
+    resident Mount remove
+    resident Assign remove
+    resident Makedir remove
+    
+    path ram: sys:system s: add
+    LoadWB delay
+ENDIF
+status >t:clock-id COMMAND=clock
+failat 21
+break <t:clock-id >NIL: ?
+delete >NIL: t:clock-id
+endcli >NIL:
