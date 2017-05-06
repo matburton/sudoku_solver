@@ -1,4 +1,5 @@
 *.r
 *.o
+t/
 sudoku_solver
 Sudoku Solver
