@@ -1,0 +1,24 @@
+c:resident c:echo pure
+echo "*E[0;0H*E[J"
+echo "*E[33mSudoku solver build environment...*E[0m"
+c:SetPatch >NIL:
+Addbuffers df0: 10
+cd c:
+Sys:System/FastMemFirst
+FF >NIL: -0
+resident CLI L:Shell-Seg SYSTEM pure add
+mount newcon:
+path c: add
+Sys:System/SetMap gb
+assign >NIL: exists git:
+IF NOT WARN
+    IF NOT EXISTS git:t
+        makedir git:t
+    ENDIF
+    assign T: git:t
+ELSE
+    makedir ram:t
+    assign T: ram:t
+ENDIF
+newshell "newcon:0/0/640/256/Sudokus"
+endcli >NIL:

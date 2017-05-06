@@ -1,0 +1,8 @@
+cd Sudokus:
+alias clear echo "*E[0;0H*E[J"
+clear
+echo "*E[33mSudoku solver build environment*E[0m"
+alias endcli execute Sudokus:s/exit-sequence
+run >NIL: c/clock INTERNAL 10 LEFT 364 TOP 0 BACKGROUND 2 FORMAT "%1Chip%3%G%|%1Fast%3%F%|%1Total%3%k"
+execute configure
+Prompt "%S> "
