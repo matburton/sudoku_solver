@@ -1,3 +1,4 @@
+#drinc:exec/miscellaneous.g
 #drinc:exec/ports.g
 #drinc:exec/tasks.g
 #drinc:libraries/dos.g
@@ -8,6 +9,18 @@
 #drinc:intuition/miscellaneous.g
 #drinc:intuition/screen.g
 #drinc:intuition/window.g
+
+Handle_t stdOutFileHandle;
+channel output text out;
+
+extern GetPars(*ulong pParamCount; **char ppParams) void;
+
+proc stdOutChar(char c) void:
+    ignore(Write(stdOutFileHandle, &c, 1));
+corp;
+
+proc devNullChar(char c) void:
+corp;
 
 proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo; *Gadget_t pGadgetC) void:
     *IntuiMessage_t pMessage;
@@ -27,14 +40,14 @@ proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo; *Gadget_t pGadgetC)
                 incase CLOSEWINDOW:
                     return;
                 incase MENUPICK:
-                    writeln("No menus yet");
-                    writeln("Value: ", pStringInfo*.si_LongInt);
+                    writeln(out; "No menus yet");
+                    writeln(out; "Value: ", pStringInfo*.si_LongInt);
                 incase GADGETUP:
                     if enabled then
-                        writeln("Added disabling gadget");
+                         writeln(out; "Added disabling gadget");
                         ignore(AddGadget(pWindow, pGadgetC, 0));
                     else
-                        writeln("Removing disabling gadget");
+                        writeln(out; "Removing disabling gadget");
                         ignore(RemoveGadget(pWindow, pGadgetC));
                     fi;
                     enabled := not enabled;
@@ -54,11 +67,10 @@ proc main() void:
     *Window_t pWindow;
     IntuiText_t intuiText;
     Handle_t handle;
+    ulong paramCount;
+    *char pParams;
+
     stringBuffer[0] := '\e';
-    
-    handle := Open("speak:", MODE_NEWFILE);
-    ignore(Write(handle, "No solutions found", 19));
-    Close(handle);
     
     borderCoordinates[0] := 0;
     borderCoordinates[1] := 0;
@@ -84,7 +96,28 @@ proc main() void:
     borderCoordinatesC[3] := 14;
     borderCoordinatesC[4] := 0;
     borderCoordinatesC[5] := 14;
+    
+    if OpenExecLibrary(0) ~= nil then
+    if OpenDosLibrary(0) ~= nil then
     if OpenIntuitionLibrary(0) ~= nil then
+
+        GetPars(&paramCount, &pParams);
+    
+        if paramCount = 0 then
+            open(out, devNullChar);
+        else
+            stdOutFileHandle := Output();
+            open(out, stdOutChar);
+        fi;
+        
+        writeln(out; "Hello world");
+
+        /*
+        handle := Open("speak:opt/r", MODE_NEWFILE);
+        ignore(Write(handle, "Finished", 9));
+        Close(handle);
+        */
+    
         stringInfo := StringInfo_t(nil, nil, 0, 3, 0, 0, 0, 0, 0, 0, nil, 0, nil);
         stringInfo.si_Buffer := &stringBuffer[0];
         stringInfo.si_UndoBuffer := &undoBuffer[0];
@@ -179,5 +212,9 @@ proc main() void:
         fi;
         CloseIntuitionLibrary();
     fi;
-    /* TODO: menus, grid lines, window background?, gadget background?, mouse busy, gui vs cli start, audible beep */
+    CloseDosLibrary();
+    fi;
+    CloseExecLibrary();
+    fi;
+    /* TODO: real menus, grid lines, command line param to start gui */
 corp;

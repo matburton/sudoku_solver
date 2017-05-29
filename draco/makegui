@@ -5,7 +5,7 @@ draco gui.d
 echo ""
 echo "*E[33mLinking...*E[0m"
 echo ""
-blink drlib:drstart.o+gui.r lib drlib:drio.lib+drlib:graphics.lib+drlib:exec.lib+drlib:intuition.lib+drlib:draco.lib+drlib:dos.lib to gui smallcode
+blink drlib:drstart0.o+gui.r lib drlib:drio.lib+drlib:graphics.lib+drlib:exec.lib+drlib:intuition.lib+drlib:draco.lib+drlib:dos.lib to gui smallcode
 echo ""
 echo "*E[33mDone*E[0m - the executable has been named *E[32mgui*E[0m"
 echo ""
