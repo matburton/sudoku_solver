@@ -9,9 +9,11 @@
 #drinc:intuition/screen.g
 #drinc:intuition/window.g
 
-proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo) void:
+proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo; *Gadget_t pGadgetC) void:
     *IntuiMessage_t pMessage;
     ulong signals;
+    bool enabled;
+    enabled := true;
     while true do
         signals := Wait((1 << pWindow*.w_UserPort*.mp_SigBit) | SIGBREAKF_CTRL_C);
         if signals & SIGBREAKF_CTRL_C ~= 0 then
@@ -28,7 +30,14 @@ proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo) void:
                     writeln("No menus yet");
                     writeln("Value: ", pStringInfo*.si_LongInt);
                 incase GADGETUP:
-                    writeln("Button pressed");
+                    if enabled then
+                        writeln("Added disabling gadget");
+                        ignore(AddGadget(pWindow, pGadgetC, 0));
+                    else
+                        writeln("Removing disabling gadget");
+                        ignore(RemoveGadget(pWindow, pGadgetC));
+                    fi;
+                    enabled := not enabled;
             esac;
             ReplyMsg(pretend(pMessage, *Message_t)); /* TODO: Reply early */
         od;
@@ -37,13 +46,13 @@ corp;
 
 proc main() void:
     NewWindow_t newWindow;
-    Gadget_t gadget, gadgetB;
+    Gadget_t gadget, gadgetB, gadgetC;
     Border_t border, borderB, borderC;
     [10] int borderCoordinates, borderCoordinatesB, borderCoordinatesC;
     StringInfo_t stringInfo;
     [3] char stringBuffer, undoBuffer;
     *Window_t pWindow;
-    IntuiText_t intuiText;
+    IntuiText_t intuiText;    
     stringBuffer[0] := '\e';
     borderCoordinates[0] := 0;
     borderCoordinates[1] := 0;
@@ -117,6 +126,22 @@ proc main() void:
         intuiText := IntuiText_t(1, 0, 0, 30, 4, nil, nil, nil);
         intuiText.it_IText := "Solve";
         gadgetB.g_GadgetText := &intuiText;
+        gadgetC := Gadget_t(nil, /* g_NextGadget */
+                            6,   /* g_LeftEdge */
+                            13,  /* g_TopEdge */
+                            24,  /* g_Width */
+                            5,   /* g_Height */
+                            GADGDISABLED,   /* g_Flags */
+                            0,   /* g_Activation */
+                            BOOLGADGET, /* g_GadgetType */
+                            (nil), /* g_GadgetRender */
+                            (nil), /* g_SelectRender */
+                            nil,   /* g_GadgetText */
+                            0,     /* g_MutualExclude */
+                            (nil), /* g_SpecialInfo */
+                            1,     /* g_GadgetID */
+                            nil);  /* g_UserData */
+        gadgetC.g_NextGadget := &gadget;
         newWindow := NewWindow_t(100,
                                  50,
                                  200,
@@ -143,10 +168,10 @@ proc main() void:
             stringBuffer[1] := '\e';
             gadgetB.g_Flags := gadgetB.g_Flags | SELECTED;
             RefreshGadgets(&gadget, pWindow, nil);
-            eventLoop(pWindow, &stringInfo);
+            eventLoop(pWindow, &stringInfo, &gadgetC);
             CloseWindow(pWindow);
         fi;
         CloseIntuitionLibrary();
     fi;
-    /* TODO: Button, menus, disabled rendering, grid lines, window background, gadget background, mouse busy */
+    /* TODO: Button, menus, grid lines, window background?, gadget background?, mouse busy, gui vs cli start, audible beep or say at end */
 corp;
