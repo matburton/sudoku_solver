@@ -10,14 +10,11 @@
 #drinc:intuition/screen.g
 #drinc:intuition/window.g
 
-Handle_t stdOutFileHandle;
-channel output text out;
-
+extern _d_IO_initialize() void;
+extern _d_pars_initialize() void;
 extern GetPars(*ulong pParamCount; **char ppParams) void;
 
-proc stdOutChar(char c) void:
-    ignore(Write(stdOutFileHandle, &c, 1));
-corp;
+channel output text out;
 
 proc devNullChar(char c) void:
 corp;
@@ -44,7 +41,7 @@ proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo; *Gadget_t pGadgetC)
                     writeln(out; "Value: ", pStringInfo*.si_LongInt);
                 incase GADGETUP:
                     if enabled then
-                         writeln(out; "Added disabling gadget");
+                        writeln(out; "Added disabling gadget");
                         ignore(AddGadget(pWindow, pGadgetC, 0));
                     else
                         writeln(out; "Removing disabling gadget");
@@ -100,14 +97,16 @@ proc main() void:
     if OpenExecLibrary(0) ~= nil then
     if OpenDosLibrary(0) ~= nil then
     if OpenIntuitionLibrary(0) ~= nil then
-
+    
+        _d_IO_initialize();
+        _d_pars_initialize();
+        
         GetPars(&paramCount, &pParams);
     
         if paramCount = 0 then
             open(out, devNullChar);
         else
-            stdOutFileHandle := Output();
-            open(out, stdOutChar);
+            open(out);
         fi;
         
         writeln(out; "Hello world");
