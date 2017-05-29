@@ -3,12 +3,13 @@
 #drinc:libraries/dos.g
 #drinc:intuition/border.g
 #drinc:intuition/intuiMessage.g
+#drinc:intuition/intuiText.g
 #drinc:intuition/gadget.g
 #drinc:intuition/miscellaneous.g
 #drinc:intuition/screen.g
 #drinc:intuition/window.g
 
-proc eventLoop(*Window_t pWindow) void:
+proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo) void:
     *IntuiMessage_t pMessage;
     ulong signals;
     while true do
@@ -25,23 +26,25 @@ proc eventLoop(*Window_t pWindow) void:
                     return;
                 incase MENUPICK:
                     writeln("No menus yet");
+                    writeln("Value: ", pStringInfo*.si_LongInt);
+                incase GADGETUP:
+                    writeln("Button pressed");
             esac;
-            ReplyMsg(pretend(pMessage, *Message_t));
+            ReplyMsg(pretend(pMessage, *Message_t)); /* TODO: Reply early */
         od;
     od;
 corp;
 
 proc main() void:
     NewWindow_t newWindow;
-    Gadget_t gadget;
-    Border_t border;
-    [10] int borderCoordinates;
+    Gadget_t gadget, gadgetB;
+    Border_t border, borderB, borderC;
+    [10] int borderCoordinates, borderCoordinatesB, borderCoordinatesC;
     StringInfo_t stringInfo;
     [3] char stringBuffer, undoBuffer;
     *Window_t pWindow;
-    stringBuffer[0] := '1';
-    stringBuffer[1] := '3';
-    stringBuffer[2] := '\e';
+    IntuiText_t intuiText;
+    stringBuffer[0] := '\e';
     borderCoordinates[0] := 0;
     borderCoordinates[1] := 0;
     borderCoordinates[2] := 0;
@@ -52,6 +55,20 @@ proc main() void:
     borderCoordinates[7] := 0;    
     borderCoordinates[8] := 0;
     borderCoordinates[9] := 0;
+
+    borderCoordinatesB[0] := 0;
+    borderCoordinatesB[1] := 14;
+    borderCoordinatesB[2] := 0;
+    borderCoordinatesB[3] := 0;   
+    borderCoordinatesB[4] := 99;
+    borderCoordinatesB[5] := 0;
+    
+    borderCoordinatesC[0] := 99;
+    borderCoordinatesC[1] := 0;
+    borderCoordinatesC[2] := 99;    
+    borderCoordinatesC[3] := 14;
+    borderCoordinatesC[4] := 0;
+    borderCoordinatesC[5] := 14;
     if OpenIntuitionLibrary(0) ~= nil then
         stringInfo := StringInfo_t(nil, nil, 0, 3, 0, 0, 0, 0, 0, 0, nil, 0, nil);
         stringInfo.si_Buffer := &stringBuffer[0];
@@ -63,7 +80,7 @@ proc main() void:
                            13,  /* g_TopEdge */
                            24,  /* g_Width */
                            5,   /* g_Height */
-                           0,   /* g_Flags */
+                           0, /* g_Flags */
                            LONGINT | STRINGCENTER, /* g_Activation */
                            STRGADGET, /* g_GadgetType */
                            (nil), /* g_GadgetRender */
@@ -73,15 +90,40 @@ proc main() void:
                            (nil), /* g_SpecialInfo */
                            1,     /* g_GadgetID */
                            nil);  /* g_UserData */
+        gadget.g_NextGadget := &gadgetB;
         gadget.g_GadgetRender.gBorder := &border;
         gadget.g_SpecialInfo.gStr := &stringInfo;
+        gadgetB := Gadget_t(nil, /* g_NextGadget */
+                            4,   /* g_LeftEdge */
+                            23,  /* g_TopEdge */
+                            100,  /* g_Width */
+                            15,   /* g_Height */
+                            GADGHCOMP,   /* g_Flags */
+                            RELVERIFY, /* g_Activation */
+                            BOOLGADGET, /* g_GadgetType */
+                            (nil), /* g_GadgetRender */
+                            (nil), /* g_SelectRender */
+                            nil,   /* g_GadgetText */
+                            0,     /* g_MutualExclude */
+                            (nil), /* g_SpecialInfo */
+                            2,     /* g_GadgetID */
+                            nil);  /* g_UserData */
+        borderB := Border_t(0, 0, 2, 0, 0, 3, nil, nil);
+        borderB.b_XY := &borderCoordinatesB[0];
+        borderB.b_NextBorder := &borderC;
+        borderC := Border_t(0, 0, 1, 0, 0, 3, nil, nil);
+        borderC.b_XY := &borderCoordinatesC[0];
+        gadgetB.g_GadgetRender.gBorder := &borderB;
+        intuiText := IntuiText_t(1, 0, 0, 30, 4, nil, nil, nil);
+        intuiText.it_IText := "Solve";
+        gadgetB.g_GadgetText := &intuiText;
         newWindow := NewWindow_t(100,
                                  50,
                                  200,
                                  100,
                                  FREEPEN,
                                  FREEPEN,
-                                 CLOSEWINDOW | MENUPICK,
+                                 CLOSEWINDOW | MENUPICK | GADGETUP,
                                  SMART_REFRESH | ACTIVATE | WINDOWDEPTH | WINDOWCLOSE | WINDOWDRAG | NOCAREREFRESH,
                                  nil,
                                  nil,
@@ -97,9 +139,14 @@ proc main() void:
         newWindow.nw_Title := "Sudoku solver";
         pWindow := OpenWindow(&newWindow);
         if pWindow ~= nil then
-            eventLoop(pWindow);
+            stringBuffer[0] := '9';
+            stringBuffer[1] := '\e';
+            gadgetB.g_Flags := gadgetB.g_Flags | SELECTED;
+            RefreshGadgets(&gadget, pWindow, nil);
+            eventLoop(pWindow, &stringInfo);
             CloseWindow(pWindow);
         fi;
         CloseIntuitionLibrary();
     fi;
+    /* TODO: Button, menus, disabled rendering, grid lines, window background, gadget background, mouse busy */
 corp;
