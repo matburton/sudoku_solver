@@ -52,8 +52,14 @@ proc main() void:
     StringInfo_t stringInfo;
     [3] char stringBuffer, undoBuffer;
     *Window_t pWindow;
-    IntuiText_t intuiText;    
+    IntuiText_t intuiText;
+    Handle_t handle;
     stringBuffer[0] := '\e';
+    
+    handle := Open("speak:", MODE_NEWFILE);
+    ignore(Write(handle, "No solutions found", 19));
+    Close(handle);
+    
     borderCoordinates[0] := 0;
     borderCoordinates[1] := 0;
     borderCoordinates[2] := 0;
@@ -173,5 +179,5 @@ proc main() void:
         fi;
         CloseIntuitionLibrary();
     fi;
-    /* TODO: Button, menus, grid lines, window background?, gadget background?, mouse busy, gui vs cli start, audible beep or say at end */
+    /* TODO: menus, grid lines, window background?, gadget background?, mouse busy, gui vs cli start, audible beep */
 corp;
