@@ -1,6 +1,8 @@
 #drinc:exec/miscellaneous.g
 #drinc:exec/ports.g
 #drinc:exec/tasks.g
+#drinc:graphics/gfx.g
+#drinc:graphics/rastport.g
 #drinc:libraries/dos.g
 #drinc:intuition/border.g
 #drinc:intuition/intuiMessage.g
@@ -11,17 +13,15 @@
 #drinc:intuition/window.g
 
 extern _d_IO_initialize() void;
-extern _d_pars_initialize() void;
-extern GetPars(*ulong pParamCount; **char ppParams) void;
 
 channel output text out;
 
 proc devNullChar(char c) void:
 corp;
 
-proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo; *Gadget_t pGadgetC) void:
+proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo; *Gadget_t pGadget, pGadgetB) void:
     *IntuiMessage_t pMessage;
-    ulong signals;
+    ulong signals, messageClass;
     bool enabled;
     enabled := true;
     while true do
@@ -33,30 +33,39 @@ proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo; *Gadget_t pGadgetC)
             pMessage := pretend(GetMsg(pWindow*.w_UserPort), *IntuiMessage_t);
             pMessage ~= nil
         do
-            case pMessage*.im_Class
+            messageClass := pMessage*.im_Class;
+            
+            ReplyMsg(pretend(pMessage, *Message_t));
+        
+            case messageClass
                 incase CLOSEWINDOW:
                     return;
                 incase MENUPICK:
                     writeln(out; "No menus yet");
                     writeln(out; "Value: ", pStringInfo*.si_LongInt);
                 incase GADGETUP:
+                    /* On refresh enabale, refresh then disable again */
                     if enabled then
-                        writeln(out; "Added disabling gadget");
-                        ignore(AddGadget(pWindow, pGadgetC, 0));
+                        writeln(out; "Disabling gadget");
+                        pGadgetB*.g_GadgetText*.it_IText := "Cancel";
+                        pGadget*.g_Flags := pGadget*.g_Flags | GADGDISABLED;
                     else
-                        writeln(out; "Removing disabling gadget");
-                        ignore(RemoveGadget(pWindow, pGadgetC));
+                        writeln(out; "Enabling gadget");
+                        pGadgetB*.g_GadgetText*.it_IText := "Solve";
+                        pGadget*.g_Flags := pGadget*.g_Flags & ~GADGDISABLED;
                     fi;
                     enabled := not enabled;
+                    RectFill(pWindow*.w_RPort, 4, 23, 103, 37);
+                    RefreshGList(pGadgetB, pWindow, nil, 1);
+                    RefreshGList(pGadgetB, pWindow, nil, 1);
             esac;
-            ReplyMsg(pretend(pMessage, *Message_t)); /* TODO: Reply early */
         od;
     od;
 corp;
 
 proc main() void:
     NewWindow_t newWindow;
-    Gadget_t gadget, gadgetB, gadgetC;
+    Gadget_t gadget, gadgetB;
     Border_t border, borderB, borderC;
     [10] int borderCoordinates, borderCoordinatesB, borderCoordinatesC;
     StringInfo_t stringInfo;
@@ -64,8 +73,6 @@ proc main() void:
     *Window_t pWindow;
     IntuiText_t intuiText;
     Handle_t handle;
-    ulong paramCount;
-    *char pParams;
 
     stringBuffer[0] := '\e';
     
@@ -97,25 +104,17 @@ proc main() void:
     if OpenExecLibrary(0) ~= nil then
     if OpenDosLibrary(0) ~= nil then
     if OpenIntuitionLibrary(0) ~= nil then
+    if OpenGraphicsLibrary(0) ~= nil then
     
         _d_IO_initialize();
-        _d_pars_initialize();
-        
-        GetPars(&paramCount, &pParams);
     
-        if paramCount = 0 then
+        if Output() = 0 then
             open(out, devNullChar);
         else
             open(out);
         fi;
         
         writeln(out; "Hello world");
-
-        /*
-        handle := Open("speak:opt/r", MODE_NEWFILE);
-        ignore(Write(handle, "Finished", 9));
-        Close(handle);
-        */
     
         stringInfo := StringInfo_t(nil, nil, 0, 3, 0, 0, 0, 0, 0, 0, nil, 0, nil);
         stringInfo.si_Buffer := &stringBuffer[0];
@@ -164,22 +163,6 @@ proc main() void:
         intuiText := IntuiText_t(1, 0, 0, 30, 4, nil, nil, nil);
         intuiText.it_IText := "Solve";
         gadgetB.g_GadgetText := &intuiText;
-        gadgetC := Gadget_t(nil, /* g_NextGadget */
-                            6,   /* g_LeftEdge */
-                            13,  /* g_TopEdge */
-                            24,  /* g_Width */
-                            5,   /* g_Height */
-                            GADGDISABLED,   /* g_Flags */
-                            0,   /* g_Activation */
-                            BOOLGADGET, /* g_GadgetType */
-                            (nil), /* g_GadgetRender */
-                            (nil), /* g_SelectRender */
-                            nil,   /* g_GadgetText */
-                            0,     /* g_MutualExclude */
-                            (nil), /* g_SpecialInfo */
-                            1,     /* g_GadgetID */
-                            nil);  /* g_UserData */
-        gadgetC.g_NextGadget := &gadget;
         newWindow := NewWindow_t(100,
                                  50,
                                  200,
@@ -206,10 +189,12 @@ proc main() void:
             stringBuffer[1] := '\e';
             gadgetB.g_Flags := gadgetB.g_Flags | SELECTED;
             RefreshGadgets(&gadget, pWindow, nil);
-            eventLoop(pWindow, &stringInfo, &gadgetC);
+            eventLoop(pWindow, &stringInfo, &gadget, &gadgetB);
             CloseWindow(pWindow);
         fi;
-        CloseIntuitionLibrary();
+        CloseGraphicsLibrary();
+    fi;
+    CloseIntuitionLibrary();
     fi;
     CloseDosLibrary();
     fi;
