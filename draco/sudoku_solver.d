@@ -252,11 +252,8 @@ proc main() void:
     write("\nSearching for ", pGridList*.g_dimension,
           " x ", pGridList*.g_dimension, " solutions...");
     LineFlush();
+    counters := Counters_t(0, 0, 0, 0, 0);
     counters.c_StartTime := GetCurrentTime();
-    counters.c_GridSplits := 0;
-    counters.c_ImpossibleGrids := 0;
-    counters.c_GridsLost := 0;
-    counters.c_Solutions := 0;
     lastReportTime := GetCurrentTime();
     lastReportedCounters := true;
     while
