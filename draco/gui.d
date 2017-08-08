@@ -11,12 +11,64 @@
 #drinc:intuition/miscellaneous.g
 #drinc:intuition/screen.g
 #drinc:intuition/window.g
+#drinc:util.g
+
+type square_text_buffer_t = [6] char;
+type border_six_t = [6] int;
+
+type SquareGadget_t = struct {
+    Gadget_t sg_Gadget;
+    StringInfo_t sg_StringInfo;
+    [3] char sg_TextBuffer;
+    [3] char sg_UndoBuffer;
+};
+
+[10] int squareGadgetBorderXY = (0,  0,  0,  10, 30, 10, 30, 0, 0, 0);
+
+Border_t squareGadgetBorder;
 
 extern _d_IO_initialize() void;
 
 channel output text out;
 
 proc devNullChar(char c) void:
+corp;
+
+proc createSquareGadget(int x, y) *Gadget_t:
+    *SquareGadget_t pSquareGadget;
+    pSquareGadget := new(SquareGadget_t);
+    if pSquareGadget = nil then
+        return nil;
+    fi;
+    pSquareGadget*.sg_Gadget := Gadget_t(nil, /* g_NextGadget */
+                                         0, /* g_LeftEdge */
+                                         0, /* g_TopEdge */
+                                         24, /* g_Width */
+                                         5, /* g_Height */
+                                         0, /* g_Flags */
+                                         LONGINT | STRINGCENTER, /* g_Activation */
+                                         STRGADGET, /* g_GadgetType */
+                                         (nil), /* g_GadgetRender */
+                                         (nil), /* g_SelectRender */
+                                         nil, /* g_GadgetText */
+                                         0, /* g_MutualExclude */
+                                         (nil), /* g_SpecialInfo */
+                                         0, /* g_GadgetID */
+                                         nil); /* g_UserData */
+    pSquareGadget*.sg_Gadget.g_LeftEdge := x;
+    pSquareGadget*.sg_Gadget.g_TopEdge := y;
+    pSquareGadget*.sg_Gadget.g_GadgetRender.gBorder := &squareGadgetBorder;
+    pSquareGadget*.sg_Gadget.g_SpecialInfo.gStr := &pSquareGadget*.sg_StringInfo;
+    pSquareGadget*.sg_Gadget.g_UserData := pretend(pSquareGadget, arbptr);
+    pSquareGadget*.sg_StringInfo := StringInfo_t(nil, nil, 0, 3, 0, 0, 0, 0, 0, 0, nil, 0, nil);
+    pSquareGadget*.sg_StringInfo.si_Buffer := &pSquareGadget*.sg_TextBuffer[0];
+    pSquareGadget*.sg_StringInfo.si_UndoBuffer := &pSquareGadget*.sg_UndoBuffer[0];
+    pSquareGadget*.sg_TextBuffer[0] := '\e';
+    &pSquareGadget*.sg_Gadget
+corp;
+
+proc freeSquareGadget(*Gadget_t pGadget) void:
+    free(pretend(pGadget*.g_UserData, *SquareGadget_t));
 corp;
 
 proc eventLoop(*Window_t pWindow; *StringInfo_t pStringInfo; *Gadget_t pGadget, pGadgetB) void:
@@ -65,41 +117,19 @@ corp;
 
 proc main() void:
     NewWindow_t newWindow;
-    Gadget_t gadget, gadgetB;
-    Border_t border, borderB, borderC;
-    [10] int borderCoordinates, borderCoordinatesB, borderCoordinatesC;
+    *Gadget_t pGadget, pGadgetB;
+    Gadget_t gadgetB;
+    Border_t borderB, borderC;
+    border_six_t borderCoordinatesB, borderCoordinatesC;
     StringInfo_t stringInfo;
-    [3] char stringBuffer, undoBuffer;
     *Window_t pWindow;
     IntuiText_t intuiText;
-    Handle_t handle;
-
-    stringBuffer[0] := '\e';
     
-    borderCoordinates[0] := 0;
-    borderCoordinates[1] := 0;
-    borderCoordinates[2] := 0;
-    borderCoordinates[3] := 10;   
-    borderCoordinates[4] := 30;
-    borderCoordinates[5] := 10;
-    borderCoordinates[6] := 30;
-    borderCoordinates[7] := 0;    
-    borderCoordinates[8] := 0;
-    borderCoordinates[9] := 0;
-
-    borderCoordinatesB[0] := 0;
-    borderCoordinatesB[1] := 14;
-    borderCoordinatesB[2] := 0;
-    borderCoordinatesB[3] := 0;   
-    borderCoordinatesB[4] := 99;
-    borderCoordinatesB[5] := 0;
+    squareGadgetBorder := Border_t(-2, -2, 2, 0, 0, 5, nil, nil);
+    squareGadgetBorder.b_XY := &squareGadgetBorderXY[0];
     
-    borderCoordinatesC[0] := 99;
-    borderCoordinatesC[1] := 0;
-    borderCoordinatesC[2] := 99;    
-    borderCoordinatesC[3] := 14;
-    borderCoordinatesC[4] := 0;
-    borderCoordinatesC[5] := 14;
+    borderCoordinatesB :=  border_six_t(0,  14, 0,  0,  99, 0);
+    borderCoordinatesC := border_six_t(99, 0,  99, 14, 0,  14);
     
     if OpenExecLibrary(0) ~= nil then
     if OpenDosLibrary(0) ~= nil then
@@ -115,30 +145,19 @@ proc main() void:
         fi;
         
         writeln(out; "Hello world");
-    
-        stringInfo := StringInfo_t(nil, nil, 0, 3, 0, 0, 0, 0, 0, 0, nil, 0, nil);
-        stringInfo.si_Buffer := &stringBuffer[0];
-        stringInfo.si_UndoBuffer := &undoBuffer[0];
-        border := Border_t(-2, -2, 2, 0, 0, 5, nil, nil);
-        border.b_XY := &borderCoordinates[0];
-        gadget := Gadget_t(nil, /* g_NextGadget */
-                           6,   /* g_LeftEdge */
-                           13,  /* g_TopEdge */
-                           24,  /* g_Width */
-                           5,   /* g_Height */
-                           0, /* g_Flags */
-                           LONGINT | STRINGCENTER, /* g_Activation */
-                           STRGADGET, /* g_GadgetType */
-                           (nil), /* g_GadgetRender */
-                           (nil), /* g_SelectRender */
-                           nil,   /* g_GadgetText */
-                           0,     /* g_MutualExclude */
-                           (nil), /* g_SpecialInfo */
-                           1,     /* g_GadgetID */
-                           nil);  /* g_UserData */
-        gadget.g_NextGadget := &gadgetB;
-        gadget.g_GadgetRender.gBorder := &border;
-        gadget.g_SpecialInfo.gStr := &stringInfo;
+        
+        pGadget := createSquareGadget(6, 13);
+        
+        /* TODO: Check if pSquareGadget is null or allocate all at once somehow */
+        
+        CharsCopy(pretend(pGadget*.g_SpecialInfo.gStr*.si_Buffer, *char), "9");
+        pGadget*.g_SpecialInfo.gStr*.si_LongInt := 9;
+        
+        pGadgetB := createSquareGadget(pGadget*.g_LeftEdge + pGadget*.g_Width + 8, pGadget*.g_TopEdge);
+        
+        pGadget*.g_NextGadget := pGadgetB;
+        pGadgetB*.g_NextGadget := &gadgetB;        
+        
         gadgetB := Gadget_t(nil, /* g_NextGadget */
                             4,   /* g_LeftEdge */
                             23,  /* g_TopEdge */
@@ -152,7 +171,7 @@ proc main() void:
                             nil,   /* g_GadgetText */
                             0,     /* g_MutualExclude */
                             (nil), /* g_SpecialInfo */
-                            2,     /* g_GadgetID */
+                            0,     /* g_GadgetID */
                             nil);  /* g_UserData */
         borderB := Border_t(0, 0, 2, 0, 0, 3, nil, nil);
         borderB.b_XY := &borderCoordinatesB[0];
@@ -181,17 +200,17 @@ proc main() void:
                                  320,
                                  200,
                                  WBENCHSCREEN);
-        newWindow.nw_FirstGadget := &gadget;
+        newWindow.nw_FirstGadget := pGadget;
         newWindow.nw_Title := "Sudoku solver";
         pWindow := OpenWindow(&newWindow);
         if pWindow ~= nil then
-            stringBuffer[0] := '9';
-            stringBuffer[1] := '\e';
             gadgetB.g_Flags := gadgetB.g_Flags | SELECTED;
-            RefreshGadgets(&gadget, pWindow, nil);
-            eventLoop(pWindow, &stringInfo, &gadget, &gadgetB);
+            RefreshGadgets(pGadget, pWindow, nil);
+            eventLoop(pWindow, pGadget*.g_SpecialInfo.gStr, pGadget, &gadgetB);
             CloseWindow(pWindow);
         fi;
+        freeSquareGadget(pGadgetB);
+        freeSquareGadget(pGadget);
         CloseGraphicsLibrary();
     fi;
     CloseIntuitionLibrary();
@@ -200,5 +219,5 @@ proc main() void:
     fi;
     CloseExecLibrary();
     fi;
-    /* TODO: real menus, grid lines, command line param to start gui */
+    /* TODO: real menus, grid lines */
 corp;
