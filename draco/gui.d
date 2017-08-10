@@ -30,9 +30,6 @@ channel output text out;
 proc devNullChar(char c) void:
 corp;
 
-/* TODO: Use square gadget editing hook */
-/* See: http://amigadev.elowar.com/read/ADCD_2.1/Libraries_Manual_guide/node0596.html */
-
 proc setupSquareGadget(*SquareGadget_t pSquareGadget; int dimension) void:
     pSquareGadget*.sg_Gadget := Gadget_t(nil, /* g_NextGadget */
                                          0, /* g_LeftEdge */
@@ -40,7 +37,7 @@ proc setupSquareGadget(*SquareGadget_t pSquareGadget; int dimension) void:
                                          24, /* g_Width */
                                          5, /* g_Height */
                                          0, /* g_Flags */
-                                         LONGINT | STRINGCENTER, /* g_Activation */
+                                         LONGINT | STRINGCENTER | RELVERIFY, /* g_Activation */
                                          STRGADGET, /* g_GadgetType */
                                          (nil), /* g_GadgetRender */
                                          (nil), /* g_SelectRender */
@@ -109,9 +106,10 @@ proc eventLoop(*Window_t pWindow) void:
                 incase CLOSEWINDOW:
                     return;
                 incase MENUPICK:
-                    writeln(out; "Menu pick");
+                    writeln(out; "MENUPICK");
                 incase GADGETUP:
-                    writeln(out; "Gadget up");
+                    writeln(out; "GADGETUP");
+                    /* TODO: Check value and zero if rubbish */
             esac;
         od;
     od;
