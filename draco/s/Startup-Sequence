@@ -1,4 +1,7 @@
-c:resident c:echo pure
+version >NIL: exec.library 36
+IF WARN
+    c:resident c:echo pure
+ENDIF
 echo "*E[0;0H*E[J"
 echo "*E[33mSudoku solver build environment...*E[0m"
 c:SetPatch >NIL:

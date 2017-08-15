@@ -1,4 +1,10 @@
-alias endcli
+version >NIL: exec.library 36
+IF WARN
+    alias endcli
+ELSE
+    unalias endcli
+    unalias endshell
+ENDIF
 IF NOT EXISTS ram:env
     echo ""
     echo "*E[33mLoading workbench...*E[0m"
@@ -29,7 +35,7 @@ IF NOT EXISTS ram:env
     path ram: sys:system s: add
     LoadWB delay
 ENDIF
-status >t:clock-id COMMAND=clock
+status >t:clock-id COMMAND=c/clock
 failat 21
 break <t:clock-id >NIL: ?
 delete >NIL: t:clock-id
