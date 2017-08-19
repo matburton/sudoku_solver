@@ -88,9 +88,23 @@ proc freeSquareGadgets(*SquareGadget_t pSquareGadgets; int dimension) void:
     Mfree(pSquareGadgets, sizeof(SquareGadget_t) * dimension * dimension);
 corp;
 
+proc drawSectorLines(*Window_t pWindow; int sectorDimension) void:
+    int dimension, index, start;
+    dimension := sectorDimension * sectorDimension;
+    SetAPen(pWindow*.w_RPort, 1);
+    for index from 1 upto sectorDimension - 1 do
+        start := 3 + 32 * sectorDimension * index;
+        Move(pWindow*.w_RPort, start, 11);
+        Draw(pWindow*.w_RPort, start, 9 + 12 * dimension);
+        start := 10 + 12 * sectorDimension * index;
+        Move(pWindow*.w_RPort, 4, start);
+        Draw(pWindow*.w_RPort, 5 + 32 * dimension, start);
+    od;
+corp;
+
 proc eventLoop(*Window_t pWindow) void:
     *IntuiMessage_t pMessage;
-    ulong signals, messageClass@signals;  
+    ulong signals, messageClass@signals;
     while true do
         signals := Wait((1 << pWindow*.w_UserPort*.mp_SigBit) | SIGBREAKF_CTRL_C);
         if signals & SIGBREAKF_CTRL_C ~= 0 then
@@ -115,10 +129,12 @@ proc eventLoop(*Window_t pWindow) void:
     od;
 corp;
 
-proc createWindow(int dimension) void:
+proc createWindow(int sectorDimension) void:
+    int dimension;
     *SquareGadget_t pSquareGadgets;
     NewWindow_t newWindow;
     *Window_t pWindow;
+    dimension := sectorDimension * sectorDimension;
     pSquareGadgets := createSquareGadgets(dimension, 6, 13);
     if pSquareGadgets = nil then
         writeln(out; "Failed to create gadgets");
@@ -153,7 +169,7 @@ proc createWindow(int dimension) void:
         writeln(out; "Failed to create window");
         DisplayBeep(nil);
     else
-        /* TODO: Draw white lines between sectors */
+        drawSectorLines(pWindow, sectorDimension);
         eventLoop(pWindow);
         CloseWindow(pWindow); 
     fi;
@@ -173,7 +189,7 @@ proc main() void:
                     else
                         open(out);
                     fi;
-                    createWindow(9);
+                    createWindow(3);
                     CloseGraphicsLibrary();
                 fi;
                 CloseIntuitionLibrary();
