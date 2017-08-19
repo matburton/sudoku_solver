@@ -1,2 +1,7 @@
 path add Sudokus:c
-newshell "newcon:0/0/640/256/Sudokus" from s/shell-startup
+version >NIL: exec.library 36
+IF WARN
+    newshell "newcon:0/0/640/256/Sudokus" from s/shell-startup
+ELSE
+    newshell "con:0/0/640/256/Sudokus" from s/shell-startup
+ENDIF
