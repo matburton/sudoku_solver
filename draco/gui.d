@@ -19,6 +19,8 @@ type SquareGadget_t = struct {
     [6] char sg_TextBuffer;
 };
 
+type buttonBorderXY = [6] int;
+
 [10] int squareGadgetBorderXY = (0,  0,  0,  10, 30, 10, 30, 0, 0, 0);
 
 Border_t squareGadgetBorder;
@@ -102,11 +104,11 @@ proc drawSectorLines(*Window_t pWindow; int sectorDimension) void:
     od;
 corp;
 
-proc eventLoop(*Window_t pWindow; int dimension) void:
+proc eventLoop(*Window_t pWindow; int dimension) void:  
     *IntuiMessage_t pMessage;
     *Gadget_t pGadget;
     *StringInfo_t pStringInfo;
-    ulong signals, messageClass@signals;
+    ulong signals, messageClass@signals;   
     while true do
         signals := Wait((1 << pWindow*.w_UserPort*.mp_SigBit) | SIGBREAKF_CTRL_C);
         if signals & SIGBREAKF_CTRL_C ~= 0 then
@@ -125,12 +127,23 @@ proc eventLoop(*Window_t pWindow; int dimension) void:
                 incase MENUPICK:
                     writeln(out; "MENUPICK");
                 incase GADGETUP:
-                    pStringInfo := pGadget*.g_SpecialInfo.gStr;
-                    if    pStringInfo*.si_LongInt < 1
-                       or pStringInfo*.si_LongInt > dimension then
-                        DisplayBeep(nil);
-                        pStringInfo*.si_LongInt := 0;                      
-                        CharsCopyN(pStringInfo*.si_Buffer, pStringInfo*.si_UndoBuffer, 3);
+                    if pGadget*.g_Activation & LONGINT ~= 0 then
+                        pStringInfo := pGadget*.g_SpecialInfo.gStr;
+                        if    pStringInfo*.si_LongInt < 1
+                           or pStringInfo*.si_LongInt > dimension then
+                            DisplayBeep(nil);
+                            pStringInfo*.si_LongInt := 0;                      
+                            CharsCopyN(pStringInfo*.si_Buffer, pStringInfo*.si_UndoBuffer, 3);
+                            RefreshGList(pGadget, pWindow, nil, 1);
+                        fi;
+                    else
+                        if pGadget*.g_Flags & SELECTED = 0 then
+                            pGadget*.g_GadgetText*.it_IText := "Cancel";
+                        else
+                            pGadget*.g_GadgetText*.it_IText := "Solve";
+                        fi;
+                        SetAPen(pWindow*.w_RPort, 0);
+                        RectFill(pWindow*.w_RPort, pGadget*.g_LeftEdge, pGadget*.g_TopEdge, pGadget*.g_LeftEdge + pGadget*.g_Width, pGadget*.g_TopEdge + pGadget*.g_Height);
                         RefreshGList(pGadget, pWindow, nil, 1);
                     fi;
             esac;
@@ -142,6 +155,10 @@ proc createWindow(int sectorDimension) void:
     int dimension;
     *SquareGadget_t pSquareGadgets;
     NewWindow_t newWindow;
+    Gadget_t buttonGadget;
+    Border_t buttonBorderA, buttonBorderB;
+    [6] int buttonBorderAXY,buttonBorderBXY;
+    IntuiText_t buttonText;
     *Window_t pWindow;
     dimension := sectorDimension * sectorDimension;
     pSquareGadgets := createSquareGadgets(dimension, 6, 13);
@@ -150,6 +167,41 @@ proc createWindow(int sectorDimension) void:
         DisplayBeep(nil);
         return;
     fi;
+    buttonGadget := Gadget_t(nil, /* g_NextGadget */
+                             4, /* g_LeftEdge */
+                             0, /* g_TopEdge */
+                             0, /* g_Width */
+                             15,   /* g_Height */
+                             GADGHCOMP, /* g_Flags */
+                             RELVERIFY | TOGGLESELECT , /* g_Activation */
+                             BOOLGADGET, /* g_GadgetType */
+                             (nil), /* g_GadgetRender */
+                             (nil), /* g_SelectRender */
+                             nil, /* g_GadgetText */
+                             0, /* g_MutualExclude */
+                             (nil), /* g_SpecialInfo */
+                             0, /* g_GadgetID */
+                             nil); /* g_UserData */
+    buttonGadget.g_TopEdge := 12 * (dimension - 1) + 23;
+    buttonGadget.g_Width := 32 * (dimension - 1) + 31;
+    buttonGadget.g_NextGadget := &pSquareGadgets*.sg_Gadget;
+    buttonGadget.g_GadgetRender.gBorder := &buttonBorderA;
+    buttonGadget.g_GadgetText := &buttonText;
+    buttonBorderA := Border_t(0, 0, 2, 0, 0, 3, nil, nil);
+    buttonBorderA.b_XY := &buttonBorderAXY[0];
+    buttonBorderA.b_NextBorder := &buttonBorderB;
+    buttonBorderB := Border_t(0, 0, 1, 0, 0, 3, nil, nil);
+    buttonBorderB.b_XY := &buttonBorderBXY[0];
+    buttonBorderAXY := buttonBorderXY(0, 0, 0, 0, 0, 0);
+    buttonBorderBXY := buttonBorderXY(0, 0, 0, 0, 0, 0);
+    buttonBorderAXY[1] := buttonGadget.g_Height - 1;
+    buttonBorderAXY[4] := buttonGadget.g_Width - 1;
+    buttonBorderBXY[0] := buttonGadget.g_Width - 1;
+    buttonBorderBXY[2] := buttonGadget.g_Width - 1;
+    buttonBorderBXY[3] := buttonGadget.g_Height - 1;
+    buttonBorderBXY[5] := buttonGadget.g_Height - 1;
+    buttonText := IntuiText_t(1, 0, 0, 0, 4, nil, nil, nil);
+    buttonText.it_LeftEdge := buttonGadget.g_Width / 2 - 20;
     newWindow := NewWindow_t(50,
                              25,
                              0,
@@ -168,16 +220,18 @@ proc createWindow(int sectorDimension) void:
                              0,
                              0,
                              WBENCHSCREEN);
-    newWindow.nw_Width := 32 * (dimension - 1) + 39;
-    newWindow.nw_Height := 12 * (dimension - 1) + 24;
-    /* TODO: Re-add solve button */
-    newWindow.nw_FirstGadget := &pSquareGadgets*.sg_Gadget;
+    newWindow.nw_Width := buttonGadget.g_Width + 8;
+    newWindow.nw_Height := buttonGadget.g_TopEdge + buttonGadget.g_Height + 2;
+    newWindow.nw_FirstGadget := &buttonGadget;
     newWindow.nw_Title := "Sudoku solver";
+    buttonText.it_IText := "Solve";
     pWindow := OpenWindow(&newWindow);
     if pWindow = nil then
         writeln(out; "Failed to create window");
         DisplayBeep(nil);
     else
+        buttonGadget.g_Flags := buttonGadget.g_Flags | SELECTED;
+        RefreshGList(&buttonGadget, pWindow, nil, 1);
         drawSectorLines(pWindow, sectorDimension);
         eventLoop(pWindow, dimension);
         CloseWindow(pWindow); 
