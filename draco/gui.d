@@ -98,12 +98,14 @@ proc drawSectorLines(*Window_t pWindow; int sectorDimension) void:
         Draw(pWindow*.w_RPort, start, 9 + 12 * dimension);
         start := 10 + 12 * sectorDimension * index;
         Move(pWindow*.w_RPort, 4, start);
-        Draw(pWindow*.w_RPort, 5 + 32 * dimension, start);
+        Draw(pWindow*.w_RPort, 2 + 32 * dimension, start);
     od;
 corp;
 
-proc eventLoop(*Window_t pWindow) void:
+proc eventLoop(*Window_t pWindow; int dimension) void:
     *IntuiMessage_t pMessage;
+    *Gadget_t pGadget;
+    *StringInfo_t pStringInfo;
     ulong signals, messageClass@signals;
     while true do
         signals := Wait((1 << pWindow*.w_UserPort*.mp_SigBit) | SIGBREAKF_CTRL_C);
@@ -115,6 +117,7 @@ proc eventLoop(*Window_t pWindow) void:
             pMessage ~= nil
         do
             messageClass := pMessage*.im_Class;
+            pGadget := pretend(pMessage*.im_IAddress, *Gadget_t);
             ReplyMsg(pretend(pMessage, *Message_t));        
             case messageClass
                 incase CLOSEWINDOW:
@@ -122,8 +125,14 @@ proc eventLoop(*Window_t pWindow) void:
                 incase MENUPICK:
                     writeln(out; "MENUPICK");
                 incase GADGETUP:
-                    writeln(out; "GADGETUP");
-                    /* TODO: Check value and zero if rubbish */
+                    pStringInfo := pGadget*.g_SpecialInfo.gStr;
+                    if    pStringInfo*.si_LongInt < 1
+                       or pStringInfo*.si_LongInt > dimension then
+                        DisplayBeep(nil);
+                        pStringInfo*.si_LongInt := 0;                      
+                        CharsCopyN(pStringInfo*.si_Buffer, pStringInfo*.si_UndoBuffer, 3);
+                        RefreshGList(pGadget, pWindow, nil, 1);
+                    fi;
             esac;
         od;
     od;
@@ -170,7 +179,7 @@ proc createWindow(int sectorDimension) void:
         DisplayBeep(nil);
     else
         drawSectorLines(pWindow, sectorDimension);
-        eventLoop(pWindow);
+        eventLoop(pWindow, dimension);
         CloseWindow(pWindow); 
     fi;
     freeSquareGadgets(pSquareGadgets, dimension);
