@@ -1,3 +1,9 @@
+c:Assign >NIL: exists kickstart:
+IF NOT WARN
+    c:Assign libs: kickstart:libs
+    kickstart:c/mkick kickstart:kickstarts/kickstart AUTO
+    c:Assign libs: Sudokus:libs
+ENDIF
 version >NIL: exec.library 36
 IF WARN
     c:resident c:echo pure
