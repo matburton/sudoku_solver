@@ -142,6 +142,7 @@ proc updateSquareGadgetValues(*Window_t pWindow; *SquareGadget_t pSquareGadgets;
     int x, y, squareValue;
     *SquareGadget_t pSquareGadget;
     channel output text squareGadgetTextBuffer;
+    uint gadgetFlags;
     for x from 0 upto pGrid*.g_dimension - 1 do
         for y from 0 upto pGrid*.g_dimension - 1 do
             squareValue := getSquareValue(pGrid, x, y);
@@ -153,20 +154,35 @@ proc updateSquareGadgetValues(*Window_t pWindow; *SquareGadget_t pSquareGadgets;
                     write(squareGadgetTextBuffer; squareValue);
                 fi;
                 pSquareGadget*.sg_StringInfo.si_LongInt := squareValue;
+                gadgetFlags := pSquareGadget*.sg_Gadget.g_Flags;
+                pSquareGadget*.sg_Gadget.g_Flags := gadgetFlags & ~GADGDISABLED;
                 RefreshGList(&pSquareGadget*.sg_Gadget, pWindow, nil, 1);
+                pSquareGadget*.sg_Gadget.g_Flags := gadgetFlags;
             fi;
         od;
     od;
 corp;
 
+proc toggleSquareGadgetsEnabled(int dimension; *SquareGadget_t pSquareGadgets) void:
+    int x, y;
+    *SquareGadget_t pSquareGadget;
+    for x from 0 upto dimension - 1 do
+        for y from 0 upto dimension - 1 do           
+            pSquareGadget := getSquareGadget(pSquareGadgets, dimension, x, y);
+            pSquareGadget*.sg_Gadget.g_Flags := pSquareGadget*.sg_Gadget.g_Flags >< GADGDISABLED;
+        od;
+    od;
+corp;
+
 proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGadgets) void:  
+    int dimension;
     *IntuiMessage_t pMessage;
     *Gadget_t pGadget;
     *StringInfo_t pStringInfo;
     ulong signals, messageClass@signals;
     *Grid_t pOriginalGrid, pGridList;
     Counters_t counters;
-    ulong lastUpdateTime;   
+    dimension := sectorDimension * sectorDimension;
     pOriginalGrid := nil;
     while not breakSignaled() do
         if pOriginalGrid = nil then       
@@ -198,8 +214,9 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
                 incase GADGETUP:
                     if pGadget*.g_Activation & LONGINT ~= 0 then
                         pStringInfo := pGadget*.g_SpecialInfo.gStr;
-                        if    pStringInfo*.si_LongInt < 1
-                           or pStringInfo*.si_LongInt > sectorDimension * sectorDimension then
+                        if pStringInfo*.si_Buffer* ~= '\e'
+                           and (   pStringInfo*.si_LongInt < 1
+                                or pStringInfo*.si_LongInt > dimension) then
                             DisplayBeep(nil);
                             pStringInfo*.si_LongInt := 0;                      
                             CharsCopyN(pStringInfo*.si_Buffer, pStringInfo*.si_UndoBuffer, 3);
@@ -223,28 +240,22 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
                                 pGadget*.g_Flags := pGadget*.g_Flags >< SELECTED;
                             else
                                 counters := Counters_t(0, 0, 0, 0, 0);
-                                counters.c_StartTime := GetCurrentTime();
-                                lastUpdateTime := GetCurrentTime();
-                            fi;
-                            /* TODO: Change gadget colouring */
-                            /* TODO: Disable gadgets */
+                                counters.c_StartTime := GetCurrentTime();                               
+                            fi;                          
+                            toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
                         else
-                            /* TODO: Un-disable gadgets */
-                            /* TODO: Put gadget contents back */
+                            toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
+                            updateSquareGadgetValues(pWindow, pSquareGadgets, pOriginalGrid);
                             freeGridList(pGridList);
                             freeGridList(pOriginalGrid);
                             pOriginalGrid := nil;
-                            /* TODO: Reset gadget colouring */
                         fi;
                         toggleSolveButton(pWindow, pGadget);
                     fi;
             esac;
         od;
         if pOriginalGrid ~= nil then
-            if GetCurrentTime() - lastUpdateTime >= 1 then
-                updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
-                lastUpdateTime := GetCurrentTime();
-            fi;
+            updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
             pGridList := advanceSolving(pGridList, &counters);
             if pGridList = nil or isComplete(pGridList) then
                 if pGridList ~= nil then
@@ -255,8 +266,7 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
                 pOriginalGrid := nil;
                 pGadget*.g_Flags := pGadget*.g_Flags >< SELECTED;
                 toggleSolveButton(pWindow, pGadget);
-                /* TODO: Un-disable gadgets */
-                /* TODO: Urgh - Reset gadget colouring */
+                toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
             fi;
         fi;
     od;
