@@ -1,17 +1,9 @@
+#sudoku_solver.g
 #sudoku_grid.g
 #sudoku_printer.g
 #drinc:exec/tasks.g
 #drinc:libraries/dos.g
 #drinc:util.g
-
-type Counters_t = struct
-{
-    ulong c_StartTime;
-    ulong c_GridSplits;
-    ulong c_ImpossibleGrids;
-    ulong c_GridsLost;
-    ulong c_Solutions;
-};
 
 extern removePossibilityAt(*Grid_t pGrid; uint x, y, value) void;
 
@@ -233,53 +225,4 @@ proc writeCounters(*Counters_t pCounters) void:
     writeln("Grids lost due to low memory: ", pCounters*.c_GridsLost);   
     write  ("Solutions found:              ", pCounters*.c_Solutions);
     LineFlush();
-corp;
-
-proc main() void:
-    channel output text console;
-    *Grid_t pGridList;
-    Counters_t counters;
-    ulong lastReportTime;
-    bool lastReportedCounters;
-    gridsInMemory := 0;
-    MerrorSet(true);
-    open(console);
-    pGridList := createGrid(4);
-    if pGridList = nil then
-        writeln("Failed to create initial grid");
-        return;
-    fi;
-    write("\nSearching for ", pGridList*.g_dimension,
-          " x ", pGridList*.g_dimension, " solutions...");
-    LineFlush();
-    counters := Counters_t(0, 0, 0, 0, 0);
-    counters.c_StartTime := GetCurrentTime();
-    lastReportTime := GetCurrentTime();
-    lastReportedCounters := true;
-    while
-        pGridList := advanceSolving(pGridList, &counters);
-        pGridList ~= nil and not breakSignaled()
-        and counters.c_Solutions = 0
-    do
-        if isComplete(pGridList) then
-            counters.c_Solutions := counters.c_Solutions + 1;
-            writeln("\n\n\(27)[33mSolution\(27)[0m");
-            writeGridString(console, pGridList);
-            pGridList := freeFrontGrid(pGridList);
-        elif counters.c_Solutions = 0
-             and GetCurrentTime() - lastReportTime >= 15 then
-            if lastReportedCounters then
-                writeln("\n\n\(27)[32mCurrent grid\(27)[0m");
-                writeGridString(console, pGridList);
-            else
-                writeCounters(&counters);
-            fi;
-            lastReportTime := GetCurrentTime();
-            lastReportedCounters := not lastReportedCounters;
-        fi;
-    od;
-    writeCounters(&counters);
-    writeln("\n");
-    freeGridList(pGridList);
-    close(console);
 corp;

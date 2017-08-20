@@ -1,11 +1,15 @@
 echo ""
 echo "*E[33mCompiling...*E[0m"
 echo ""
-draco gui.d
+draco gui.d sudoku_solver.d sudoku_grid.d sudoku_printer.d
+echo ""
+echo "*E[33mAssembling...*E[0m"
+echo ""
+asm68k sudoku_grid.a -NL
 echo ""
 echo "*E[33mLinking...*E[0m"
 echo ""
-blink drlib:drstart0.o+gui.r lib drlib:drio.lib+drlib:graphics.lib+drlib:exec.lib+drlib:intuition.lib+drlib:draco.lib+drlib:dos.lib to gui smallcode
+blink drlib:drstart0.o+gui.r+sudoku_solver.r+sudoku_grid.r+sudoku_grid.o+sudoku_printer.r lib drlib:drio.lib+drlib:graphics.lib+drlib:exec.lib+drlib:intuition.lib+drlib:draco.lib+drlib:dos.lib to gui smallcode
 echo ""
 echo "*E[33mDone*E[0m - the executable has been named *E[32mgui*E[0m"
 echo ""

@@ -12,6 +12,9 @@
 #drinc:intuition/screen.g
 #drinc:intuition/window.g
 #drinc:util.g
+#sudoku_grid.g
+#sudoku_printer.g
+#sudoku_solver.g
 
 type SquareGadget_t = struct {
     Gadget_t sg_Gadget;
@@ -104,15 +107,77 @@ proc drawSectorLines(*Window_t pWindow; int sectorDimension) void:
     od;
 corp;
 
-proc eventLoop(*Window_t pWindow; int dimension) void:  
+proc createGridFromSquareGadgets(int sectorDimension; *SquareGadget_t pSquareGadgets) *Grid_t:
+    *Grid_t pGrid;
+    int dimension, x, y;
+    *SquareGadget_t pSquareGadget;
+    dimension := sectorDimension * sectorDimension;
+    pGrid := createGrid(sectorDimension);
+    if pGrid = nil then
+        return nil;
+    fi;
+    for y from dimension - 1 downto 0 do
+        for x from dimension - 1 downto 0 do
+            pSquareGadget := getSquareGadget(pSquareGadgets, dimension, x, y);
+            if pSquareGadget*.sg_StringInfo.si_LongInt ~= 0 then
+                setValueAt(pGrid, x, y, pSquareGadget*.sg_StringInfo.si_LongInt);
+            fi;
+        od;
+    od;
+    pGrid
+corp;
+
+proc toggleSolveButton(*Window_t pWindow; *Gadget_t pGadget) void:
+    if pGadget*.g_Flags & SELECTED = 0 then
+        pGadget*.g_GadgetText*.it_IText := "Cancel";
+    else
+        pGadget*.g_GadgetText*.it_IText := "Solve";
+    fi;
+    SetAPen(pWindow*.w_RPort, 0);
+    RectFill(pWindow*.w_RPort, pGadget*.g_LeftEdge, pGadget*.g_TopEdge, pGadget*.g_LeftEdge + pGadget*.g_Width, pGadget*.g_TopEdge + pGadget*.g_Height);
+    RefreshGList(pGadget, pWindow, nil, 1);
+corp;
+
+proc updateSquareGadgetValues(*Window_t pWindow; *SquareGadget_t pSquareGadgets; *Grid_t pGrid) void:
+    int x, y, squareValue;
+    *SquareGadget_t pSquareGadget;
+    channel output text squareGadgetTextBuffer;
+    for x from 0 upto pGrid*.g_dimension - 1 do
+        for y from 0 upto pGrid*.g_dimension - 1 do
+            squareValue := getSquareValue(pGrid, x, y);
+            pSquareGadget := getSquareGadget(pSquareGadgets, pGrid*.g_dimension, x, y);
+            if squareValue ~= pSquareGadget*.sg_StringInfo.si_LongInt then
+                BlockFill(&pSquareGadget*.sg_TextBuffer[0], 3, pretend('\e', byte));
+                if squareValue ~= 0 then
+                    open(squareGadgetTextBuffer, &pSquareGadget*.sg_TextBuffer[0]);
+                    write(squareGadgetTextBuffer; squareValue);
+                fi;
+                pSquareGadget*.sg_StringInfo.si_LongInt := squareValue;
+                RefreshGList(&pSquareGadget*.sg_Gadget, pWindow, nil, 1);
+            fi;
+        od;
+    od;
+corp;
+
+proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGadgets) void:  
     *IntuiMessage_t pMessage;
     *Gadget_t pGadget;
     *StringInfo_t pStringInfo;
-    ulong signals, messageClass@signals;   
-    while true do
-        signals := Wait((1 << pWindow*.w_UserPort*.mp_SigBit) | SIGBREAKF_CTRL_C);
-        if signals & SIGBREAKF_CTRL_C ~= 0 then
-            return;
+    ulong signals, messageClass@signals;
+    *Grid_t pOriginalGrid, pGridList;
+    Counters_t counters;
+    ulong lastUpdateTime;   
+    pOriginalGrid := nil;
+    while not breakSignaled() do
+        if pOriginalGrid = nil then       
+            signals := Wait((1 << pWindow*.w_UserPort*.mp_SigBit) | SIGBREAKF_CTRL_C);
+            if signals & SIGBREAKF_CTRL_C ~= 0 then
+                if pOriginalGrid ~= nil then
+                    freeGridList(pGridList);
+                    freeGridList(pOriginalGrid);
+                fi;
+                return;
+            fi;
         fi;
         while
             pMessage := pretend(GetMsg(pWindow*.w_UserPort), *IntuiMessage_t);
@@ -123,6 +188,10 @@ proc eventLoop(*Window_t pWindow; int dimension) void:
             ReplyMsg(pretend(pMessage, *Message_t));        
             case messageClass
                 incase CLOSEWINDOW:
+                    if pOriginalGrid ~= nil then
+                        freeGridList(pGridList);
+                        freeGridList(pOriginalGrid);
+                    fi;
                     return;
                 incase MENUPICK:
                     writeln(out; "MENUPICK");
@@ -130,25 +199,71 @@ proc eventLoop(*Window_t pWindow; int dimension) void:
                     if pGadget*.g_Activation & LONGINT ~= 0 then
                         pStringInfo := pGadget*.g_SpecialInfo.gStr;
                         if    pStringInfo*.si_LongInt < 1
-                           or pStringInfo*.si_LongInt > dimension then
+                           or pStringInfo*.si_LongInt > sectorDimension * sectorDimension then
                             DisplayBeep(nil);
                             pStringInfo*.si_LongInt := 0;                      
                             CharsCopyN(pStringInfo*.si_Buffer, pStringInfo*.si_UndoBuffer, 3);
                             RefreshGList(pGadget, pWindow, nil, 1);
                         fi;
                     else
-                        if pGadget*.g_Flags & SELECTED = 0 then
-                            pGadget*.g_GadgetText*.it_IText := "Cancel";
+                        if pOriginalGrid = nil then
+                            pOriginalGrid := createGridFromSquareGadgets(sectorDimension, pSquareGadgets);
+                            if pOriginalGrid ~= nil then                          
+                                pGridList := cloneGrid(pOriginalGrid);
+                                if pGridList = nil then
+                                    freeGridList(pOriginalGrid);
+                                    pOriginalGrid := nil;
+                                else
+                                    pGridList*.g_pNext := pGridList;
+                                fi;
+                            fi;
+                            if pOriginalGrid = nil then
+                                writeln(out; "Failed to create grid");
+                                DisplayBeep(nil);
+                                pGadget*.g_Flags := pGadget*.g_Flags >< SELECTED;
+                            else
+                                counters := Counters_t(0, 0, 0, 0, 0);
+                                counters.c_StartTime := GetCurrentTime();
+                                lastUpdateTime := GetCurrentTime();
+                            fi;
+                            /* TODO: Change gadget colouring */
+                            /* TODO: Disable gadgets */
                         else
-                            pGadget*.g_GadgetText*.it_IText := "Solve";
+                            /* TODO: Un-disable gadgets */
+                            /* TODO: Put gadget contents back */
+                            freeGridList(pGridList);
+                            freeGridList(pOriginalGrid);
+                            pOriginalGrid := nil;
+                            /* TODO: Reset gadget colouring */
                         fi;
-                        SetAPen(pWindow*.w_RPort, 0);
-                        RectFill(pWindow*.w_RPort, pGadget*.g_LeftEdge, pGadget*.g_TopEdge, pGadget*.g_LeftEdge + pGadget*.g_Width, pGadget*.g_TopEdge + pGadget*.g_Height);
-                        RefreshGList(pGadget, pWindow, nil, 1);
+                        toggleSolveButton(pWindow, pGadget);
                     fi;
             esac;
         od;
+        if pOriginalGrid ~= nil then
+            if GetCurrentTime() - lastUpdateTime >= 1 then
+                updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
+                lastUpdateTime := GetCurrentTime();
+            fi;
+            pGridList := advanceSolving(pGridList, &counters);
+            if pGridList = nil or isComplete(pGridList) then
+                if pGridList ~= nil then
+                    updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
+                    freeGridList(pGridList);
+                fi;
+                freeGridList(pOriginalGrid);
+                pOriginalGrid := nil;
+                pGadget*.g_Flags := pGadget*.g_Flags >< SELECTED;
+                toggleSolveButton(pWindow, pGadget);
+                /* TODO: Un-disable gadgets */
+                /* TODO: Urgh - Reset gadget colouring */
+            fi;
+        fi;
     od;
+    if pOriginalGrid ~= nil then
+        freeGridList(pGridList);
+        freeGridList(pOriginalGrid);
+    fi;
 corp;
 
 proc createWindow(int sectorDimension) void:
@@ -203,7 +318,7 @@ proc createWindow(int sectorDimension) void:
     buttonText := IntuiText_t(1, 0, 0, 0, 4, nil, nil, nil);
     buttonText.it_LeftEdge := buttonGadget.g_Width / 2 - 20;
     newWindow := NewWindow_t(50,
-                             25,
+                             15,
                              0,
                              0,
                              FREEPEN,
@@ -233,7 +348,7 @@ proc createWindow(int sectorDimension) void:
         buttonGadget.g_Flags := buttonGadget.g_Flags | SELECTED;
         RefreshGList(&buttonGadget, pWindow, nil, 1);
         drawSectorLines(pWindow, sectorDimension);
-        eventLoop(pWindow, dimension);
+        eventLoop(pWindow, sectorDimension, pSquareGadgets);
         CloseWindow(pWindow); 
     fi;
     freeSquareGadgets(pSquareGadgets, dimension);
@@ -252,7 +367,7 @@ proc main() void:
                     else
                         open(out);
                     fi;
-                    createWindow(3);
+                    createWindow(4);
                     CloseGraphicsLibrary();
                 fi;
                 CloseIntuitionLibrary();
