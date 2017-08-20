@@ -365,6 +365,7 @@ proc createWindow(int sectorDimension) void:
 corp;
 
 proc main() void:
+    MerrorSet(true);
     squareGadgetBorder := Border_t(-2, -2, 2, 0, 0, 5, nil, nil);
     squareGadgetBorder.b_XY := &squareGadgetBorderXY[0];    
     if OpenExecLibrary(0) ~= nil then
