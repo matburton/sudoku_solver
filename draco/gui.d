@@ -4,6 +4,7 @@
 #drinc:graphics/gfx.g
 #drinc:graphics/rastport.g
 #drinc:libraries/dos.g
+#drinc:libraries/dosextens.g
 #drinc:intuition/border.g
 #drinc:intuition/intuiMessage.g
 #drinc:intuition/intuiText.g
@@ -152,6 +153,7 @@ proc updateSquareGadgetValues(*Window_t pWindow; *SquareGadget_t pSquareGadgets;
                 if squareValue ~= 0 then
                     open(squareGadgetTextBuffer, &pSquareGadget*.sg_TextBuffer[0]);
                     write(squareGadgetTextBuffer; squareValue);
+                    close(squareGadgetTextBuffer);
                 fi;
                 pSquareGadget*.sg_StringInfo.si_LongInt := squareValue;
                 gadgetFlags := pSquareGadget*.sg_Gadget.g_Flags;
@@ -365,20 +367,29 @@ proc createWindow(int sectorDimension) void:
 corp;
 
 proc main() void:
-    MerrorSet(true);
+    *Process_t pProcess;
+    *Message_t pWorkbenchStartup;
     squareGadgetBorder := Border_t(-2, -2, 2, 0, 0, 5, nil, nil);
-    squareGadgetBorder.b_XY := &squareGadgetBorderXY[0];    
+    squareGadgetBorder.b_XY := &squareGadgetBorderXY[0];
+    pWorkbenchStartup := nil;
+    MerrorSet(true);
     if OpenExecLibrary(0) ~= nil then
+        pProcess := pretend(FindTask(nil), *Process_t);
+        if pretend(pProcess*.pr_CLI, arbptr) = nil then
+            ignore(WaitPort(&pProcess*.pr_MsgPort));
+            pWorkbenchStartup := GetMsg(&pProcess*.pr_MsgPort);
+        fi;
         if OpenDosLibrary(0) ~= nil then
             if OpenIntuitionLibrary(0) ~= nil then
                 if OpenGraphicsLibrary(0) ~= nil then
-                    _d_IO_initialize();    
-                    if Output() = 0 then
+                    _d_IO_initialize();
+                    if pWorkbenchStartup ~= nil then
                         open(out, devNullChar);
                     else
                         open(out);
                     fi;
                     createWindow(4);
+                    close(out);
                     CloseGraphicsLibrary();
                 fi;
                 CloseIntuitionLibrary();
@@ -386,5 +397,9 @@ proc main() void:
             CloseDosLibrary();
         fi;
         CloseExecLibrary();
+    fi;
+    if pWorkbenchStartup ~= nil then
+        Forbid();
+        ReplyMsg(pWorkbenchStartup);
     fi;
 corp;
