@@ -21,6 +21,7 @@ type SquareGadget_t = struct {
     Gadget_t sg_Gadget;
     StringInfo_t sg_StringInfo;
     [6] char sg_TextBuffer;
+    long sg_PreviousValue;
 };
 
 type buttonBorderXY = [6] int;
@@ -54,14 +55,16 @@ proc setupSquareGadget(*SquareGadget_t pSquareGadget; int dimension) void:
                                          nil); /* g_UserData */
     pSquareGadget*.sg_Gadget.g_GadgetRender.gBorder := &squareGadgetBorder;
     pSquareGadget*.sg_Gadget.g_SpecialInfo.gStr := &pSquareGadget*.sg_StringInfo;
+    pSquareGadget*.sg_Gadget.g_UserData := pretend(pSquareGadget, *byte);
     pSquareGadget*.sg_StringInfo := StringInfo_t(nil, nil, 0, 0, 0, 0, 0, 0, 0, 0, nil, 0, nil);
     pSquareGadget*.sg_StringInfo.si_MaxChars := 3;
     if dimension < 16 then
         pSquareGadget*.sg_StringInfo.si_MaxChars := 2;
     fi;
     pSquareGadget*.sg_StringInfo.si_Buffer := &pSquareGadget*.sg_TextBuffer[0];
-    pSquareGadget*.sg_StringInfo.si_UndoBuffer := &pSquareGadget*.sg_TextBuffer[0] + 3;
+    pSquareGadget*.sg_StringInfo.si_UndoBuffer := &pSquareGadget*.sg_TextBuffer[3];
     BlockFill(&pSquareGadget*.sg_TextBuffer[0], 6, pretend('\e', byte));
+    pSquareGadget*.sg_PreviousValue := 0;
 corp;
 
 proc getSquareGadget(*SquareGadget_t pSquareGadgets; int dimension, x, y) *SquareGadget_t:
@@ -139,28 +142,32 @@ proc toggleSolveButton(*Window_t pWindow; *Gadget_t pGadget) void:
     RefreshGList(pGadget, pWindow, nil, 1);
 corp;
 
-proc updateSquareGadgetValues(*Window_t pWindow; *SquareGadget_t pSquareGadgets; *Grid_t pGrid) void:
-    int x, y, squareValue;
-    *SquareGadget_t pSquareGadget;
-    channel output text squareGadgetTextBuffer;
+proc updateSquareGadgetValue(*Window_t pWindow; *SquareGadget_t pSquareGadget; long value) void:
     uint gadgetFlags;
+    channel output text squareGadgetTextBuffer;  
+    if pSquareGadget*.sg_StringInfo.si_LongInt = value then
+        return;
+    fi;
+    pSquareGadget*.sg_StringInfo.si_LongInt := value;
+    BlockFill(&pSquareGadget*.sg_TextBuffer[0], 3, pretend('\e', byte));
+    if value ~= 0 then
+        open(squareGadgetTextBuffer, &pSquareGadget*.sg_TextBuffer[0]);
+        write(squareGadgetTextBuffer; value);
+        close(squareGadgetTextBuffer);
+    fi;
+    gadgetFlags := pSquareGadget*.sg_Gadget.g_Flags;
+    pSquareGadget*.sg_Gadget.g_Flags := gadgetFlags & ~GADGDISABLED;
+    RefreshGList(&pSquareGadget*.sg_Gadget, pWindow, nil, 1);
+    pSquareGadget*.sg_Gadget.g_Flags := gadgetFlags;
+corp;
+
+proc updateSquareGadgetValues(*Window_t pWindow; *SquareGadget_t pSquareGadgets; *Grid_t pGrid) void:
+    int x, y;
+    *SquareGadget_t pSquareGadget;
     for x from 0 upto pGrid*.g_dimension - 1 do
         for y from 0 upto pGrid*.g_dimension - 1 do
-            squareValue := getSquareValue(pGrid, x, y);
             pSquareGadget := getSquareGadget(pSquareGadgets, pGrid*.g_dimension, x, y);
-            if squareValue ~= pSquareGadget*.sg_StringInfo.si_LongInt then
-                BlockFill(&pSquareGadget*.sg_TextBuffer[0], 3, pretend('\e', byte));
-                if squareValue ~= 0 then
-                    open(squareGadgetTextBuffer, &pSquareGadget*.sg_TextBuffer[0]);
-                    write(squareGadgetTextBuffer; squareValue);
-                    close(squareGadgetTextBuffer);
-                fi;
-                pSquareGadget*.sg_StringInfo.si_LongInt := squareValue;
-                gadgetFlags := pSquareGadget*.sg_Gadget.g_Flags;
-                pSquareGadget*.sg_Gadget.g_Flags := gadgetFlags & ~GADGDISABLED;
-                RefreshGList(&pSquareGadget*.sg_Gadget, pWindow, nil, 1);
-                pSquareGadget*.sg_Gadget.g_Flags := gadgetFlags;
-            fi;
+            updateSquareGadgetValue(pWindow, pSquareGadget, getSquareValue(pGrid, x, y));
         od;
     od;
 corp;
@@ -176,24 +183,32 @@ proc toggleSquareGadgetsEnabled(int dimension; *SquareGadget_t pSquareGadgets) v
     od;
 corp;
 
+proc restorePreviousValues(*Window_t pWindow; int dimension; *SquareGadget_t pSquareGadgets) void:
+    int x, y;
+    *SquareGadget_t pSquareGadget;
+    for x from 0 upto dimension - 1 do
+        for y from 0 upto dimension - 1 do
+            pSquareGadget := getSquareGadget(pSquareGadgets, dimension, x, y);
+            updateSquareGadgetValue(pWindow, pSquareGadget, pSquareGadget*.sg_PreviousValue);
+        od;
+    od;
+corp;
+
 proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGadgets) void:  
     int dimension;
     *IntuiMessage_t pMessage;
     *Gadget_t pGadget;
-    *StringInfo_t pStringInfo;
-    ulong signals, messageClass@signals;
-    *Grid_t pOriginalGrid, pGridList;
+    *SquareGadget_t pSquareGadget;
+    ulong signals, messageClass@signals, lastWroteCountersTime;
+    *Grid_t pGridList;
     Counters_t counters;
     dimension := sectorDimension * sectorDimension;
-    pOriginalGrid := nil;
+    pGridList := nil;
     while not breakSignaled() do
-        if pOriginalGrid = nil then       
+        if pGridList = nil then       
             signals := Wait((1 << pWindow*.w_UserPort*.mp_SigBit) | SIGBREAKF_CTRL_C);
             if signals & SIGBREAKF_CTRL_C ~= 0 then
-                if pOriginalGrid ~= nil then
-                    freeGridList(pGridList);
-                    freeGridList(pOriginalGrid);
-                fi;
+                freeGridList(pGridList);
                 return;
             fi;
         fi;
@@ -206,76 +221,70 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
             ReplyMsg(pretend(pMessage, *Message_t));        
             case messageClass
                 incase CLOSEWINDOW:
-                    if pOriginalGrid ~= nil then
-                        freeGridList(pGridList);
-                        freeGridList(pOriginalGrid);
-                    fi;
+                    freeGridList(pGridList);
                     return;
                 incase MENUPICK:
                     writeln(out; "MENUPICK");
                 incase GADGETUP:
                     if pGadget*.g_Activation & LONGINT ~= 0 then
-                        pStringInfo := pGadget*.g_SpecialInfo.gStr;
-                        if pStringInfo*.si_Buffer* ~= '\e'
-                           and (   pStringInfo*.si_LongInt < 1
-                                or pStringInfo*.si_LongInt > dimension) then
+                        pSquareGadget := pretend(pGadget*.g_UserData, *SquareGadget_t);
+                        if pSquareGadget*.sg_StringInfo.si_Buffer* ~= '\e'
+                           and (   pSquareGadget*.sg_StringInfo.si_LongInt < 1
+                                or pSquareGadget*.sg_StringInfo.si_LongInt > dimension) then
                             DisplayBeep(nil);
-                            pStringInfo*.si_LongInt := 0;                      
-                            CharsCopyN(pStringInfo*.si_Buffer, pStringInfo*.si_UndoBuffer, 3);
-                            RefreshGList(pGadget, pWindow, nil, 1);
+                            updateSquareGadgetValue(pWindow, pSquareGadget, pSquareGadget*.sg_PreviousValue);
+                        else
+                            pSquareGadget*.sg_PreviousValue := pSquareGadget*.sg_StringInfo.si_LongInt;
                         fi;
                     else
-                        if pOriginalGrid = nil then
-                            pOriginalGrid := createGridFromSquareGadgets(sectorDimension, pSquareGadgets);
-                            if pOriginalGrid ~= nil then                          
-                                pGridList := cloneGrid(pOriginalGrid);
-                                if pGridList = nil then
-                                    freeGridList(pOriginalGrid);
-                                    pOriginalGrid := nil;
-                                else
-                                    pGridList*.g_pNext := pGridList;
-                                fi;
-                            fi;
-                            if pOriginalGrid = nil then
+                        if pGridList = nil then
+                            toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
+                            pGridList := createGridFromSquareGadgets(sectorDimension, pSquareGadgets);
+                            if pGridList = nil then
                                 writeln(out; "Failed to create grid");
                                 DisplayBeep(nil);
                                 pGadget*.g_Flags := pGadget*.g_Flags >< SELECTED;
                             else
                                 counters := Counters_t(0, 0, 0, 0, 0);
-                                counters.c_StartTime := GetCurrentTime();                               
-                            fi;                          
-                            toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
+                                counters.c_StartTime := GetCurrentTime();
+                                lastWroteCountersTime := GetCurrentTime();
+                            fi;
                         else
+                            restorePreviousValues(pWindow, dimension, pSquareGadgets);
                             toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
-                            updateSquareGadgetValues(pWindow, pSquareGadgets, pOriginalGrid);
                             freeGridList(pGridList);
-                            freeGridList(pOriginalGrid);
-                            pOriginalGrid := nil;
+                            pGridList := nil;
                         fi;
                         toggleSolveButton(pWindow, pGadget);
                     fi;
             esac;
         od;
-        if pOriginalGrid ~= nil then
+        if pGridList ~= nil then
+            if GetCurrentTime() - lastWroteCountersTime >= 5 then
+                writeCounters(out, &counters);
+                lastWroteCountersTime := GetCurrentTime();
+            fi;
             updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
             pGridList := advanceSolving(pGridList, &counters);
             if pGridList = nil or isComplete(pGridList) then
                 if pGridList ~= nil then
                     updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
-                    freeGridList(pGridList);
+                    writeln("\n\(27)[33mSolution\(27)[0m");
+                    writeGridString(out, pGridList);
+                    counters.c_Solutions := counters.c_Solutions + 1;
+                else
+                    restorePreviousValues(pWindow, dimension, pSquareGadgets);
                 fi;
-                freeGridList(pOriginalGrid);
-                pOriginalGrid := nil;
+                writeCounters(out, &counters);
+                freeGridList(pGridList);               
+                pGridList := nil;
                 pGadget*.g_Flags := pGadget*.g_Flags >< SELECTED;
                 toggleSolveButton(pWindow, pGadget);
                 toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
             fi;
         fi;
     od;
-    if pOriginalGrid ~= nil then
-        freeGridList(pGridList);
-        freeGridList(pOriginalGrid);
-    fi;
+    freeGridList(pGridList);
 corp;
 
 proc createWindow(int sectorDimension) void:
@@ -389,6 +398,7 @@ proc main() void:
                         open(out);
                     fi;
                     createWindow(4);
+                    write(out; '\n');
                     close(out);
                     CloseGraphicsLibrary();
                 fi;

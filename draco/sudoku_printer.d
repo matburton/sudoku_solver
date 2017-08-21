@@ -1,5 +1,4 @@
 #sudoku_grid.g
-#drinc:util.g
 
 *char TOO_LARGE_EXCUSE = "Can't write-out large grid";
 
@@ -25,7 +24,7 @@ corp;
 
 proc writeDividerLine(channel output text target; *Grid_t pGrid) void:
     uint x;
-    write("\(27)[32m");
+    write(target; "\(27)[32m");
     for x from 1 upto pGrid*.g_dimension do
         if x = pGrid*.g_dimension then
             write(target; "-\(27)[0m\n");
@@ -58,14 +57,13 @@ proc writeGridString(channel output text target; *Grid_t pGrid) void:
     fi;
     for y from 1 upto pGrid*.g_dimension do
         writeRow(target, pGrid, y - 1);
+        write(target; '\n');
         if y ~= pGrid*.g_dimension then
-            write(target; '\n');
             if y % pGrid*.g_sectorDimension = 0 then
                 writeDividerLine(target, pGrid);
             fi;
         fi;
     od;
-    LineFlush();
 corp;
 
 proc writeStateLine(channel output text target; *Grid_t pGrid) void:
@@ -79,5 +77,5 @@ proc writeStateLine(channel output text target; *Grid_t pGrid) void:
             od;
         od;
     fi;
-    LineFlush();
+    write(target; '\n');
 corp;

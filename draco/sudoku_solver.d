@@ -204,25 +204,24 @@ proc breakSignaled() bool:
     SetSignal(0, 0) & SIGBREAKF_CTRL_C ~= 0
 corp;
 
-proc writeTimePeriod(ulong seconds) void:
+proc writeTimePeriod(channel output text target; ulong seconds) void:
     if seconds / 3600 < 10 then
-        write('0');
+        write(target; '0');
     fi;
-    write(seconds / 3600);
+    write(target; seconds / 3600);
     seconds := seconds % 3600;
-    write(":", (seconds / 60):-2);
+    write(target; ":", (seconds / 60):-2);
     seconds := seconds % 60;
-    writeln(":", seconds:-2);
+    writeln(target; ":", seconds:-2);
 corp;
 
-proc writeCounters(*Counters_t pCounters) void:
-    write  ("\n\n");
-    writeln("Grids in memory:              ", gridsInMemory);
-    write  ("Elapsed time:                 ");
-    writeTimePeriod(GetCurrentTime() - pCounters*.c_StartTime);
-    writeln("Grids created via splitting:  ", pCounters*.c_GridSplits);
-    writeln("Impossible grids encountered: ", pCounters*.c_ImpossibleGrids);
-    writeln("Grids lost due to low memory: ", pCounters*.c_GridsLost);   
-    write  ("Solutions found:              ", pCounters*.c_Solutions);
-    LineFlush();
+proc writeCounters(channel output text target; *Counters_t pCounters) void:
+    write  (target; '\n');
+    writeln(target; "Grids in memory:              ", gridsInMemory);
+    write  (target; "Elapsed time:                 ");
+    writeTimePeriod(target, GetCurrentTime() - pCounters*.c_StartTime);
+    writeln(target; "Grids created via splitting:  ", pCounters*.c_GridSplits);
+    writeln(target; "Impossible grids encountered: ", pCounters*.c_ImpossibleGrids);
+    writeln(target; "Grids lost due to low memory: ", pCounters*.c_GridsLost);   
+    writeln(target; "Solutions found:              ", pCounters*.c_Solutions);
 corp;

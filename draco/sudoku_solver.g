@@ -17,3 +17,5 @@ extern breakSignaled() bool;
 /* Returns nil if there are no more solutions */
 /* Caller must free front grid if complete before re-calling */
 extern advanceSolving(*Grid_t pGridList; *Counters_t pCounters) *Grid_t;
+
+extern writeCounters(channel output text target; *Counters_t pCounters) void;
