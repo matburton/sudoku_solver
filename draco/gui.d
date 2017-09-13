@@ -269,7 +269,7 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
             if pGridList = nil or isComplete(pGridList) then
                 if pGridList ~= nil then
                     updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
-                    writeln("\n\(27)[33mSolution\(27)[0m");
+                    writeln(out; "\n\(27)[33mSolution\(27)[0m");
                     writeGridString(out, pGridList);
                     counters.c_Solutions := counters.c_Solutions + 1;
                 else
