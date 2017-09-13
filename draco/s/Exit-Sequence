@@ -5,6 +5,9 @@ ELSE
     unalias endcli
     unalias endshell
 ENDIF
+path RESET
+assign drinc:
+assign drlib:
 IF NOT EXISTS ram:env
     echo ""
     echo "*E[33mLoading workbench...*E[0m"
