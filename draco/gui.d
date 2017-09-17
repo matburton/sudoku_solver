@@ -14,8 +14,26 @@
 #drinc:intuition/window.g
 #drinc:util.g
 #sudoku_grid.g
-#sudoku_printer.g
 #sudoku_solver.g
+
+/* I may not use these like this, but they're good for brainstorming */
+*char UNIQUE_CHECK             = "Checking solution is unique...";
+*char UNIQUE_SOLUTION_FOUND    = "Solution is unique";
+*char MULTIPLE_SOLUTIONS_FOUND = "Solution is not unique";
+*char UNIQUE_SOLVER_FAILED     = "Failed to check for uniqueness";
+
+/*
+TODO
+3. Add string box output for other states
+4. Add menu items:
+   4.1 Grid -> Clear (maybe not needed)
+   4.2 Grid -> Reset (restore previous then zero previous?)
+   4.3 Grid -> Sizegui
+   4.4 Solver -> Solve
+   4.5 Solver -> Cancel
+   4.6 Solver -> Check solution is unique
+5. Display impossible squares as disabled?
+*/
 
 type SquareGadget_t = struct {
     Gadget_t sg_Gadget;
@@ -44,7 +62,7 @@ proc setupSquareGadget(*SquareGadget_t pSquareGadget; int dimension) void:
                                          24, /* g_Width */
                                          5, /* g_Height */
                                          0, /* g_Flags */
-                                         LONGINT | STRINGCENTER | RELVERIFY, /* g_Activation */
+                                         LONGINT | STRINGCENTER | GADGIMMEDIATE, /* g_Activation */
                                          STRGADGET, /* g_GadgetType */
                                          (nil), /* g_GadgetRender */
                                          (nil), /* g_SelectRender */
@@ -55,7 +73,6 @@ proc setupSquareGadget(*SquareGadget_t pSquareGadget; int dimension) void:
                                          nil); /* g_UserData */
     pSquareGadget*.sg_Gadget.g_GadgetRender.gBorder := &squareGadgetBorder;
     pSquareGadget*.sg_Gadget.g_SpecialInfo.gStr := &pSquareGadget*.sg_StringInfo;
-    pSquareGadget*.sg_Gadget.g_UserData := pretend(pSquareGadget, *byte);
     pSquareGadget*.sg_StringInfo := StringInfo_t(nil, nil, 0, 0, 0, 0, 0, 0, 0, 0, nil, 0, nil);
     pSquareGadget*.sg_StringInfo.si_MaxChars := 3;
     if dimension < 16 then
@@ -64,7 +81,6 @@ proc setupSquareGadget(*SquareGadget_t pSquareGadget; int dimension) void:
     pSquareGadget*.sg_StringInfo.si_Buffer := &pSquareGadget*.sg_TextBuffer[0];
     pSquareGadget*.sg_StringInfo.si_UndoBuffer := &pSquareGadget*.sg_TextBuffer[3];
     BlockFill(&pSquareGadget*.sg_TextBuffer[0], 6, pretend('\e', byte));
-    pSquareGadget*.sg_PreviousValue := 0;
 corp;
 
 proc getSquareGadget(*SquareGadget_t pSquareGadgets; int dimension, x, y) *SquareGadget_t:
@@ -183,6 +199,17 @@ proc toggleSquareGadgetsEnabled(int dimension; *SquareGadget_t pSquareGadgets) v
     od;
 corp;
 
+proc stashCurrentValues(*Window_t pWindow; int dimension; *SquareGadget_t pSquareGadgets) void:
+    int x, y;
+    *SquareGadget_t pSquareGadget;
+    for x from 0 upto dimension - 1 do
+        for y from 0 upto dimension - 1 do
+            pSquareGadget := getSquareGadget(pSquareGadgets, dimension, x, y);
+            pSquareGadget*.sg_PreviousValue := pSquareGadget*.sg_StringInfo.si_LongInt;
+        od;
+    od;
+corp;
+
 proc restorePreviousValues(*Window_t pWindow; int dimension; *SquareGadget_t pSquareGadgets) void:
     int x, y;
     *SquareGadget_t pSquareGadget;
@@ -194,7 +221,39 @@ proc restorePreviousValues(*Window_t pWindow; int dimension; *SquareGadget_t pSq
     od;
 corp;
 
-proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGadgets) void:  
+proc setText(*Window_t pWindow; *Gadget_t pTextGadget; *char pText) void:
+    *StringInfo_t pStringInfo;  
+    pStringInfo := pTextGadget*.g_SpecialInfo.gStr;
+    BlockFill(pStringInfo*.si_Buffer, pStringInfo*.si_MaxChars, pretend('\e', byte));
+    CharsCopyN(pStringInfo*.si_Buffer, pText, pStringInfo*.si_MaxChars - 1);
+    pTextGadget*.g_Flags := pTextGadget*.g_Flags & ~GADGDISABLED;
+    RefreshGList(pTextGadget, pWindow, nil, 1);
+    pTextGadget*.g_Flags := pTextGadget*.g_Flags | GADGDISABLED;
+corp;
+
+proc valuesAreValid(*Window_t pWindow; int dimension; *SquareGadget_t pSquareGadgets; *Gadget_t pTextGadget) bool:
+    int x, y;
+    *SquareGadget_t pSquareGadget;
+    [30] char textBuffer;
+    channel output text textBufferChannel;  
+    for x from 0 upto dimension - 1 do
+        for y from 0 upto dimension - 1 do
+            pSquareGadget := getSquareGadget(pSquareGadgets, dimension, x, y);
+            if pSquareGadget*.sg_StringInfo.si_Buffer* ~= '\e'
+               and (   pSquareGadget*.sg_StringInfo.si_LongInt < 1
+                    or pSquareGadget*.sg_StringInfo.si_LongInt > dimension) then
+                open(textBufferChannel, &textBuffer[0]);
+                write(textBufferChannel; "Invalid valid '", pSquareGadget*.sg_StringInfo.si_Buffer ,"' at (", x + 1, ",", y + 1, ")");
+                close(textBufferChannel);
+                setText(pWindow, pTextGadget, &textBuffer[0]);
+                return false;
+            fi;
+        od;
+    od;
+    true
+corp;
+
+proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGadgets; *Gadget_t pButtonGadget, pTextGadget) void:  
     int dimension;
     *IntuiMessage_t pMessage;
     *Gadget_t pGadget;
@@ -225,19 +284,15 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
                     return;
                 incase MENUPICK:
                     writeln(out; "MENUPICK");
+                incase GADGETDOWN:
+                    setText(pWindow, pTextGadget, "");
                 incase GADGETUP:
-                    if pGadget*.g_Activation & LONGINT ~= 0 then
-                        pSquareGadget := pretend(pGadget*.g_UserData, *SquareGadget_t);
-                        if pSquareGadget*.sg_StringInfo.si_Buffer* ~= '\e'
-                           and (   pSquareGadget*.sg_StringInfo.si_LongInt < 1
-                                or pSquareGadget*.sg_StringInfo.si_LongInt > dimension) then
+                    if pGridList = nil then
+                        if not valuesAreValid(pWindow, dimension, pSquareGadgets, pTextGadget) then
                             DisplayBeep(nil);
-                            updateSquareGadgetValue(pWindow, pSquareGadget, pSquareGadget*.sg_PreviousValue);
+                            pGadget*.g_Flags := pGadget*.g_Flags >< SELECTED;
                         else
-                            pSquareGadget*.sg_PreviousValue := pSquareGadget*.sg_StringInfo.si_LongInt;
-                        fi;
-                    else
-                        if pGridList = nil then
+                            stashCurrentValues(pWindow, dimension, pSquareGadgets);
                             toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
                             pGridList := createGridFromSquareGadgets(sectorDimension, pSquareGadgets);
                             if pGridList = nil then
@@ -248,19 +303,21 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
                                 counters := Counters_t(0, 0, 0, 0, 0);
                                 counters.c_StartTime := GetCurrentTime();
                                 lastWroteCountersTime := GetCurrentTime();
+                                setText(pWindow, pTextGadget, "Solving...");
                             fi;
-                        else
-                            restorePreviousValues(pWindow, dimension, pSquareGadgets);
-                            toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
-                            freeGridList(pGridList);
-                            pGridList := nil;
                         fi;
-                        toggleSolveButton(pWindow, pGadget);
+                    else
+                        restorePreviousValues(pWindow, dimension, pSquareGadgets);
+                        toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
+                        freeGridList(pGridList);
+                        pGridList := nil;
+                        setText(pWindow, pTextGadget, "");
                     fi;
+                    toggleSolveButton(pWindow, pGadget);
             esac;
         od;
         if pGridList ~= nil then
-            if GetCurrentTime() - lastWroteCountersTime >= 5 then
+            if GetCurrentTime() - lastWroteCountersTime >= 10 then
                 writeCounters(out, &counters);
                 lastWroteCountersTime := GetCurrentTime();
             fi;
@@ -269,17 +326,22 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
             if pGridList = nil or isComplete(pGridList) then
                 if pGridList ~= nil then
                     updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
-                    writeln(out; "\n\(27)[33mSolution\(27)[0m");
-                    writeGridString(out, pGridList);
                     counters.c_Solutions := counters.c_Solutions + 1;
+                    setText(pWindow, pTextGadget, "Solution found");
                 else
                     restorePreviousValues(pWindow, dimension, pSquareGadgets);
+                    if counters.c_GridsLost = 0 then
+                        setText(pWindow, pTextGadget, "Puzzle has no solutions");
+                    else
+                        setText(pWindow, pTextGadget, "Failed to find solution");
+                    fi;
                 fi;
+                write(out; "\n\(27)[33mFinal statistics:\(27)[0m");
                 writeCounters(out, &counters);
                 freeGridList(pGridList);               
                 pGridList := nil;
-                pGadget*.g_Flags := pGadget*.g_Flags >< SELECTED;
-                toggleSolveButton(pWindow, pGadget);
+                pButtonGadget*.g_Flags := pButtonGadget*.g_Flags >< SELECTED;
+                toggleSolveButton(pWindow, pButtonGadget);
                 toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
             fi;
         fi;
@@ -291,10 +353,12 @@ proc createWindow(int sectorDimension) void:
     int dimension;
     *SquareGadget_t pSquareGadgets;
     NewWindow_t newWindow;
-    Gadget_t buttonGadget;
+    Gadget_t buttonGadget, textGadget;
     Border_t buttonBorderA, buttonBorderB;
-    [6] int buttonBorderAXY,buttonBorderBXY;
+    [6] int buttonBorderAXY, buttonBorderBXY;
     IntuiText_t buttonText;
+    StringInfo_t textStringInfo;
+    [30] char textBuffer;
     *Window_t pWindow;
     dimension := sectorDimension * sectorDimension;
     pSquareGadgets := createSquareGadgets(dimension, 6, 13);
@@ -309,7 +373,7 @@ proc createWindow(int sectorDimension) void:
                              0, /* g_Width */
                              15,   /* g_Height */
                              GADGHCOMP, /* g_Flags */
-                             RELVERIFY | TOGGLESELECT , /* g_Activation */
+                             RELVERIFY | TOGGLESELECT, /* g_Activation */
                              BOOLGADGET, /* g_GadgetType */
                              (nil), /* g_GadgetRender */
                              (nil), /* g_SelectRender */
@@ -318,9 +382,9 @@ proc createWindow(int sectorDimension) void:
                              (nil), /* g_SpecialInfo */
                              0, /* g_GadgetID */
                              nil); /* g_UserData */
-    buttonGadget.g_TopEdge := 12 * (dimension - 1) + 23;
+    buttonGadget.g_TopEdge := 12 * (dimension - 1) + 32;
     buttonGadget.g_Width := 32 * (dimension - 1) + 31;
-    buttonGadget.g_NextGadget := &pSquareGadgets*.sg_Gadget;
+    buttonGadget.g_NextGadget := &textGadget;
     buttonGadget.g_GadgetRender.gBorder := &buttonBorderA;
     buttonGadget.g_GadgetText := &buttonText;
     buttonBorderA := Border_t(0, 0, 2, 0, 0, 3, nil, nil);
@@ -338,13 +402,37 @@ proc createWindow(int sectorDimension) void:
     buttonBorderBXY[5] := buttonGadget.g_Height - 1;
     buttonText := IntuiText_t(1, 0, 0, 0, 4, nil, nil, nil);
     buttonText.it_LeftEdge := buttonGadget.g_Width / 2 - 20;
+    textGadget := Gadget_t(nil, /* g_NextGadget */
+                           4, /* g_LeftEdge */
+                           0, /* g_TopEdge */
+                           24, /* g_Width */
+                           5, /* g_Height */
+                           0, /* g_Flags */
+                           0, /* g_Activation */
+                           STRGADGET, /* g_GadgetType */
+                           (nil), /* g_GadgetRender */
+                           (nil), /* g_SelectRender */
+                           nil, /* g_GadgetText */
+                           0, /* g_MutualExclude */
+                           (nil), /* g_SpecialInfo */
+                           0, /* g_GadgetID */
+                           nil); /* g_UserData */
+    textGadget.g_NextGadget := &pSquareGadgets*.sg_Gadget;
+    textGadget.g_TopEdge := 12 * (dimension - 1) + 23;
+    textGadget.g_Width := 32 * (dimension - 1) + 31;
+    textGadget.g_SpecialInfo.gStr := &textStringInfo;
+    textStringInfo := StringInfo_t(nil, nil, 0, 0, 0, 0, 0, 0, 0, 0, nil, 0, nil);
+    textStringInfo.si_MaxChars := 30;
+    textStringInfo.si_Buffer := &textBuffer[0];
+    BlockFill(&textBuffer[0], 30, pretend('\e', byte));
+    CharsCopyN(&textBuffer[0], "Edit puzzle, then 'Solve'", textStringInfo.si_MaxChars - 1);
     newWindow := NewWindow_t(50,
                              15,
                              0,
                              0,
                              FREEPEN,
                              FREEPEN,
-                             CLOSEWINDOW | MENUPICK | GADGETUP,
+                             CLOSEWINDOW | MENUPICK | GADGETUP | GADGETDOWN,
                              SMART_REFRESH | ACTIVATE | WINDOWDEPTH | WINDOWCLOSE | WINDOWDRAG | NOCAREREFRESH,
                              nil,
                              nil,
@@ -368,8 +456,9 @@ proc createWindow(int sectorDimension) void:
     else
         buttonGadget.g_Flags := buttonGadget.g_Flags | SELECTED;
         RefreshGList(&buttonGadget, pWindow, nil, 1);
+        textGadget.g_Flags := textGadget.g_Flags | GADGDISABLED;
         drawSectorLines(pWindow, sectorDimension);
-        eventLoop(pWindow, sectorDimension, pSquareGadgets);
+        eventLoop(pWindow, sectorDimension, pSquareGadgets, &buttonGadget, &textGadget);
         CloseWindow(pWindow); 
     fi;
     freeSquareGadgets(pSquareGadgets, dimension);
