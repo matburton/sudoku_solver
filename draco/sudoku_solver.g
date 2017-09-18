@@ -10,6 +10,8 @@ type Counters_t = struct
 
 extern setValueAt(*Grid_t pGrid; uint x, y, value) void;
 
+extern freeFrontGrid(*Grid_t pGridList) *Grid_t;
+
 extern freeGridList(*Grid_t pGridList) void;
 
 extern breakSignaled() bool;
