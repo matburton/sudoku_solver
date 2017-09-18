@@ -1,4 +1,5 @@
 #drinc:exec/miscellaneous.g
+#drinc:exec/memory.g
 #drinc:exec/ports.g
 #drinc:exec/tasks.g
 #drinc:graphics/gfx.g
@@ -16,6 +17,25 @@
 #sudoku_grid.g
 #sudoku_solver.g
 
+[36] uint BUSY_POINTER = (0x0000, 0x0000,
+                          0x0400, 0x07C0,
+                          0x0000, 0x07C0,
+                          0x0100, 0x0380,
+                          0x0000, 0x07E0,
+                          0x07C0, 0x1FF8,
+                          0x1FF0, 0x3FEC,
+                          0x3FF8, 0x7FDE,
+                          0x3FF8, 0x7FBE,
+                          0x7FFC, 0xFF7F,
+                          0x7EFC, 0xFFFF,
+                          0x7FFC, 0xFFFF,
+                          0x3FF8, 0x7FFE,
+                          0x3FF8, 0x7FFE,
+                          0x1FF0, 0x3FFC,
+                          0x07C0, 0x1FF8,
+                          0x0000, 0x07E0,
+                          0x0000, 0x0000);
+
 /* I may not use these like this, but they're good for brainstorming */
 *char UNIQUE_CHECK             = "Checking solution is unique...";
 *char UNIQUE_SOLUTION_FOUND    = "Solution is unique";
@@ -32,7 +52,6 @@ TODO
    4.4 Solver -> Solve
    4.5 Solver -> Cancel
    4.6 Solver -> Check solution is unique
-5. Display impossible squares as disabled?
 */
 
 type SquareGadget_t = struct {
@@ -51,6 +70,8 @@ Border_t squareGadgetBorder;
 extern _d_IO_initialize() void;
 
 channel output text out;
+
+*uint pBusyPointer;
 
 proc devNullChar(char c) void:
 corp;
@@ -225,10 +246,17 @@ proc setText(*Window_t pWindow; *Gadget_t pTextGadget; *char pText) void:
     *StringInfo_t pStringInfo;  
     pStringInfo := pTextGadget*.g_SpecialInfo.gStr;
     BlockFill(pStringInfo*.si_Buffer, pStringInfo*.si_MaxChars, pretend('\e', byte));
-    CharsCopyN(pStringInfo*.si_Buffer, pText, pStringInfo*.si_MaxChars - 1);
+    if pText ~= nil then
+        CharsCopyN(pStringInfo*.si_Buffer, pText, pStringInfo*.si_MaxChars - 1);
+    fi;
     pTextGadget*.g_Flags := pTextGadget*.g_Flags & ~GADGDISABLED;
     RefreshGList(pTextGadget, pWindow, nil, 1);
     pTextGadget*.g_Flags := pTextGadget*.g_Flags | GADGDISABLED;
+    if pText ~= nil then
+        SetWindowTitles(pWindow, pretend(-1, *char), pText);
+    else
+        SetWindowTitles(pWindow, pretend(-1, *char), "Sudoku solver");
+    fi;
 corp;
 
 proc valuesAreValid(*Window_t pWindow; int dimension; *SquareGadget_t pSquareGadgets; *Gadget_t pTextGadget) bool:
@@ -285,7 +313,7 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
                 incase MENUPICK:
                     writeln(out; "MENUPICK");
                 incase GADGETDOWN:
-                    setText(pWindow, pTextGadget, "");
+                    setText(pWindow, pTextGadget, nil);
                 incase GADGETUP:
                     if pGridList = nil then
                         if not valuesAreValid(pWindow, dimension, pSquareGadgets, pTextGadget) then
@@ -304,6 +332,9 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
                                 counters.c_StartTime := GetCurrentTime();
                                 lastWroteCountersTime := GetCurrentTime();
                                 setText(pWindow, pTextGadget, "Solving...");
+                                if pBusyPointer ~= nil then
+                                    SetPointer(pWindow, pBusyPointer, 16, 16, -6, 0);
+                                fi;
                             fi;
                         fi;
                     else
@@ -311,7 +342,8 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
                         toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
                         freeGridList(pGridList);
                         pGridList := nil;
-                        setText(pWindow, pTextGadget, "");
+                        setText(pWindow, pTextGadget, nil);
+                        ClearPointer(pWindow);
                     fi;
                     toggleSolveButton(pWindow, pGadget);
             esac;
@@ -343,6 +375,7 @@ proc eventLoop(*Window_t pWindow; int sectorDimension; *SquareGadget_t pSquareGa
                 pButtonGadget*.g_Flags := pButtonGadget*.g_Flags >< SELECTED;
                 toggleSolveButton(pWindow, pButtonGadget);
                 toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
+                ClearPointer(pWindow);
             fi;
         fi;
     od;
@@ -454,6 +487,7 @@ proc createWindow(int sectorDimension) void:
         writeln(out; "Failed to create window");
         DisplayBeep(nil);
     else
+        SetWindowTitles(pWindow, pretend(-1, *char), "Sudoku solver");
         buttonGadget.g_Flags := buttonGadget.g_Flags | SELECTED;
         RefreshGList(&buttonGadget, pWindow, nil, 1);
         textGadget.g_Flags := textGadget.g_Flags | GADGDISABLED;
@@ -486,7 +520,14 @@ proc main() void:
                     else
                         open(out);
                     fi;
+                    pBusyPointer := pretend(AllocMem(72, MEMF_CHIP), *uint);
+                    if pBusyPointer ~= nil then
+                        BlockCopy(pBusyPointer, &BUSY_POINTER[0], 72);
+                    fi;
                     createWindow(4);
+                    if pBusyPointer ~= nil then
+                        FreeMem(pBusyPointer, 72);
+                    fi;
                     write(out; '\n');
                     close(out);
                     CloseGraphicsLibrary();
