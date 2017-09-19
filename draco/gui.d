@@ -10,6 +10,7 @@
 #drinc:intuition/intuiMessage.g
 #drinc:intuition/intuiText.g
 #drinc:intuition/gadget.g
+#drinc:intuition/menu.g
 #drinc:intuition/miscellaneous.g
 #drinc:intuition/screen.g
 #drinc:intuition/window.g
@@ -38,8 +39,6 @@
 /*
 TODO
 4. Add menu items:
-   4.1 Grid -> Clear (maybe not needed)
-   4.2 Grid -> Reset (restore previous then zero previous?)
    4.3 Grid -> Sizegui
    4.4 Solver -> Solve
    4.5 Solver -> Cancel
@@ -94,6 +93,7 @@ proc setupSquareGadget(*SquareGadget_t pSquareGadget; uint dimension) void:
     pSquareGadget*.sg_StringInfo.si_Buffer := &pSquareGadget*.sg_TextBuffer[0];
     pSquareGadget*.sg_StringInfo.si_UndoBuffer := &pSquareGadget*.sg_TextBuffer[3];
     BlockFill(&pSquareGadget*.sg_TextBuffer[0], 6, pretend('\e', byte));
+    pSquareGadget*.sg_PreviousValue := 0;
 corp;
 
 proc getSquareGadget(*SquareGadget_t pSquareGadgets; uint dimension, x, y) *SquareGadget_t:
@@ -230,6 +230,7 @@ proc restorePreviousValues(*Window_t pWindow; uint dimension; *SquareGadget_t pS
         for y from 0 upto dimension - 1 do
             pSquareGadget := getSquareGadget(pSquareGadgets, dimension, x, y);
             updateSquareGadgetValue(pWindow, pSquareGadget, pSquareGadget*.sg_PreviousValue);
+            pSquareGadget*.sg_PreviousValue := 0;
         od;
     od;
 corp;
@@ -289,15 +290,30 @@ proc cleanupAfterSolver(*Window_t pWindow;
 corp;
 
 proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareGadgets; *Gadget_t pButtonGadget, pTextGadget) void:  
+    Menu_t gridMenu, solverMenu;
+    MenuItem_t resetMenuItem;
+    IntuiText_t resetMenuItemText;
+    *MenuItem_t pSelectedMenuItem;
     bool checkSolutionIsUnique;
     uint dimension;
     *IntuiMessage_t pMessage;
     *Gadget_t pGadget;
     *SquareGadget_t pSquareGadget;
-    ulong signals, messageClass@signals, lastWroteCountersTime;
+    ulong signals, messageClass@signals, lastWroteCountersTime, menuNumber@pSelectedMenuItem;
     *Grid_t pGridList;
     Counters_t counters;
     checkSolutionIsUnique := true;
+    gridMenu := Menu_t(nil, 30, 0, 60, 0, MENUENABLED, nil, nil, 0, 0, 0, 0);
+    gridMenu.m_NextMenu := &solverMenu;
+    gridMenu.m_MenuName := "Grid";
+    gridMenu.m_FirstItem := &resetMenuItem;
+    solverMenu := Menu_t(nil, 120, 0, 60, 0, MENUENABLED, nil, nil, 0, 0, 0, 0);
+    solverMenu.m_MenuName := "Solver";
+    resetMenuItem := MenuItem_t(nil, 0, 0, 90, 12, ITEMTEXT | ITEMENABLED | HIGHCOMP | COMMSEQ, 0, (nil), (nil), 'R', nil, 0);
+    resetMenuItem.mi_ItemFill.miIt := &resetMenuItemText;
+    resetMenuItemText := IntuiText_t(0, 1, 0, 4, 2, nil, nil, nil);
+    resetMenuItemText.it_IText := "Reset";
+    SetMenuStrip(pWindow, &gridMenu);
     dimension := sectorDimension * sectorDimension;
     pGridList := nil;
     while not breakSignaled() do
@@ -313,6 +329,7 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
             pMessage ~= nil
         do
             messageClass := pMessage*.im_Class;
+            menuNumber := pMessage*.im_Code;
             pGadget := pretend(pMessage*.im_IAddress, *Gadget_t);
             ReplyMsg(pretend(pMessage, *Message_t));        
             case messageClass
@@ -320,7 +337,13 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
                     freeGridList(pGridList);
                     return;
                 incase MENUPICK:
-                    writeln(out; "MENUPICK");
+                    while menuNumber ~= MENUNULL do
+                        pSelectedMenuItem := ItemAddress(&gridMenu, menuNumber);
+                        if pSelectedMenuItem = &resetMenuItem then
+                            restorePreviousValues(pWindow, dimension, pSquareGadgets);
+                        fi;
+                        menuNumber := pSelectedMenuItem*.mi_NextSelect;
+                    od;
                 incase GADGETDOWN:
                     setText(pWindow, pTextGadget, nil);
                 incase GADGETUP:
@@ -347,7 +370,9 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
                             fi;
                         fi;
                     else
-                        restorePreviousValues(pWindow, dimension, pSquareGadgets);
+                        if counters.c_Solutions = 0 then
+                            restorePreviousValues(pWindow, dimension, pSquareGadgets);
+                        fi;
                         toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
                         freeGridList(pGridList);
                         pGridList := nil;
@@ -521,6 +546,7 @@ proc createWindow(uint sectorDimension) void:
         textGadget.g_Flags := textGadget.g_Flags | GADGDISABLED;
         drawSectorLines(pWindow, sectorDimension);
         eventLoop(pWindow, sectorDimension, pSquareGadgets, &buttonGadget, &textGadget);
+        ClearMenuStrip(pWindow);
         CloseWindow(pWindow); 
     fi;
     freeSquareGadgets(pSquareGadgets, dimension);
