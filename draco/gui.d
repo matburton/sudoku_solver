@@ -40,9 +40,6 @@
 TODO
 4. Add menu items:
    4.3 Grid -> Sizegui
-   4.4 Solver -> Solve
-   4.5 Solver -> Cancel
-   4.6 Solver -> Check solution is unique
 */
 
 type SquareGadget_t = struct {
@@ -290,11 +287,10 @@ proc cleanupAfterSolver(*Window_t pWindow;
 corp;
 
 proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareGadgets; *Gadget_t pButtonGadget, pTextGadget) void:  
-    Menu_t gridMenu, solverMenu;
+    Menu_t gridMenu;
     MenuItem_t resetMenuItem;
     IntuiText_t resetMenuItemText;
     *MenuItem_t pSelectedMenuItem;
-    bool checkSolutionIsUnique;
     uint dimension;
     *IntuiMessage_t pMessage;
     *Gadget_t pGadget;
@@ -302,13 +298,9 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
     ulong signals, messageClass@signals, lastWroteCountersTime, menuNumber@pSelectedMenuItem;
     *Grid_t pGridList;
     Counters_t counters;
-    checkSolutionIsUnique := true;
-    gridMenu := Menu_t(nil, 30, 0, 60, 0, MENUENABLED, nil, nil, 0, 0, 0, 0);
-    gridMenu.m_NextMenu := &solverMenu;
+    gridMenu := Menu_t(nil, 30, 0, 60, 0, MENUENABLED, nil, nil, 0, 0, 0, 0);  
     gridMenu.m_MenuName := "Grid";
     gridMenu.m_FirstItem := &resetMenuItem;
-    solverMenu := Menu_t(nil, 120, 0, 60, 0, MENUENABLED, nil, nil, 0, 0, 0, 0);
-    solverMenu.m_MenuName := "Solver";
     resetMenuItem := MenuItem_t(nil, 0, 0, 90, 12, ITEMTEXT | ITEMENABLED | HIGHCOMP | COMMSEQ, 0, (nil), (nil), 'R', nil, 0);
     resetMenuItem.mi_ItemFill.miIt := &resetMenuItemText;
     resetMenuItemText := IntuiText_t(0, 1, 0, 4, 2, nil, nil, nil);
@@ -406,26 +398,20 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
                 cleanupAfterSolver(pWindow, dimension, pSquareGadgets, pButtonGadget, pGridList, &counters);              
             elif isComplete(pGridList) then
                 updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
+                pGridList := freeFrontGrid(pGridList);
                 counters.c_Solutions := counters.c_Solutions + 1;
                 if counters.c_Solutions > 1 then
                     setText(pWindow, pTextGadget, "Solution is not unique");
                     cleanupAfterSolver(pWindow, dimension, pSquareGadgets, pButtonGadget, pGridList, &counters);
                     pGridList := nil;
-                elif checkSolutionIsUnique then
-                    pGridList := freeFrontGrid(pGridList);
-                    if pGridList ~= nil then
-                        setText(pWindow, pTextGadget, "Checking solution is unique...");
-                    elif counters.c_GridsLost = 0 then
-                        setText(pWindow, pTextGadget, "Solution is unique");
-                        cleanupAfterSolver(pWindow, dimension, pSquareGadgets, pButtonGadget, pGridList, &counters);
-                    else
-                        setText(pWindow, pTextGadget, "Failed to check for uniqueness");
-                        cleanupAfterSolver(pWindow, dimension, pSquareGadgets, pButtonGadget, pGridList, &counters);
-                    fi;
-                else
-                    setText(pWindow, pTextGadget, "Solution found");
+                elif pGridList ~= nil then
+                    setText(pWindow, pTextGadget, "Checking solution is unique...");
+                elif counters.c_GridsLost = 0 then
+                    setText(pWindow, pTextGadget, "Solution is unique");
                     cleanupAfterSolver(pWindow, dimension, pSquareGadgets, pButtonGadget, pGridList, &counters);
-                    pGridList := nil;
+                else
+                    setText(pWindow, pTextGadget, "Failed to check for uniqueness");
+                    cleanupAfterSolver(pWindow, dimension, pSquareGadgets, pButtonGadget, pGridList, &counters);
                 fi;
             elif counters.c_Solutions = 0 then
                 updateSquareGadgetValues(pWindow, pSquareGadgets, pGridList);
