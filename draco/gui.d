@@ -36,11 +36,6 @@
                           0x07C0, 0x1FF8,
                           0x0000, 0x07E0,
                           0x0000, 0x0000);
-/*
-TODO
-4. Add menu items:
-   4.3 Grid -> Sizegui
-*/
 
 type SquareGadget_t = struct {
     Gadget_t sg_Gadget;
@@ -286,10 +281,10 @@ proc cleanupAfterSolver(*Window_t pWindow;
     ClearPointer(pWindow);
 corp;
 
-proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareGadgets; *Gadget_t pButtonGadget, pTextGadget) void:  
+proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareGadgets; *Gadget_t pButtonGadget, pTextGadget) uint:  
     Menu_t gridMenu;
-    MenuItem_t resetMenuItem;
-    IntuiText_t resetMenuItemText;
+    MenuItem_t resetMenuItem, sizeMenuItem, size3MenuItem, size4MenuItem;
+    IntuiText_t resetMenuItemText, sizeMenuItemText, size3MenuItemText, size4MenuItemText;
     *MenuItem_t pSelectedMenuItem;
     uint dimension;
     *IntuiMessage_t pMessage;
@@ -298,13 +293,35 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
     ulong signals, messageClass@signals, lastWroteCountersTime, menuNumber@pSelectedMenuItem;
     *Grid_t pGridList;
     Counters_t counters;
-    gridMenu := Menu_t(nil, 30, 0, 60, 0, MENUENABLED, nil, nil, 0, 0, 0, 0);  
+    gridMenu := Menu_t(nil, 15, 0, 40, 0, MENUENABLED, nil, nil, 0, 0, 0, 0);  
     gridMenu.m_MenuName := "Grid";
     gridMenu.m_FirstItem := &resetMenuItem;
-    resetMenuItem := MenuItem_t(nil, 0, 0, 90, 12, ITEMTEXT | ITEMENABLED | HIGHCOMP | COMMSEQ, 0, (nil), (nil), 'R', nil, 0);
+    resetMenuItem := MenuItem_t(nil, 0, 0, 86, 12, ITEMTEXT | ITEMENABLED | HIGHCOMP | COMMSEQ, 0, (nil), (nil), 'R', nil, 0);
+    resetMenuItem.mi_NextItem := &sizeMenuItem;
     resetMenuItem.mi_ItemFill.miIt := &resetMenuItemText;
     resetMenuItemText := IntuiText_t(0, 1, 0, 4, 2, nil, nil, nil);
     resetMenuItemText.it_IText := "Reset";
+    sizeMenuItem := MenuItem_t(nil, 0, 12, 86, 12, ITEMTEXT | ITEMENABLED, 0, (nil), (nil), ' ', nil, 0);
+    sizeMenuItem.mi_ItemFill.miIt := &sizeMenuItemText;
+    sizeMenuItem.mi_SubItem := &size3MenuItem;
+    sizeMenuItemText := IntuiText_t(0, 1, 0, 4, 2, nil, nil, nil);
+    sizeMenuItemText.it_IText := "Size     \(187)";
+    size3MenuItem := MenuItem_t(nil, 86, 0, 90, 12, CHECKIT | ITEMTEXT | ITEMENABLED | HIGHCOMP, 0, (nil), (nil), ' ', nil, 0);
+    size3MenuItem.mi_NextItem := &size4MenuItem;
+    size3MenuItem.mi_ItemFill.miIt := &size3MenuItemText;
+    size3MenuItemText := IntuiText_t(0, 1, 0, CHECKWIDTH + 4, 2, nil, nil, nil);
+    size3MenuItemText.it_IText := " 9 by 9 ";
+    size4MenuItem := MenuItem_t(nil, 86, 12, 90, 12, CHECKIT | CHECKED | ITEMTEXT | ITEMENABLED | HIGHCOMP, 0, (nil), (nil), ' ', nil, 0);
+    size4MenuItem.mi_ItemFill.miIt := &size4MenuItemText;
+    size4MenuItemText := IntuiText_t(0, 1, 0, CHECKWIDTH + 4, 2, nil, nil, nil);
+    size4MenuItemText.it_IText := "16 by 16";
+    if sectorDimension = 3 then
+        size3MenuItem.mi_Flags := size3MenuItem.mi_Flags | CHECKED;
+        size4MenuItem.mi_Flags := size4MenuItem.mi_Flags & ~CHECKED;
+    elif sectorDimension = 4 then
+        size3MenuItem.mi_Flags := size3MenuItem.mi_Flags & ~CHECKED;
+        size4MenuItem.mi_Flags := size4MenuItem.mi_Flags | CHECKED;
+    fi;
     SetMenuStrip(pWindow, &gridMenu);
     dimension := sectorDimension * sectorDimension;
     pGridList := nil;
@@ -313,7 +330,7 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
             signals := Wait((1 << pWindow*.w_UserPort*.mp_SigBit) | SIGBREAKF_CTRL_C);
             if signals & SIGBREAKF_CTRL_C ~= 0 then
                 freeGridList(pGridList);
-                return;
+                return 0;
             fi;
         fi;
         while
@@ -327,12 +344,18 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
             case messageClass
                 incase CLOSEWINDOW:
                     freeGridList(pGridList);
-                    return;
+                    return 0;
                 incase MENUPICK:
                     while menuNumber ~= MENUNULL do
                         pSelectedMenuItem := ItemAddress(&gridMenu, menuNumber);
                         if pSelectedMenuItem = &resetMenuItem then
                             restorePreviousValues(pWindow, dimension, pSquareGadgets);
+                        elif pSelectedMenuItem = &size3MenuItem and sectorDimension ~= 3 then
+                            freeGridList(pGridList);
+                            return 3;
+                        elif pSelectedMenuItem = &size4MenuItem and sectorDimension ~= 4 then
+                            freeGridList(pGridList);
+                            return 4;
                         fi;
                         menuNumber := pSelectedMenuItem*.mi_NextSelect;
                     od;
@@ -419,9 +442,10 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
         fi;
     od;
     freeGridList(pGridList);
+    0
 corp;
 
-proc createWindow(uint sectorDimension) void:
+proc createWindow(uint sectorDimension) uint:
     uint dimension;
     *SquareGadget_t pSquareGadgets;
     NewWindow_t newWindow;
@@ -437,7 +461,7 @@ proc createWindow(uint sectorDimension) void:
     if pSquareGadgets = nil then
         writeln(out; "Failed to create gadgets");
         DisplayBeep(nil);
-        return;
+        return 0;
     fi;
     buttonGadget := Gadget_t(nil, /* g_NextGadget */
                              4, /* g_LeftEdge */
@@ -497,7 +521,7 @@ proc createWindow(uint sectorDimension) void:
     textStringInfo.si_MaxChars := 31;
     textStringInfo.si_Buffer := &textBuffer[0];
     BlockFill(&textBuffer[0], 30, pretend('\e', byte));
-    CharsCopyN(&textBuffer[0], "Edit puzzle, then 'Solve'", textStringInfo.si_MaxChars - 1);
+    CharsCopyN(&textBuffer[0], "Edit puzzle, then click Solve", textStringInfo.si_MaxChars - 1);
     newWindow := NewWindow_t(50,
                              15,
                              0,
@@ -525,25 +549,29 @@ proc createWindow(uint sectorDimension) void:
     if pWindow = nil then
         writeln(out; "Failed to create window");
         DisplayBeep(nil);
-    else
-        SetWindowTitles(pWindow, pretend(-1, *char), "Sudoku solver");
-        buttonGadget.g_Flags := buttonGadget.g_Flags | SELECTED;
-        RefreshGList(&buttonGadget, pWindow, nil, 1);
-        textGadget.g_Flags := textGadget.g_Flags | GADGDISABLED;
-        drawSectorLines(pWindow, sectorDimension);
-        eventLoop(pWindow, sectorDimension, pSquareGadgets, &buttonGadget, &textGadget);
-        ClearMenuStrip(pWindow);
-        CloseWindow(pWindow); 
+        freeSquareGadgets(pSquareGadgets, dimension);
+        return 0;
     fi;
+    SetWindowTitles(pWindow, pretend(-1, *char), "Sudoku solver");
+    buttonGadget.g_Flags := buttonGadget.g_Flags | SELECTED;
+    RefreshGList(&buttonGadget, pWindow, nil, 1);
+    textGadget.g_Flags := textGadget.g_Flags | GADGDISABLED;
+    drawSectorLines(pWindow, sectorDimension);
+    sectorDimension := eventLoop(pWindow, sectorDimension, pSquareGadgets, &buttonGadget, &textGadget);
+    ClearMenuStrip(pWindow);
+    CloseWindow(pWindow);
     freeSquareGadgets(pSquareGadgets, dimension);
+    sectorDimension
 corp;
 
 proc main() void:
     *Process_t pProcess;
     *Message_t pWorkbenchStartup;
+    uint sectorDimension;
     squareGadgetBorder := Border_t(-2, -2, 2, 0, 0, 5, nil, nil);
     squareGadgetBorder.b_XY := &squareGadgetBorderXY[0];
     pWorkbenchStartup := nil;
+    sectorDimension := 4;
     MerrorSet(true);
     if OpenExecLibrary(0) ~= nil then
         pProcess := pretend(FindTask(nil), *Process_t);
@@ -564,7 +592,9 @@ proc main() void:
                     if pBusyPointer ~= nil then
                         BlockCopy(pBusyPointer, &BUSY_POINTER[0], 72);
                     fi;
-                    createWindow(4);
+                    while sectorDimension ~= 0 do
+                        sectorDimension := createWindow(sectorDimension);
+                    od;
                     if pBusyPointer ~= nil then
                         FreeMem(pBusyPointer, 72);
                     fi;
