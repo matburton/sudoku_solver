@@ -350,6 +350,15 @@ proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareG
                         pSelectedMenuItem := ItemAddress(&gridMenu, menuNumber);
                         if pSelectedMenuItem = &resetMenuItem then
                             restorePreviousValues(pWindow, dimension, pSquareGadgets);
+                            if pGridList ~= nil then
+                                freeGridList(pGridList);
+                                pGridList := nil;
+                                pButtonGadget*.g_Flags := pButtonGadget*.g_Flags >< SELECTED;
+                                toggleSolveButton(pWindow, pButtonGadget);
+                                toggleSquareGadgetsEnabled(dimension, pSquareGadgets);
+                                ClearPointer(pWindow);
+                            fi;
+                            setText(pWindow, pTextGadget, nil);
                         elif pSelectedMenuItem = &size3MenuItem and sectorDimension ~= 3 then
                             freeGridList(pGridList);
                             return 3;
