@@ -14,8 +14,6 @@ extern freeFrontGrid(*Grid_t pGridList) *Grid_t;
 
 extern freeGridList(*Grid_t pGridList) void;
 
-extern breakSignaled() bool;
-
 /* Returns nil if there are no more solutions */
 /* Caller must free front grid if complete before re-calling */
 extern advanceSolving(*Grid_t pGridList; *Counters_t pCounters) *Grid_t;

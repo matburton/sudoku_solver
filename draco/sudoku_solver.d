@@ -1,9 +1,5 @@
 #sudoku_solver.g
 #sudoku_grid.g
-#sudoku_printer.g
-#drinc:exec/tasks.g
-#drinc:libraries/dos.g
-#drinc:util.g
 
 extern removePossibilityAt(*Grid_t pGrid; uint x, y, value) void;
 
@@ -198,10 +194,6 @@ proc advanceSolving(*Grid_t pGridList; *Counters_t pCounters) *Grid_t:
         pGridList := splitFirstGridToFront(pGridList, pCounters);
     fi;
     pGridList
-corp;
-
-proc breakSignaled() bool:
-    SetSignal(0, 0) & SIGBREAKF_CTRL_C ~= 0
 corp;
 
 proc writeTimePeriod(channel output text target; ulong seconds) void:

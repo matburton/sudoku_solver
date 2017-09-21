@@ -281,6 +281,10 @@ proc cleanupAfterSolver(*Window_t pWindow;
     ClearPointer(pWindow);
 corp;
 
+proc breakSignaled() bool:
+    SetSignal(0, 0) & SIGBREAKF_CTRL_C ~= 0
+corp;
+
 proc eventLoop(*Window_t pWindow; uint sectorDimension; *SquareGadget_t pSquareGadgets; *Gadget_t pButtonGadget, pTextGadget) uint:  
     Menu_t gridMenu;
     MenuItem_t resetMenuItem, sizeMenuItem, size3MenuItem, size4MenuItem;

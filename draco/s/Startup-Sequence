@@ -29,5 +29,5 @@ ELSE
     makedir ram:t
     assign T: ram:t
 ENDIF
-newshell "newcon:0/0/640/256/Sudokus"
+newshell "newcon:0/11/640/245/Sudokus"
 endcli >NIL:
