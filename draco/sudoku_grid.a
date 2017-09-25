@@ -8,16 +8,25 @@
         xdef    isComplete
         
         xref    CopyMemQuick
+        
+GRID_DIMENSION              equ 2
+GRID_SIZE                   equ 12
+GRID_SQUARE_SIZE            equ 14
+GRID_IMPOSSIBLE_SQUARES     equ 16
+GRID_INCOMPLETE_SQUARES     equ 18
+GRID_FIRST_SQUARE           equ 20
+SQUARE_POSSIBILITY_COUNT    equ 0
+SQUARE_VALUE                equ 1
+SQUARE_POSSIBILITY_PACK     equ 2
 
 getSquareOffset macro
-        moveq   #0,d0
         move.w  (sp)+,d0
         move.w  (sp)+,d1
         move.l  (sp)+,a1
-        mulu    2(a1),d0
+        mulu    GRID_DIMENSION(a1),d0
         add.w   d1,d0
-        mulu    14(a1),d0
-        add.w   #\1+20,d0
+        mulu    GRID_SQUARE_SIZE(a1),d0
+        add.w   #\1+GRID_FIRST_SQUARE,d0
         endm
 
 getSquarePointer
@@ -29,7 +38,7 @@ getSquarePointer
 cloneIntoGrid
         move.l  (sp)+,a0
         move.l  4(sp),a1
-        move.w  12(a1),-(sp)
+        move.w  GRID_SIZE(a1),-(sp)
         move.w  #0,-(sp)
         move.l  a0,-(sp)
         jmp     CopyMemQuick
@@ -38,7 +47,7 @@ squareHasPossibility
         move.l  (sp)+,a0
         move.w  (sp)+,d1
         swap    d1
-        getSquareOffset 2
+        getSquareOffset SQUARE_POSSIBILITY_PACK
         add.l   d0,a1
         clr.w   d1
         swap    d1
@@ -61,22 +70,22 @@ getSquareCachedValue macro
         endm
 
 getPossibilityCount
-        getSquareCachedValue 0
+        getSquareCachedValue SQUARE_POSSIBILITY_COUNT
 
 getSquareValue
-        getSquareCachedValue 1
+        getSquareCachedValue SQUARE_VALUE
 
 isGridCachedValueZero macro
         movem.l (sp)+,a0/a1
-        tst.w   \1+12(a1)
+        tst.w   \1(a1)
         seq     d0
         jmp     (a0)
         endm
 
 isPossible
-        isGridCachedValueZero 4
+        isGridCachedValueZero GRID_IMPOSSIBLE_SQUARES
         
 isComplete
-        isGridCachedValueZero 6
+        isGridCachedValueZero GRID_INCOMPLETE_SQUARES
 
 end

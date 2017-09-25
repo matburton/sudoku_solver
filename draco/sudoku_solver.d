@@ -1,5 +1,6 @@
 #sudoku_solver.g
 #sudoku_grid.g
+#drinc:util.g
 
 extern removePossibilityAt(*Grid_t pGrid; uint x, y, value) void;
 
