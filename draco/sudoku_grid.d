@@ -140,25 +140,6 @@ proc removeSquarePossibility(*Grid_t pGrid; uint x, y, value) void:
     fi;
 corp;
 
-proc mustBeValueByColumn(*Grid_t pGrid; uint x, y, value) bool:
-    uint bumpSize, index;
-    *byte pSquare;
-    byte mask;
-    bumpSize := pretend(pGrid + sizeof(Grid_t), *GridCache_t)*.gc_squareSize;    
-    pSquare := pretend(pGrid + SQUARES_OFFSET, *byte)
-             + x * bumpSize + sizeof(SquareCache_t)
-             + (value - 1) / BITS_PER_PACK;
-    mask := pretend(1, byte) << ((value - 1) % BITS_PER_PACK);
-    bumpSize := bumpSize * pGrid*.g_dimension;
-    for index from 0 upto pGrid*.g_dimension - 1 do
-        if index ~= y and pSquare* & mask ~= 0 then
-            return false;
-        fi;
-        pSquare := pSquare + bumpSize;
-    od;
-    true
-corp;
-
 proc mustBeValueBySector(*Grid_t pGrid; uint x, y, value) bool:
     uint squareSize, dimension, sectorDimension, bumpSize, index, ignoreIndex;
     byte mask;

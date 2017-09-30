@@ -7,6 +7,7 @@
         xdef    isPossible
         xdef    isComplete
         xdef    mustBeValueByRow
+        xdef    mustBeValueByColumn
         
         xref    CopyMemQuick
         
@@ -111,13 +112,45 @@ mustBeValueByRow
         move.w  GRID_DIMENSION(a0),d1   ; - Create loop counter in d1
         subq.w  #1,d1                   ;   as the grid dimension - 1
         move.w  GRID_SQUARE_SIZE(a0),a0 ; - Cache square size
-nxtRow: sub.w   a0,a1                   ; - Move to previous square
+nxtCol: sub.w   a0,a1                   ; - Move to previous square
         btst.b  d0,(a1)                 ; - Test if it has the value
-        dbne    d1,nxtRow               ; - Loop if it doesn't
+        dbne    d1,nxtCol               ; - Loop if it doesn't
         cmp.w   (sp),d1                 ; - Continue the loop if this
-        dbne    d1,nxtRow               ;   was the original x index
+        dbne    d1,nxtCol               ;   was the original x index
         tst.w   d1                      ; - Set return value to 1 if
         smi     d0                      ;   we ran through full row
         addq.w  #2,sp                   ; - Pop x index off the stack
         rts
-end
+        
+mustBeValueByColumn
+        move.l  (sp)+,a0 ; - Pop return address
+        move.w  (sp)+,d1 ; - Pop possibility value to high
+        swap    d1       ;   bits for getBitIndexAndBumpPtr
+        move.w  (sp)+,d0 ; - Pop y index
+        move.w  (sp)+,d1 ; - Pop x index to low bits
+        move.l  (sp)+,a1 ; - Pop grid address
+        move.l  a0,-(sp) ; - Push return address
+        move.w  d0,-(sp) ; - Push y index
+        move.w  GRID_DIMENSION(a1),d0 ; - getSquareOffset at row past bottom of grid
+        mulu    d0,d0                 ;   to work backwards, offset to square after
+        add.w   d1,d0                 ;   the last row in the correct column in d0
+        mulu    GRID_SQUARE_SIZE(a1),d0
+        add.w   #SQUARE_POSSIBILITY_PACK+GRID_FIRST_SQUARE,d0
+        move.l  a1,a0         ; - Copy grid address
+        getBitIndexAndBumpPtr ; - Leave bit index in d0 and move a1 to correct byte
+        move.w  GRID_SQUARE_SIZE(a0),d1 ; - Prepare the offset
+        mulu    GRID_DIMENSION(a0),d1   ;   to move up column
+        move.w  GRID_DIMENSION(a0),a0   ; - Create loop counter
+        exg     d1,a0                   ; - Swap registers over
+        subq.w  #1,d1                   ; - -1 loop counter to start
+nxtRow: sub.w   a0,a1                   ; - Move to previous square
+        btst.b  d0,(a1)                 ; - Test if it has the value
+        dbne    d1,nxtRow               ; - Loop if it doesn't
+        cmp.w   (sp),d1                 ; - Continue the loop if this
+        dbne    d1,nxtRow               ;   was the original y index
+        tst.w   d1                      ; - Set return value to 1 if
+        smi     d0                      ;   we ran through full row
+        addq.w  #2,sp                   ; - Pop y index off the stack
+        rts
+        
+        end

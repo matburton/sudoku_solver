@@ -5,7 +5,7 @@ draco sudoku_solver.d sudoku_grid.d sudoku_solver_gui.d
 echo ""
 echo "*E[33mAssembling...*E[0m"
 echo ""
-asm68k sudoku_grid.a -NL
+a68k sudoku_grid.a
 echo ""
 echo "*E[33mLinking...*E[0m"
 echo ""

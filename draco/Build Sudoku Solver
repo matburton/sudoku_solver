@@ -1,7 +1,7 @@
 path add Sudokus:c
 version >NIL: exec.library 36
 IF WARN
-    newshell "newcon:0/11/640/245/Sudokus" from s/shell-startup
+    newshell "newcon:0/11/540/245/Sudokus" from s/shell-startup
 ELSE
-    newshell "con:0/11/640/245/Sudokus" from s/shell-startup
+    newshell "con:100/11/540/245/Sudokus" from s/shell-startup
 ENDIF
