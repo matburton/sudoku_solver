@@ -1,0 +1,95 @@
+﻿
+@page "/"
+@page "/index.html"
+
+@using SudokuSolver.Core
+
+<style>
+
+    .grid { display: inline-block;
+            margin:  0.25em;
+            border:  1px solid black; }
+
+    .grid pre { margin: 0.25em; }
+
+    input { width: 1.5em; }
+
+    button { margin-top: 0.5em; }
+
+</style>
+
+<h1>Sudoku Solver</h1>
+
+<table>
+    @foreach(var x in Enumerable.Range(0, 9))
+    {
+        <tr>
+            @foreach(var y in Enumerable.Range(0, 9))
+            {
+                <td>
+                    <input type="text" pattern="[0-9]"
+                           onchange="@(e => m_Grid = m_Grid.SetSquareValue(int.Parse((string)e.Value), (x, y).ToTuple()))" />
+                </td>
+            }
+        </tr>
+    }
+</table>
+
+<button onclick="@Solve">Solve</button>
+
+@if (m_SolutionGrids.Any())
+{
+    <p>
+        <strong>Solutions: </strong>
+        
+        @if (m_OtherSolutions != null)
+        {
+            <button style="display: inline-block" onclick="@AnotherSolution">
+                Another
+            </button>
+        }
+        
+        <div>
+            @foreach (var grid in m_SolutionGrids)
+            {
+                <div class="grid">
+                    <pre>@grid.ToString</pre>
+                </div>
+            }
+        </div>
+    </p>
+}
+
+@functions
+{
+    private ISudoku m_Grid = Factory.EmptyGrid(3);
+
+    private readonly List<ISudoku> m_SolutionGrids = new List<ISudoku>();
+
+    private IEnumerator<ISudoku> m_OtherSolutions;
+
+    private void Solve()
+    {
+        m_OtherSolutions?.Dispose();
+
+        m_SolutionGrids.Clear();
+
+        m_OtherSolutions = m_Grid.Solutions.GetEnumerator();
+
+        AnotherSolution();
+    }
+
+    private void AnotherSolution()
+    {
+        if (m_OtherSolutions.MoveNext())
+        {
+            m_SolutionGrids.Add(m_OtherSolutions.Current);
+        }
+        else
+        {
+            m_OtherSolutions.Dispose();
+
+            m_OtherSolutions = null;
+        }
+    }
+}

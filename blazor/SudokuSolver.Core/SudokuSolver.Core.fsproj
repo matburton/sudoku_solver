@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Square.fs" />
+    <Compile Include="Grid.fs" />
+    <Compile Include="Refine.fs" />
+    <Compile Include="Deduce.fs" />
+    <Compile Include="Split.fs" />
+    <Compile Include="Solve.fs" />
+    <Compile Include="Print.fs" />
+    <Compile Include="ISudoku.fs" />
+    <Compile Include="Factory.fs" />
+    <Compile Include="Batch.fs" />
+    <Compile Include="AssemblyInfo.fs" />
+  </ItemGroup>
+</Project>
