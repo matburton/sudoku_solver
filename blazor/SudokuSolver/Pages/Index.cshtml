@@ -21,14 +21,14 @@
 <h1>Sudoku Solver</h1>
 
 <table>
-    @foreach(var x in Enumerable.Range(0, 9))
+    @foreach(var y in Enumerable.Range(0, 9))
     {
         <tr>
-            @foreach(var y in Enumerable.Range(0, 9))
+            @foreach(var x in Enumerable.Range(0, 9))
             {
                 <td>
                     <input type="text" pattern="[0-9]"
-                           onchange="@(e => m_Grid = m_Grid.SetSquareValue(int.Parse((string)e.Value), (x, y).ToTuple()))" />
+                           onchange="@(e => m_SquareValues[x, y] = (string)e.Value)" />
                 </td>
             }
         </tr>
@@ -62,7 +62,7 @@
 
 @functions
 {
-    private ISudoku m_Grid = Factory.EmptyGrid(3);
+    private readonly string[,] m_SquareValues = new string[9, 9];
 
     private readonly List<ISudoku> m_SolutionGrids = new List<ISudoku>();
 
@@ -74,7 +74,18 @@
 
         m_SolutionGrids.Clear();
 
-        m_OtherSolutions = m_Grid.Solutions.GetEnumerator();
+        var grid = Factory.EmptyGrid(3);
+
+        foreach(var x in Enumerable.Range(0, 9))
+        foreach(var y in Enumerable.Range(0, 9))
+        {
+            if (int.TryParse(m_SquareValues[x, y], out var squareValue))
+            {
+                grid = grid.SetSquareValue(squareValue, (x, y).ToTuple());
+            }
+        }
+
+        m_OtherSolutions = grid.Solutions.GetEnumerator();
 
         AnotherSolution();
     }
