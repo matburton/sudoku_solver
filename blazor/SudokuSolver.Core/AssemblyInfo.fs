@@ -2,7 +2,6 @@
 namespace SudokuSolver.Core
 
 open System.Reflection;
-open System.Runtime.CompilerServices;
 open System.Runtime.InteropServices;
  
 [<assembly: AssemblyTitle("SudokuSolver.Core")>]

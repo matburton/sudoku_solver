@@ -1,6 +1,9 @@
 ﻿
 using Microsoft.AspNetCore.Blazor.Builder;
 using Microsoft.AspNetCore.Blazor.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+
+using SudokuSolver.Core;
 
 namespace SudokuSolver
 {
@@ -19,6 +22,11 @@ namespace SudokuSolver
             public void Configure(IBlazorApplicationBuilder app)
             {
                 app.AddComponent<App>("app");
+            }
+
+            public void ConfigureServices(IServiceCollection services)
+            {
+                services.AddTransient(_ => Factory.EmptyGrid(3));
             }
         }
     }

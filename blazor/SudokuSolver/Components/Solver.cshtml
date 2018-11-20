@@ -1,0 +1,125 @@
+﻿
+@using System.Diagnostics
+
+@using SudokuSolver.Core
+
+<style>
+
+    .grid { display: inline-block;
+            margin:  0.25em;
+            border:  1px solid black; }
+
+    .grid pre { margin: 0.25em; }
+
+    input { width: 1.5em; }
+
+    button { margin-top: 0.5em; }
+
+</style>
+
+<h1>Sudoku Solver</h1>
+
+<table>
+    @foreach(var y in Enumerable.Range(0, 9))
+    {
+        <tr>
+            @foreach(var x in Enumerable.Range(0, 9))
+            {
+                <td>
+                    <input type="text" pattern="[0-9]"
+                           onchange="@(e => m_SquareValues[x, y] = (string)e.Value)" />
+                </td>
+            }
+        </tr>
+    }
+</table>
+
+<button onclick="@Solve">Solve</button>
+
+@if (m_TimeTaken != null)
+{
+    <div>
+        <strong>Time taken: </strong>@m_TimeTaken
+    </div>
+}
+
+@if (m_SolutionGrids.Any())
+{
+    <p>
+        <strong>Solutions: </strong>
+        
+        @if (m_OtherSolutions != null)
+        {
+            <button style="display: inline-block" onclick="@AnotherSolution">
+                Another
+            </button>
+        }
+        
+        <div>
+            @foreach (var grid in m_SolutionGrids)
+            {
+                <div class="grid">
+                    <pre>@grid.ToString</pre>
+                </div>
+            }
+        </div>
+    </p>
+}
+
+@functions
+{
+    [Parameter]
+    private ISudoku EmptyGrid { get; set; }
+
+    private readonly string[,] m_SquareValues = new string[9, 9];
+
+    private readonly List<ISudoku> m_SolutionGrids = new List<ISudoku>();
+
+    private IEnumerator<ISudoku> m_OtherSolutions;
+
+    private TimeSpan? m_TimeTaken;
+
+    private void Solve()
+    {
+        m_OtherSolutions?.Dispose();
+
+        m_SolutionGrids.Clear();
+
+        var stopwatch = new Stopwatch();
+
+        stopwatch.Start();
+
+        var grid = EmptyGrid;
+
+        foreach(var x in Enumerable.Range(0, 9))
+        foreach(var y in Enumerable.Range(0, 9))
+        {
+            if (int.TryParse(m_SquareValues[x, y], out var squareValue))
+            {
+                grid = grid.SetSquareValue(squareValue, (x, y).ToTuple());
+            }
+        }
+
+        m_OtherSolutions = grid.Solutions.GetEnumerator();
+
+        AnotherSolution();
+
+        stopwatch.Stop();
+
+        m_TimeTaken = stopwatch.Elapsed;
+    }
+
+    private void AnotherSolution()
+    {
+        if (m_OtherSolutions.MoveNext())
+        {
+            m_SolutionGrids.Add(m_OtherSolutions.Current);
+        }
+        else
+        {
+            m_OtherSolutions.Dispose();
+
+            m_OtherSolutions = null;
+        }
+    }
+}

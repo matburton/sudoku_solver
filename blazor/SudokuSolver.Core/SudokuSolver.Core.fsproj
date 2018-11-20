@@ -12,7 +12,6 @@
     <Compile Include="Print.fs" />
     <Compile Include="ISudoku.fs" />
     <Compile Include="Factory.fs" />
-    <Compile Include="Batch.fs" />
     <Compile Include="AssemblyInfo.fs" />
   </ItemGroup>
 </Project>

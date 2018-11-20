@@ -5,8 +5,6 @@ open SudokuSolver.Core.Deduce
 open SudokuSolver.Core.Grid
 open SudokuSolver.Core.Split
 
-let mutable splits = 0;
-
 /// Returns a sequence that finds solutions to a grid
 //
 let solutions grid =
@@ -25,8 +23,6 @@ let solutions grid =
                       else if isPossible grid then
 
                          let newGrids = split grid;
-                         
-                         splits <- splits + (Seq.length newGrids)
                       
                          let complete, incomplete =
                             newGrids
