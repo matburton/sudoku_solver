@@ -8,6 +8,11 @@ struct Grid
     uint16_t dimension;
     struct Grid* pNext; // Invasive circular doubly linked list
     struct Grid* pPrevious;
+
+    // Private
+    //
+    uint16_t impossibleSquares;
+    uint16_t incompleteSquares;
 };
 
 unsigned int gridsInMemory;
@@ -30,11 +35,11 @@ void cloneIntoGrid(struct Grid* pSource, struct Grid* pTarget);
 //
 void freeGrid(struct Grid* pGrid);
 
-void setSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint16_t value);
+void setSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);
 
-bool squareHasPossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint16_t value);
+bool squareHasPossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);
 
-void removeSquarePossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint16_t value);
+void removeSquarePossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);
 
 uint16_t getPossibilityCount(struct Grid* pGrid, uint16_t x, uint16_t y);
 
@@ -46,8 +51,8 @@ bool isPossible(struct Grid* pGrid);
 
 bool isComplete(struct Grid* pGrid);
 
-bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint16_t value);
+bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);
 
-bool mustBeValueByColumn(struct Grid* pGrid, uint16_t x, uint16_t y, uint16_t value);
+bool mustBeValueByColumn(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);
 
-bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint16_t value);
+bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);
