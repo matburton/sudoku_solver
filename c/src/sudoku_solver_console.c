@@ -1,17 +1,41 @@
 
-#include <stdio.h>
+#include "../include/sudoku_solver.h"
+#include "../include/sudoku_printer.h"
 
-#include "../include/sudoku_grid.h"
+#include <stdio.h>
 
 int main()
 {
-    struct Grid* pGrid = createGrid(4);
+    struct Grid* pGridList = createGrid(3);
 
-    //setSquareValue(pGrid, 15, 15, 16);
+    if (!pGridList)
+    {
+        printf("Failed to create initial grid");
 
-    //printf("Value at 15,15: %u", getSquareValue(pGrid, 15, 15));
+        return 1;
+    }
 
-    freeGrid(pGrid);
+    struct Counters counters = { 0 };
+
+    while (0 == counters.solutions)
+    {
+        pGridList = advanceSolving(pGridList, &counters);
+
+        if (!pGridList) break;
+
+        if (isComplete(pGridList))
+        {
+            counters.solutions += 1;
+
+            printf("Solution:\r\n");
+
+            writeGridString(pGridList);
+
+            pGridList = freeFrontGrid(pGridList);
+        }
+    }
+
+    freeGridList(pGridList);
 
     return 0;
 }

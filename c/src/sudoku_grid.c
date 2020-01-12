@@ -1,9 +1,9 @@
 
+#include "../include/sudoku_grid.h"
+
 #include <immintrin.h>
 #include <stdlib.h>
-#include <string.h> 
-
-#include "../include/sudoku_grid.h"
+#include <string.h>
 
 static inline uint64_t* getSquarePointer(struct Grid* pGrid, uint16_t x, uint16_t y)
 {
@@ -26,7 +26,7 @@ struct Grid* createGrid(uint16_t sectorDimension)
 
     struct Grid* pGrid = malloc(totalSize);
 
-    if (NULL == pGrid) return NULL;
+    if (!pGrid) return NULL;
 
     pGrid->sectorDimension   = sectorDimension;
     pGrid->dimension         = dimension;
@@ -51,13 +51,13 @@ struct Grid* cloneGrid(struct Grid* pGrid)
 {
     struct Grid* pClone = malloc(getTotalSize(pGrid->dimension));
 
-    if (NULL == pClone) return NULL;
+    if (!pClone) return NULL;
 
     cloneIntoGrid(pGrid, pClone);
 
     gridsInMemory += 1;
 
-    return NULL;
+    return pClone;
 }
 
 void cloneIntoGrid(struct Grid* pSource, struct Grid* pTarget)
@@ -120,7 +120,7 @@ uint16_t getPossibilityCount(struct Grid* pGrid, uint16_t x, uint16_t y)
     return (uint16_t)__popcnt64(*getSquarePointer(pGrid, x, y));
 }
 
-uint16_t getSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y)
+uint8_t getSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y)
 {
     uint64_t square = *getSquarePointer(pGrid, x, y);
 
@@ -130,17 +130,17 @@ uint16_t getSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y)
 
     _BitScanForward64(&index, square);
 
-    return (uint16_t)index + 1;
+    return (uint8_t)index + 1;
 }
 
 bool isPossible(struct Grid* pGrid)
 {
-    return pGrid->impossibleSquares = 0;
+    return 0 == pGrid->impossibleSquares;
 }
 
 bool isComplete(struct Grid* pGrid)
 {
-    return pGrid->incompleteSquares = 0;
+    return 0 == pGrid->incompleteSquares;
 }
 
 bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)

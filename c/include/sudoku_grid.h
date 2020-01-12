@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -45,7 +47,7 @@ uint16_t getPossibilityCount(struct Grid* pGrid, uint16_t x, uint16_t y);
 
 // Returns 0 if the square has multiple possibilities or no possibilities
 //
-uint16_t getSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y);
+uint8_t getSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y);
 
 bool isPossible(struct Grid* pGrid);
 
