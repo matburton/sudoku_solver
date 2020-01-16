@@ -23,14 +23,23 @@ void writeSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y)
         {
             printf("%c", '0' + value);
         }
-        else if (value >= 11)
+        else if (value < 11)
+        {
+            printf("%c", '0' + value - 1);
+        }
+        else if (value < 37)
         {
             printf("%c", 'A' + value - 11);
         }
-        else
+        else if (value < 63)
         {
-            printf("%c", '0' + value - 1);
-        }        
+            printf("%c", 'a' + value - 37);
+        }
+        else if (value == 63)
+        {
+            printf("$");
+        }
+        else printf("@");
     }
 }
 
@@ -40,7 +49,7 @@ void writeDividerLine(struct Grid* pGrid)
     {
         if (x == pGrid->dimension)
         {
-            printf("-\n");
+            printf("-\r\n");
         }
         else
         {
@@ -74,12 +83,7 @@ void writeRow(struct Grid* pGrid, uint16_t y)
 
 void writeGridString(struct Grid* pGrid)
 {
-    if (pGrid->sectorDimension > 6)
-    {
-        printf("Can't write-out large grid\r\n");
-
-        return;
-    }
+    printf("\r\n");
 
     for (uint16_t y = 1; y <= pGrid->dimension; ++y)
     {
@@ -95,4 +99,6 @@ void writeGridString(struct Grid* pGrid)
             }
         }
     }
+
+    printf("\r\n");
 }

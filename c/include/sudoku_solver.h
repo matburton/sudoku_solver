@@ -1,10 +1,12 @@
 
 #include <stdint.h>
+#include <time.h>
 
 #include "sudoku_grid.h"
 
 struct Counters
 {
+    time_t startTime;
     unsigned int gridSplits;
     unsigned int impossibleGrids;
     unsigned int gridsLost;

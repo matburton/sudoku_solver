@@ -151,6 +151,16 @@ struct Grid* attachToFrontIfPossible(struct Grid* pGridList,
 
         freeGrid(pGrid);
 
+        // HACK
+        // {
+        uint16_t squares = pGridList->dimension * pGridList->dimension;
+
+        if (pCounters->impossibleGrids % squares == 0 && pGridList)
+        {
+            pGridList = pGridList->pPrevious;
+        }
+        // }
+
         return pGridList;
     }
 
@@ -192,6 +202,8 @@ struct Grid* splitFirstGridToFront(struct Grid* pGridList,
     uint16_t bestCount = 0, bestX = 0, bestY = 0;
 
     struct Grid* pGrid = pGridList;
+
+    pGridList = detachFrontGrid(pGridList);
 
     for (uint16_t y = 0; y < pGrid->dimension; ++y)
     {
@@ -254,7 +266,17 @@ struct Grid* advanceSolving(struct Grid* pGridList, struct Counters* pCounters)
 
         pGridList = freeFrontGrid(pGridList);
 
-        if (!pGridList) return NULL;       
+        // HACK
+        // {
+        uint16_t squares = pGridList->dimension * pGridList->dimension;
+
+        if (pCounters->impossibleGrids % squares == 0 && pGridList)
+        {
+            pGridList = pGridList->pPrevious;
+        }
+        // }
+
+        if (!pGridList) return NULL;
     }
 
     refineGrid(pGridList);
