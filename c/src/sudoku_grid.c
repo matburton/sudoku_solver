@@ -2,8 +2,7 @@
 #include "../include/sudoku_grid.h"
 
 #include <immintrin.h>
-#include <stdlib.h>
-#include <string.h>
+#include <windows.h>
 
 static inline uint64_t* getSquarePointer(struct Grid* pGrid, uint16_t x, uint16_t y)
 {
@@ -24,7 +23,11 @@ struct Grid* createGrid(uint16_t sectorDimension)
     uint16_t squareCount = dimension * dimension;
     size_t totalSize     = getTotalSize(dimension);
 
-    struct Grid* pGrid = malloc(totalSize);
+    HANDLE heap = GetProcessHeap();
+
+    if (!heap) return NULL;
+
+    struct Grid* pGrid = HeapAlloc(heap, 0, totalSize);
 
     if (!pGrid) return NULL;
 
@@ -39,7 +42,7 @@ struct Grid* createGrid(uint16_t sectorDimension)
          pSquare <= getSquarePointer(pGrid, dimension - 1, dimension - 1);
          ++pSquare)
     {
-        *pSquare = (1 << dimension) - 1;
+        *pSquare = ((uint64_t)1 << dimension) - 1;
     }
 
     gridsInMemory += 1;
@@ -49,7 +52,13 @@ struct Grid* createGrid(uint16_t sectorDimension)
 
 struct Grid* cloneGrid(struct Grid* pGrid)
 {
-    struct Grid* pClone = malloc(getTotalSize(pGrid->dimension));
+    if (gridsInMemory >= 300000) return NULL; // HACK
+
+    HANDLE heap = GetProcessHeap();
+
+    if (!heap) return NULL;
+
+    struct Grid* pClone = HeapAlloc(heap, 0, getTotalSize(pGrid->dimension));
 
     if (!pClone) return NULL;
 
@@ -62,12 +71,18 @@ struct Grid* cloneGrid(struct Grid* pGrid)
 
 void cloneIntoGrid(struct Grid* pSource, struct Grid* pTarget)
 {
-    memcpy(pTarget, pSource, getTotalSize(pSource->dimension));
+    char* pDest = (char*)pTarget;
+    char* pSrc = (char*)pSource;
+
+    for (size_t count = 0; count < getTotalSize(pSource->dimension); ++count)
+    {
+        *pDest++ = *pSrc++;
+    }
 }
 
 void freeGrid(struct Grid* pGrid)
 {
-    free(pGrid);
+    HeapFree(GetProcessHeap(), 0, pGrid);
 
     gridsInMemory -= 1;
 }
@@ -90,6 +105,8 @@ void setSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 
     *pSquare = (uint64_t)1 << (value - 1);
 }
+
+#pragma warning (disable:4057)
 
 bool squareHasPossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 {
@@ -207,3 +224,5 @@ bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t val
 
     return true;
 }
+
+#pragma warning (default:4057)

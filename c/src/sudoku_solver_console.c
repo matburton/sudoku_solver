@@ -2,58 +2,108 @@
 #include "../include/sudoku_solver.h"
 #include "../include/sudoku_printer.h"
 
-#include <stdio.h>
+#include <windows.h>
 
-void writeTimePeriod(time_t seconds)
+char writeNumberBuffer [21];
+
+char* toNumberString(ULONGLONG number)
 {
-    if (seconds / 3600 < 10)
+    char* pStart = &writeNumberBuffer[20];
+
+    *pStart = '\0';
+
+    if (0 == number)
     {
-        printf("0");
+        *--pStart = '0';
     }
+    else
+    {
+        unsigned int mod = 10;
+
+        while (number > 0)
+        {
+            *--pStart = '0' + (char)(number % mod);
+
+            number /= mod;
+        }
+    }
+
+    return pStart;
+}
+
+void writeTimePeriod(ULONGLONG milliseconds)
+{
+    milliseconds /= 1000;
+
+    if (milliseconds / 3600 < 10)
+    {
+        writeCharacter('0');
+    }
+
+    write(toNumberString(milliseconds / 3600));
     
-    printf("%lli", seconds / 3600);
+    milliseconds %= 3600;
 
-    seconds %= 3600;
+    writeCharacter(':');
 
-    printf(":%.2lli", seconds / 60);
+    if (milliseconds / 60 < 10)
+    {
+        writeCharacter('0');
+    }
 
-    seconds %= 60;
+    write(toNumberString(milliseconds / 60));
 
-    printf(":%.2lli", seconds);
+    milliseconds %= 60;
+
+    writeCharacter(':');
+    write(toNumberString(milliseconds));
 }
 
 void writeCounters(struct Counters* pCounters)
 {
-    printf("\r\nGrids in memory:              %u", gridsInMemory);
-    printf("\r\nElapsed time:                 ");
-    writeTimePeriod(time(NULL) - pCounters->startTime);
-    printf("\r\nGrids created via splitting:  %u", pCounters->gridSplits);
-    printf("\r\nImpossible grids encountered: %u", pCounters->impossibleGrids);
-    printf("\r\nGrids lost due to low memory: %u", pCounters->gridsLost);
-    printf("\r\nSolutions found:              %u", pCounters->solutions);
-    printf("\r\n");
+    write("\r\nGrids in memory: ");
+    write(toNumberString(gridsInMemory));
+
+    write("\r\nElapsed time: ");
+    writeTimePeriod(GetTickCount64() - pCounters->startTime);
+
+    write("\r\nGrids created via splitting: ");
+    write(toNumberString(pCounters->gridSplits));
+
+    write("\r\nImpossible grids encountered: ");
+    write(toNumberString(pCounters->impossibleGrids));
+
+    write("\r\nGrids lost due to low memory: ");
+    write(toNumberString(pCounters->gridsLost));
+
+    write("\r\nSolutions found: ");
+    write(toNumberString(pCounters->solutions));
+
+    write("\r\n");
 }
 
-int main()
+void main()
 {
-    struct Grid* pGridList = createGrid(7);
+    struct Grid* pGridList = createGrid(8);
 
     if (!pGridList)
     {
-        printf("Failed to create initial grid");
+        write("Failed to create initial grid");
 
-        return 1;
+        ExitProcess(1);
     }
 
-    printf("\r\nSearching for %hu x %hu soltuions...\r\n",
-           pGridList->dimension,
-           pGridList->dimension);
+    write("\r\nSearching for ");
+    write(toNumberString(pGridList->dimension));
+    write(" x ");
+    write(toNumberString(pGridList->dimension));
+    write(" soltuions...\r\n");
 
     struct Counters counters = { 0 };
 
-    counters.startTime = time(NULL);
+    counters.startTime = GetTickCount64();
 
-    time_t lastReportTime = time(NULL);
+    ULONGLONG lastReportTime = GetTickCount64();
 
     bool lastReportedCounters = true;
 
@@ -67,7 +117,7 @@ int main()
         {
             counters.solutions += 1;
 
-            printf("\r\nSolution:");
+            write("\r\nSolution:");
 
             writeGridString(pGridList);
 
@@ -75,17 +125,17 @@ int main()
 
             pGridList = freeFrontGrid(pGridList);
         }
-        else if (time(NULL) - lastReportTime >= 15)
+        else if (GetTickCount64() - lastReportTime >= 5000)
         {
             if (lastReportedCounters)
             {
-                printf("\r\nCurrent grid:");
+                write("\r\nCurrent grid:");
 
                 writeGridString(pGridList);
             }
             else writeCounters(&counters);
 
-            lastReportTime = time(NULL);
+            lastReportTime = GetTickCount64();
 
             lastReportedCounters  = !lastReportedCounters;
         }
@@ -93,7 +143,7 @@ int main()
 
     freeGridList(pGridList);
 
-    printf("\r\n");
+    write("\r\n");
 
-    return 0;
+    ExitProcess(0);
 }

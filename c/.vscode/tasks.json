@@ -5,9 +5,7 @@
         "label": "msvc build",
         "type": "shell",
         "command": "cl.exe",
-        // "/O2", "/Ot", "/Ob3", "/Oi", "/GL", - optimisations
-        // "/Zi" - for debugging
-        "args": ["/Zi", "/TC", "/W4", "/WX", "/MT", "/Fo:", "obj/", "/Fe:", "bin/sudoku_solver_console.exe", "src/sudoku_grid.c", "src/sudoku_solver.c", "src/sudoku_solver_console.c"],
+        "args": ["/O2", "/Ot", "/Ob3", "/Oi", "/GL", "/TC", "/W4", "/WX", "/GS-", "/Fo:", "obj/", "/Fe:", "bin/sudoku_solver_console.exe", "/DEBUG:NONE", "src/sudoku_grid.c", "src/sudoku_solver.c", "src/sudoku_printer.c", "src/sudoku_solver_console.c", "/link", "/ENTRY:main", "/MANIFEST:NO", "/DYNAMICBASE:NO", "/NODEFAULTLIB", "/SUBSYSTEM:CONSOLE", "/STACK:0x100000,0x100000", "kernel32.lib"],
         "presentation": {
           "reveal": "always"
         },
