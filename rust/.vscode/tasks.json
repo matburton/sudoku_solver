@@ -15,7 +15,7 @@
                 "echo": true,
                 "reveal": "always",
                 "focus": true,
-                "panel": "new",
+                "panel": "shared",
                 "showReuseMessage": true,
                 "clear": true
             }
@@ -29,6 +29,28 @@
             "group": {
                 "kind": "test",
                 "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "cargo test build",
+            "command": "cargo",
+            "args": [
+                "test", "--no-run"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "presentation": {
+                "reveal": "never",
             }
         }
     ]

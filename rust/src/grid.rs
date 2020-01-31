@@ -1,5 +1,5 @@
 
-#[derive(Clone, Copy)]
+#[derive(Copy, Clone)]
 pub struct Square {
 
     bits: u64
@@ -9,12 +9,25 @@ impl Square {
 
     pub fn has_possibility(&self, value: u8) -> bool {
 
-        1 == self.bits.to_le_bytes()[(value - 1) as usize]
+        self.bits & 1u64 << (value - 1) != 0
     }
 
     pub fn get_possibility_count(&self) -> u16 {
 
         self.bits.count_ones() as u16
+    }
+
+    pub fn get_a_possibility(&self) -> u8 {
+
+        for value in 1 .. 65 {
+
+            if self.has_possibility(value) {
+
+                return value;
+            }
+        }
+
+        0
     }
 
     pub fn get_value(&self) -> u8 {
@@ -33,7 +46,6 @@ impl Square {
     }
 }
 
-#[derive(Clone)]
 pub struct Grid {
 
     pub sector_dimension: u16,
@@ -85,13 +97,28 @@ impl Grid {
         }))
     }
 
-    pub fn clone_into_grid(&self, target: &mut Grid) {
+    pub fn clone(&self) -> Option<Box<Self>> {
 
-        target.sector_dimension   = self.sector_dimension;
-        target.dimension          = self.dimension;
-        target.impossible_squares = self.impossible_squares;
-        target.incomplete_squares = self.incomplete_squares;
-        target.squares            = self.squares;
+        let mut grid = Box::new(Grid {
+            sector_dimension:   0,
+            dimension:          0,
+            impossible_squares: 0,
+            incomplete_squares: 0,
+            squares:            [Square { bits: 0 }; 4096]
+        });
+
+        grid.clone_from(self);
+
+        Some(grid)
+    }
+
+    pub fn clone_from(&mut self, source: &Self) {
+
+        self.sector_dimension   = source.sector_dimension;
+        self.dimension          = source.dimension;
+        self.impossible_squares = source.impossible_squares;
+        self.incomplete_squares = source.incomplete_squares;
+        self.squares            = source.squares;
     }
 
     pub fn set_square_value(&mut self, x: u16, y: u16, value: u8) {
@@ -188,7 +215,7 @@ impl Grid {
         true
     }
 
-    fn must_be_value(&self, x: u16, y: u16, value: u8) -> bool {
+    pub fn must_be_value(&self, x: u16, y: u16, value: u8) -> bool {
 
         let mask = 1u64 << value - 1;
 
@@ -201,15 +228,203 @@ impl Grid {
 #[test]
 fn new_sector_dimension_2() {
 
-    let grid = Grid::new(2);
+    let grid = Grid::new(2).expect("Grid::new returned None");
 
-    unimplemented!();
+    assert_eq!(grid.sector_dimension, 2);
+    assert_eq!(grid.dimension,        4);
+
+    assert!( grid.is_possible());
+    assert!(!grid.is_complete());
+
+    assert_eq!(grid.get_square(0,  0).get_possibility_count(),  4);
+    assert_eq!(grid.get_square(15, 15).get_possibility_count(), 4);
 }
 
 #[test]
 fn new_sector_dimension_8() {
 
-    let grid = Grid::new(8);
+    let grid = Grid::new(8).expect("Grid::new returned None");
+
+    assert_eq!(grid.sector_dimension, 8);
+    assert_eq!(grid.dimension,        64);
+
+    assert!( grid.is_possible());
+    assert!(!grid.is_complete());
+
+    assert_eq!(grid.get_square(0,  0).get_possibility_count(),  64);
+    assert_eq!(grid.get_square(63, 63).get_possibility_count(), 64);
+}
+
+#[test]
+fn set_square_value() {
+
+    let mut grid = Grid::new(8).unwrap();
+
+    grid.set_square_value(0,  0,  1);
+    grid.set_square_value(1,  0,  2);
+    grid.set_square_value(0,  1,  3);
+    grid.set_square_value(63, 63, 63);
+
+    assert_eq!(grid.get_square(0,  0).get_value(),  1);
+    assert_eq!(grid.get_square(1,  0).get_value(),  2);
+    assert_eq!(grid.get_square(0,  1).get_value(),  3);
+    assert_eq!(grid.get_square(63, 63).get_value(), 63);
+}
+
+#[test]
+fn has_possibility() {
+
+    let mut grid = Grid::new(8).unwrap();
+
+    grid.set_square_value(0, 0, 1);
+
+    assert!( grid.get_square(0, 0).has_possibility(1));
+    assert!(!grid.get_square(0, 0).has_possibility(2));
+
+    grid.remove_square_possibility(0, 1, 2);
+
+    assert!( grid.get_square(0, 1).has_possibility(1));
+    assert!(!grid.get_square(0, 1).has_possibility(2));
+    
+    grid.set_square_value(1, 0, 3);
+    grid.remove_square_possibility(1, 0, 3);
+
+    assert!(!grid.get_square(1, 0).has_possibility(2));
+    assert!(!grid.get_square(1, 0).has_possibility(3));
+
+    grid.set_square_value(63, 63, 4);
+    grid.set_square_value(63, 63, 5);
+
+    assert!(!grid.get_square(63, 63).has_possibility(4));
+    assert!( grid.get_square(63, 63).has_possibility(5));
+}
+
+#[test]
+fn get_a_possibility() {
+
+    unimplemented!();
+}
+
+#[test]
+fn get_possibility_count() {
+
+    let mut grid = Grid::new(8).unwrap();
+
+    assert_eq!(grid.get_square(0, 1).get_possibility_count(), 64);
+
+    grid.remove_square_possibility(0, 1, 2);
+    grid.remove_square_possibility(0, 1, 2);
+
+    assert_eq!(grid.get_square(0, 1).get_possibility_count(), 63);
+
+    grid.set_square_value(0, 1, 2);
+
+    assert_eq!(grid.get_square(0, 1).get_possibility_count(), 1);
+
+    grid.remove_square_possibility(0, 1, 2);
+
+    assert_eq!(grid.get_square(0, 1).get_possibility_count(), 0);
+
+    grid.set_square_value(0, 1, 2);
+
+    assert_eq!(grid.get_square(0, 1).get_possibility_count(), 1);
+}
+
+#[test]
+fn get_value() {
+
+    let mut grid = Grid::new(2).unwrap();
+
+    assert_eq!(grid.get_square(0, 1).get_value(), 0);
+
+    grid.remove_square_possibility(0, 1, 1);
+
+    assert_eq!(grid.get_square(0, 1).get_value(), 0);
+
+    grid.remove_square_possibility(0, 1, 2);
+    grid.remove_square_possibility(0, 1, 4);
+
+    assert_eq!(grid.get_square(0, 1).get_value(), 3);
+
+    grid.set_square_value(0, 1, 1);
+
+    assert_eq!(grid.get_square(0, 1).get_value(), 1);
+
+    grid.remove_square_possibility(0, 1, 1);
+
+    assert_eq!(grid.get_square(0, 1).get_value(), 0);
+}
+
+#[test]
+fn clone() {
+
+    let mut gridA = Grid::new(8).unwrap();
+
+    gridA.set_square_value(62, 63, 64);
+    gridA.remove_square_possibility(62, 63, 64);
+
+    let gridB = gridA.clone();
+
+    assert_eq!(gridB.sector_dimension, 8);
+    assert_eq!(gridB.dimension, 64);
+
+    assert!(!gridB.is_complete());
+    assert!(!gridB.is_possible());
+
+    assert_eq!(gridB.get_square(0,  0).get_possibility_count(),  64);
+    assert_eq!(gridB.get_square(62, 63).get_possibility_count(), 0);
+}
+
+#[test]
+fn clone_from() {
+
+    let mut gridA = Grid::new(8).unwrap();
+    let mut gridB = Grid::new(2).unwrap();
+
+    gridA.set_square_value(62, 63, 64);
+    gridA.remove_square_possibility(62, 63, 64);
+
+    for x_index in 0..4 {
+
+        for y_index in 0..4 {
+
+            gridB.set_square_value(x_index, y_index, 1);
+        }
+    }
+
+    gridB.clone_from(gridA);
+
+    assert_eq!(gridB.sector_dimension, 8);
+    assert_eq!(gridB.dimension, 64);
+
+    assert!(!gridB.is_complete());
+    assert!(!gridB.is_possible());
+
+    assert_eq!(gridB.get_square(0,  0).get_possibility_count(),  64);
+    assert_eq!(gridB.get_square(62, 63).get_possibility_count(), 0);
+    assert_eq!(gridA.get_square(62, 63).get_possibility_count(), 0);
+}
+
+#[test]
+fn remove_square_possibility() {
+
+    unimplemented!();
+}
+
+#[test]
+fn is_possible() {
+
+    unimplemented!();
+}
+
+#[test]
+fn is_complete() {
+
+    unimplemented!();
+}
+
+#[test]
+fn must_be_value() {
 
     unimplemented!();
 }
