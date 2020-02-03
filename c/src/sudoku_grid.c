@@ -39,7 +39,7 @@ struct Grid* createGrid(uint16_t sectorDimension)
          pSquare <= getSquarePointer(pGrid, dimension - 1, dimension - 1);
          ++pSquare)
     {
-        *pSquare = (1 << dimension) - 1;
+        *pSquare = ((uint64_t)1 << dimension) - 1;
     }
 
     gridsInMemory += 1;

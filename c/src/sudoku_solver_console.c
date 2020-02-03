@@ -36,7 +36,7 @@ void writeCounters(struct Counters* pCounters)
 
 int main()
 {
-    struct Grid* pGridList = createGrid(7);
+    struct Grid* pGridList = createGrid(6);
 
     if (!pGridList)
     {
