@@ -205,7 +205,7 @@ impl Grid {
 
                 if x_index == x && y_index == y { continue; }
 
-                if self.get_square(x, y).bits & mask != 0 {
+                if self.get_square(x_index, y_index).bits & mask != 0 {
 
                     return false;
                 }
