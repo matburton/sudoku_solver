@@ -131,8 +131,8 @@ impl Grid {
 
         match possibility_count {
             0 => self.impossible_squares -= 1,
-            1 => self.incomplete_squares -= 1,
-            _ => {}
+            1 => {},
+            _ => self.incomplete_squares -= 1
         }
     }
 

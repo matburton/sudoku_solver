@@ -17,7 +17,7 @@ fn write_counters(counters: &solver::Counters,
 
 fn main() {
 
-    let mut grid_stack = match solver::GridStack::new(5) {
+    let mut grid_stack = match solver::GridStack::new(6) {
         None => {
 
             std::println!("Failed to create initial grid");
@@ -49,7 +49,7 @@ fn main() {
 
             grid_stack.drop_front();
         }
-        else if last_report_time.elapsed() >= std::time::Duration::from_secs(5) {
+        else if last_report_time.elapsed() >= std::time::Duration::from_secs(15) {
 
             if last_reported_counters {
 
