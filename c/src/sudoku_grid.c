@@ -38,7 +38,7 @@ struct Grid* createGrid(uint16_t sectorDimension)
     pGrid->impossibleSquares = 0;
     pGrid->incompleteSquares = squareCount;
 
-    uint64_t square = 0;
+    LONG64 square = 0;
 
     _bittestandset64(&square, dimension - 1);
 
