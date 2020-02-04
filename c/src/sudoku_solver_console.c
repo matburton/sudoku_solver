@@ -84,7 +84,7 @@ void writeCounters(struct Counters* pCounters)
 
 void main()
 {
-    struct Grid* pGridList = createGrid(8);
+    struct Grid* pGridList = createGrid(7);
 
     if (!pGridList)
     {
@@ -125,7 +125,7 @@ void main()
 
             pGridList = freeFrontGrid(pGridList);
         }
-        else if (GetTickCount64() - lastReportTime >= 5000)
+        else if (GetTickCount64() - lastReportTime >= 15000)
         {
             if (lastReportedCounters)
             {
