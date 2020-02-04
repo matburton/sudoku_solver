@@ -35,11 +35,17 @@ struct Grid* createGrid(uint16_t sectorDimension)
     pGrid->impossibleSquares = 0;
     pGrid->incompleteSquares = squareCount;
 
+    uint64_t square = 0;
+
+    _bittestandset64(&square, dimension - 1);
+
+    square = _blsmsk_u64(square);
+
     for (uint64_t* pSquare = getSquarePointer(pGrid, 0, 0);
          pSquare <= getSquarePointer(pGrid, dimension - 1, dimension - 1);
          ++pSquare)
     {
-        *pSquare = ((uint64_t)1 << dimension) - 1;
+        *pSquare = square;
     }
 
     gridsInMemory += 1;
@@ -49,6 +55,8 @@ struct Grid* createGrid(uint16_t sectorDimension)
 
 struct Grid* cloneGrid(struct Grid* pGrid)
 {
+    if (gridsInMemory >= 300000) return NULL;
+
     struct Grid* pClone = malloc(getTotalSize(pGrid->dimension));
 
     if (!pClone) return NULL;
