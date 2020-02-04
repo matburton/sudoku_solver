@@ -58,6 +58,16 @@ impl GridStack {
 
             counters.impossible_grids += 1;
 
+            // HACK
+            // {
+            let squares = grid.dimension * grid.dimension;
+
+            if counters.impossible_grids % squares as u64 == 0 && !self.stack.is_empty()
+            {
+                self.stack.rotate_right(1);
+            }
+            // }
+
             return;
         }
 
@@ -98,7 +108,10 @@ impl GridStack {
         let possibility = grid.get_square(x_best, y_best)
                               .get_a_possibility();
         
-        let mut clone = grid.clone();
+        let mut clone = match self.stack.len() {
+            l if l >= 300000 => None,
+            _ => grid.clone()
+        };
 
         if clone.is_none() {
 
@@ -248,7 +261,17 @@ pub fn advance_solving(grid_stack: &mut GridStack,
 
                 counters.impossible_grids += 1;
 
+                let squares = grid.dimension * grid.dimension;
+
                 grid_stack.drop_front();
+
+                // HACK
+                // {
+                if counters.impossible_grids % squares as u64 == 0 && !grid_stack.stack.is_empty()
+                {
+                    grid_stack.stack.rotate_right(1);
+                }
+                // }
             }
         }
     };
