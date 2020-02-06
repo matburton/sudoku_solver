@@ -9,6 +9,11 @@ static inline uint64_t* getSquarePointer(struct Grid* pGrid, uint16_t x, uint16_
     return (uint64_t*)(pGrid + 1) + (y * pGrid->dimension + x);
 }
 
+static inline uint64_t toMask(uint8_t value)
+{
+    return (uint64_t)1 << (value - 1);
+}
+
 static size_t getTotalSize(uint16_t dimension)
 {
     return sizeof(struct Grid)
@@ -112,12 +117,12 @@ void setSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
     *pSquare = (uint64_t)1 << (value - 1);
 }
 
-#pragma warning (disable:4057)
-
 bool squareHasPossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 {
-    return _bittest64(getSquarePointer(pGrid, x, y), value - 1);
+    return (*getSquarePointer(pGrid, x, y) & toMask(value)) != 0;
 }
+
+#pragma warning (disable:4057)
 
 void removeSquarePossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 {
@@ -166,13 +171,13 @@ bool isComplete(struct Grid* pGrid)
     return 0 == pGrid->incompleteSquares;
 }
 
-bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
+bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint64_t mask)
 {
     uint64_t* pSquare = getSquarePointer(pGrid, 0, y);
 
     for (uint16_t index = 0; index < pGrid->dimension; ++index)
     {
-        if (index != x && _bittest64(pSquare + index, value - 1))
+        if (index != x && (*(pSquare + index) & mask))
         {
             return false;
         }
@@ -181,13 +186,13 @@ bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
     return true;
 }
 
-bool mustBeValueByColumn(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
+bool mustBeValueByColumn(struct Grid* pGrid, uint16_t x, uint16_t y, uint64_t mask)
 {
     uint64_t* pSquare = getSquarePointer(pGrid, x, 0);
 
     for (uint16_t index = 0; index < pGrid->dimension; ++index)
     {
-        if (index != y && _bittest64(pSquare, value - 1))
+        if (index != y && (*pSquare & mask))
         {
             return false;
         }
@@ -198,7 +203,7 @@ bool mustBeValueByColumn(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t val
     return true;
 }
 
-bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
+bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint64_t mask)
 {
     uint16_t sectorDimension = pGrid->sectorDimension;
 
@@ -213,7 +218,7 @@ bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t val
 
     for (uint16_t index = 0; index < pGrid->dimension; ++index)
     {
-        if (index != ignoreIndex && _bittest64(pSquare, value - 1))
+        if (index != ignoreIndex && (*pSquare & mask))
         {
             return false;
         }
@@ -229,6 +234,15 @@ bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t val
     }
 
     return true;
+}
+
+bool mustBeValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
+{
+    uint64_t mask = toMask(value);
+
+    return mustBeValueByRow   (pGrid, x, y, mask)
+        || mustBeValueByColumn(pGrid, x, y, mask)
+        || mustBeValueBySector(pGrid, x, y, mask);
 }
 
 #pragma warning (default:4057)

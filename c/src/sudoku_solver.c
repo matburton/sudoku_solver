@@ -67,10 +67,8 @@ uint8_t getDeducedValueAt(struct Grid* pGrid, uint16_t x, uint16_t y)
     {
         for (uint8_t value = 1; value <= pGrid->dimension; ++value)
         {
-            if (   squareHasPossibility   (pGrid, x, y, value)
-                && (   mustBeValueByRow   (pGrid, x, y, value)
-                    || mustBeValueByColumn(pGrid, x, y, value)
-                    || mustBeValueBySector(pGrid, x, y, value)))
+            if (   squareHasPossibility(pGrid, x, y, value)
+                && mustBeValue(pGrid, x, y, value))
             {
                 return value;
             }
