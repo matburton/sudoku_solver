@@ -53,8 +53,4 @@ bool isPossible(struct Grid* pGrid);
 
 bool isComplete(struct Grid* pGrid);
 
-bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);
-
-bool mustBeValueByColumn(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);
-
-bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);
+bool mustBeValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value);

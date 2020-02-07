@@ -1,13 +1,29 @@
 
 #include "../include/sudoku_grid.h"
 
-#include <immintrin.h>
 #include <stdlib.h>
 #include <string.h>
 
 static inline uint64_t* getSquarePointer(struct Grid* pGrid, uint16_t x, uint16_t y)
 {
     return (uint64_t*)(pGrid + 1) + (y * pGrid->dimension + x);
+}
+
+static inline uint64_t toMask(uint8_t value)
+{
+    return (uint64_t)1 << (value - 1);
+}
+
+static inline uint64_t countSetBits(uint64_t square)
+{
+    uint64_t count;
+
+    for (count = 0; square; ++count)
+    {
+        square &= square - 1;
+    }
+
+    return count;
 }
 
 static size_t getTotalSize(uint16_t dimension)
@@ -35,11 +51,15 @@ struct Grid* createGrid(uint16_t sectorDimension)
     pGrid->impossibleSquares = 0;
     pGrid->incompleteSquares = squareCount;
 
+    uint64_t square = dimension == 8
+                    ? (uint64_t)0 - 1
+                    : ((uint64_t)1 << dimension) - 1;
+
     for (uint64_t* pSquare = getSquarePointer(pGrid, 0, 0);
          pSquare <= getSquarePointer(pGrid, dimension - 1, dimension - 1);
          ++pSquare)
     {
-        *pSquare = (1 << dimension) - 1;
+        *pSquare = square;
     }
 
     gridsInMemory += 1;
@@ -49,6 +69,8 @@ struct Grid* createGrid(uint16_t sectorDimension)
 
 struct Grid* cloneGrid(struct Grid* pGrid)
 {
+    if (gridsInMemory >= 300000) return NULL; // HACK
+
     struct Grid* pClone = malloc(getTotalSize(pGrid->dimension));
 
     if (!pClone) return NULL;
@@ -76,7 +98,7 @@ void setSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 {
     uint64_t* pSquare = getSquarePointer(pGrid, x, y);
 
-    uint64_t possibilityCount = __popcnt64(*pSquare);
+    uint64_t possibilityCount = countSetBits(*pSquare);
 
     if (0 == possibilityCount)
     {
@@ -93,16 +115,16 @@ void setSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 
 bool squareHasPossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 {
-    return _bittest64(getSquarePointer(pGrid, x, y), value - 1);
+    return (*getSquarePointer(pGrid, x, y) & toMask(value)) != 0;
 }
 
 void removeSquarePossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 {
     uint64_t* pSquare = getSquarePointer(pGrid, x, y);
 
-    _bittestandreset64(pSquare, value - 1);
+    *pSquare = *pSquare & ~toMask(value);
 
-    uint64_t possibilityCount = __popcnt64(*pSquare);
+    uint64_t possibilityCount = countSetBits(*pSquare);
 
     if (0 == possibilityCount)
     {
@@ -117,20 +139,30 @@ void removeSquarePossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t
 
 uint16_t getPossibilityCount(struct Grid* pGrid, uint16_t x, uint16_t y)
 {
-    return (uint16_t)__popcnt64(*getSquarePointer(pGrid, x, y));
+    return (uint16_t)countSetBits(*getSquarePointer(pGrid, x, y));
 }
 
 uint8_t getSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y)
 {
     uint64_t square = *getSquarePointer(pGrid, x, y);
 
-    if (__popcnt64(square) != 1) return 0;
+    if (countSetBits(square) != 1) return 0;
 
-    unsigned long index;
+    uint8_t value = 1;
 
-    _BitScanForward64(&index, square);
+    uint64_t mask = 1;
 
-    return (uint8_t)index + 1;
+    for (; value < pGrid->dimension; mask <<= 1)
+    {
+        if ((square & mask) != 0)
+        {
+            return value;
+        }
+
+        ++value;
+    }
+
+    return value;
 }
 
 bool isPossible(struct Grid* pGrid)
@@ -143,13 +175,13 @@ bool isComplete(struct Grid* pGrid)
     return 0 == pGrid->incompleteSquares;
 }
 
-bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
+bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint64_t mask)
 {
     uint64_t* pSquare = getSquarePointer(pGrid, 0, y);
 
     for (uint16_t index = 0; index < pGrid->dimension; ++index)
     {
-        if (index != x && _bittest64(pSquare + index, value - 1))
+        if (index != x && (*(pSquare + index) & mask))
         {
             return false;
         }
@@ -158,13 +190,13 @@ bool mustBeValueByRow(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
     return true;
 }
 
-bool mustBeValueByColumn(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
+bool mustBeValueByColumn(struct Grid* pGrid, uint16_t x, uint16_t y, uint64_t mask)
 {
     uint64_t* pSquare = getSquarePointer(pGrid, x, 0);
 
     for (uint16_t index = 0; index < pGrid->dimension; ++index)
     {
-        if (index != y && _bittest64(pSquare, value - 1))
+        if (index != y && (*pSquare & mask))
         {
             return false;
         }
@@ -175,7 +207,7 @@ bool mustBeValueByColumn(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t val
     return true;
 }
 
-bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
+bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint64_t mask)
 {
     uint16_t sectorDimension = pGrid->sectorDimension;
 
@@ -190,7 +222,7 @@ bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t val
 
     for (uint16_t index = 0; index < pGrid->dimension; ++index)
     {
-        if (index != ignoreIndex && _bittest64(pSquare, value - 1))
+        if (index != ignoreIndex && (*pSquare & mask))
         {
             return false;
         }
@@ -206,4 +238,13 @@ bool mustBeValueBySector(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t val
     }
 
     return true;
+}
+
+bool mustBeValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
+{
+    uint64_t mask = toMask(value);
+
+    return mustBeValueByRow   (pGrid, x, y, mask)
+        || mustBeValueByColumn(pGrid, x, y, mask)
+        || mustBeValueBySector(pGrid, x, y, mask);
 }
