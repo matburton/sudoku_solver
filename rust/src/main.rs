@@ -17,7 +17,7 @@ fn write_counters(counters: &solver::Counters,
 
 fn main() {
 
-    let mut grid_stack = match solver::GridStack::new(6) {
+    let mut grid_stack = match solver::GridStack::new(7) {
         None => {
 
             std::println!("Failed to create initial grid");

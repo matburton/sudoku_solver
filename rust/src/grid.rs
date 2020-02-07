@@ -54,7 +54,7 @@ pub struct Grid {
     impossible_squares: u16,
     incomplete_squares: u16,
 
-    squares: [Square; 4096]
+    squares: std::vec::Vec<Square>
 }
 
 impl Grid {
@@ -66,7 +66,9 @@ impl Grid {
 
     fn get_square_bits(&mut self, x: u16, y: u16) -> &mut u64 {
 
-        &mut self.squares[self.get_square_index(x, y)].bits
+        let square_index = self.get_square_index(x, y);
+
+        &mut self.squares[square_index].bits
     }
 
     pub fn get_square(&self, x: u16, y: u16) -> &Square {
@@ -82,34 +84,32 @@ impl Grid {
         }
 
         let dimension = sector_dimension * sector_dimension;
-       
+      
         let bits = match sector_dimension {
             8 => std::u64::MAX,
             _ => (1u64 << dimension) - 1
         };
 
+        let square_count = dimension * dimension;
+
         Some(Box::new(Grid {
             sector_dimension:   sector_dimension,
             dimension:          dimension,
             impossible_squares: 0,
-            incomplete_squares: dimension * dimension,
-            squares:            [Square { bits: bits }; 4096]
+            incomplete_squares: square_count,
+            squares: vec![Square { bits: bits }; square_count as usize]
         }))
     }
 
     pub fn clone(&self) -> Option<Box<Self>> {
 
-        let mut grid = Box::new(Grid {
-            sector_dimension:   0,
-            dimension:          0,
-            impossible_squares: 0,
-            incomplete_squares: 0,
-            squares:            [Square { bits: 0 }; 4096]
-        });
-
-        grid.clone_from(self);
-
-        Some(grid)
+        Some(Box::new(Grid {
+            sector_dimension:   self.sector_dimension,
+            dimension:          self.dimension,
+            impossible_squares: self.impossible_squares,
+            incomplete_squares: self.incomplete_squares,
+            squares:            self.squares.clone()
+        }))
     }
 
     pub fn clone_from(&mut self, source: &Self) {
@@ -118,7 +118,7 @@ impl Grid {
         self.dimension          = source.dimension;
         self.impossible_squares = source.impossible_squares;
         self.incomplete_squares = source.incomplete_squares;
-        self.squares            = source.squares;
+        self.squares            = source.squares.clone();
     }
 
     pub fn set_square_value(&mut self, x: u16, y: u16, value: u8) {
