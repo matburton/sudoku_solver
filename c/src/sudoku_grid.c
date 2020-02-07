@@ -1,7 +1,6 @@
 
 #include "../include/sudoku_grid.h"
 
-#include <immintrin.h>
 #include <windows.h>
 
 static inline uint64_t* getSquarePointer(struct Grid* pGrid, uint16_t x, uint16_t y)
@@ -12,6 +11,18 @@ static inline uint64_t* getSquarePointer(struct Grid* pGrid, uint16_t x, uint16_
 static inline uint64_t toMask(uint8_t value)
 {
     return (uint64_t)1 << (value - 1);
+}
+
+static inline uint64_t countSetBits(uint64_t square)
+{
+    uint64_t count;
+
+    for (count = 0; square; ++count)
+    {
+        square &= square - 1;
+    }
+
+    return count;
 }
 
 static size_t getTotalSize(uint16_t dimension)
@@ -43,11 +54,9 @@ struct Grid* createGrid(uint16_t sectorDimension)
     pGrid->impossibleSquares = 0;
     pGrid->incompleteSquares = squareCount;
 
-    LONG64 square = 0;
-
-    _bittestandset64(&square, dimension - 1);
-
-    square = _blsmsk_u64(square);
+    uint64_t square = dimension == 8
+                    ? (uint64_t)0 - 1
+                    : ((uint64_t)1 << dimension) - 1;
 
     for (uint64_t* pSquare = getSquarePointer(pGrid, 0, 0);
          pSquare <= getSquarePointer(pGrid, dimension - 1, dimension - 1);
@@ -102,7 +111,7 @@ void setSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 {
     uint64_t* pSquare = getSquarePointer(pGrid, x, y);
 
-    uint64_t possibilityCount = __popcnt64(*pSquare);
+    uint64_t possibilityCount = countSetBits(*pSquare);
 
     if (0 == possibilityCount)
     {
@@ -122,15 +131,13 @@ bool squareHasPossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t va
     return (*getSquarePointer(pGrid, x, y) & toMask(value)) != 0;
 }
 
-#pragma warning (disable:4057)
-
 void removeSquarePossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
 {
     uint64_t* pSquare = getSquarePointer(pGrid, x, y);
 
-    _bittestandreset64(pSquare, value - 1);
+    *pSquare = *pSquare & ~toMask(value);
 
-    uint64_t possibilityCount = __popcnt64(*pSquare);
+    uint64_t possibilityCount = countSetBits(*pSquare);
 
     if (0 == possibilityCount)
     {
@@ -145,20 +152,30 @@ void removeSquarePossibility(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t
 
 uint16_t getPossibilityCount(struct Grid* pGrid, uint16_t x, uint16_t y)
 {
-    return (uint16_t)__popcnt64(*getSquarePointer(pGrid, x, y));
+    return (uint16_t)countSetBits(*getSquarePointer(pGrid, x, y));
 }
 
 uint8_t getSquareValue(struct Grid* pGrid, uint16_t x, uint16_t y)
 {
     uint64_t square = *getSquarePointer(pGrid, x, y);
 
-    if (__popcnt64(square) != 1) return 0;
+    if (countSetBits(square) != 1) return 0;
 
-    unsigned long index;
+    uint8_t value = 1;
 
-    _BitScanForward64(&index, square);
+    uint64_t mask = 1;
 
-    return (uint8_t)index + 1;
+    for (; value < pGrid->dimension; mask <<= 1)
+    {
+        if ((square & mask) != 0)
+        {
+            return value;
+        }
+
+        ++value;
+    }
+
+    return value;
 }
 
 bool isPossible(struct Grid* pGrid)
@@ -244,5 +261,3 @@ bool mustBeValue(struct Grid* pGrid, uint16_t x, uint16_t y, uint8_t value)
         || mustBeValueByColumn(pGrid, x, y, mask)
         || mustBeValueBySector(pGrid, x, y, mask);
 }
-
-#pragma warning (default:4057)
