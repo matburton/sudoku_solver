@@ -110,7 +110,8 @@ namespace SudokuSolver.Core
             while (x != lastX || y != lastY);
         }
         
-        private static void SplitFirstGridToFront(IList<Grid> grids)
+        private static void SplitFirstGridToFront(IList<Grid> grids,
+                                                  Counters counters)
         {
             var (bestCount, bestX, bestY) = (0, 0, 0);
             
@@ -130,19 +131,27 @@ namespace SudokuSolver.Core
             Coords coords = (bestX, bestY);
             
             var value = grid.GetSquare(coords).GetAPossibility();
-            
+
             var clone = grid.Clone();
             
+            ++counters.GridSplits;
+
             RemovePossibilityAt(grid, coords, value);
             
-            if (!grid.IsPossible) grids.RemoveAt(0);
+            if (!grid.IsPossible)
+            {
+                ++counters.ImpossibleGrids;
+                
+                grids.RemoveAt(0);
+            }
             
             SetValueAt(clone, coords, value);
             
             if (clone.IsPossible) grids.Insert(0, clone);
+            else ++counters.ImpossibleGrids;
         }
         
-        public static void AdvanceSolving(IList<Grid> grids)
+        public static void AdvanceSolving(IList<Grid> grids, Counters counters)
         {
             if (grids.Count is 0) return;
             
@@ -150,6 +159,8 @@ namespace SudokuSolver.Core
             
             if (!grid.IsPossible)
             {
+                ++counters.ImpossibleGrids;
+                
                 grids.RemoveAt(0);
                 
                 if (grids.Count is 0) return;
@@ -159,7 +170,7 @@ namespace SudokuSolver.Core
             
             if (!grid.IsComplete && grid.IsPossible)
             {
-                SplitFirstGridToFront(grids);
+                SplitFirstGridToFront(grids, counters);
             }
         }
     }
