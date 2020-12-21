@@ -1,18 +1,10 @@
 
+using System.Collections.Generic;
+
 namespace SudokuSolver.Core
 {
-    public sealed class Solver
+    public static class Solver
     {
-        private static int GetAPossibilityAt(Grid grid, Coords coords)
-        {
-            for (var value  = 1; value < grid.Dimension; ++value)
-            {
-                if (grid.SquareHasPossibility(coords, value)) return value;
-            }
-            
-            return grid.Dimension;
-        }
-        
         private static void SetValueAt(Grid grid, Coords coords, int value)
         {
             grid.SetSquareValue(coords, value);
@@ -40,11 +32,15 @@ namespace SudokuSolver.Core
                 }
             }
             
-            var startX = coords.X / grid.SectorDimension * grid.SectorDimension;
-            var startY = coords.Y / grid.SectorDimension * grid.SectorDimension;
+            int Start(int i) => i / grid.SectorDimension * grid.SectorDimension;
+            
+            var (startX, startY) = (Start(coords.X), Start(coords.Y));
+            
+            var (endX, endY) = (startX + grid.SectorDimension,
+                                startY + grid.SectorDimension);
 
-            for (var y = startY; y < startY + grid.SectorDimension; ++y)
-            for (var x = startX; x < startX + grid.SectorDimension; ++x)
+            for (var y = startY; y < endY; ++y)
+            for (var x = startX; x < endX; ++x)
             {
                 if (x != coords.X && y != coords.Y)
                 {
@@ -57,13 +53,114 @@ namespace SudokuSolver.Core
                                                 Coords coords,
                                                 int value)
         {
-            if (!grid.SquareHasPossibility(coords, value)) return;
+            if (!grid.GetSquare(coords).HasPossibility(value)) return;
             
-            grid.RemoveSquarePossibility(coords, value);
-            
-            value = grid.GetSquareValue(coords);
+            value = grid.RemoveSquarePossibility(coords, value).Value;
             
             if (value != 0) RemovePossibilitiesRelatedTo(grid, coords, value);
+        }
+        
+        private static int GetDeducedValueAt(Grid grid, Coords coords)
+        {
+            var square = grid.GetSquare(coords);
+            
+            // ReSharper disable once InvertIf
+            if (square.PossibilityCount > 1)
+            {
+                for (var value = 1; value <= grid.Dimension; ++ value)
+                {
+                    if (   square.HasPossibility(value)
+                        && grid.MustBeValue(coords, value))
+                    {
+                        return value;
+                    }
+                }
+            }
+            
+            return 0;
+        }
+        
+        private static void RefineGrid(Grid grid)
+        {
+            var (x, y, lastX, lastY) = (0, 0, 0, 0);
+            
+            do
+            {
+                var value = GetDeducedValueAt(grid, (x, y));
+                
+                if (value != 0)
+                {
+                    SetValueAt(grid, (x, y), value);
+                    
+                    if (!grid.IsPossible) return;
+                    
+                    (lastX, lastY) = (x, y);
+                }
+                
+                x += 1;
+
+                // ReSharper disable once InvertIf
+                if (grid.Dimension == x)
+                {
+                    (x, y) = (0, y + 1);
+                    
+                    if (grid.Dimension == y) y = 0;
+                }
+            }
+            while (x != lastX || y != lastY);
+        }
+        
+        private static void SplitFirstGridToFront(IList<Grid> grids)
+        {
+            var (bestCount, bestX, bestY) = (0, 0, 0);
+            
+            var grid = grids[0];
+            
+            for (var y = 0; y < grid.Dimension; ++y)
+            for (var x = 0; x < grid.Dimension; ++x)
+            {
+                var count = grid.GetSquare((x, y)).PossibilityCount;
+                
+                if (count > 1 && (bestCount is 0 || count < bestCount))
+                {
+                    (bestCount, bestX, bestY) = (count, x, y);
+                }
+            }
+            
+            Coords coords = (bestX, bestY);
+            
+            var value = grid.GetSquare(coords).GetAPossibility();
+            
+            var clone = grid.Clone();
+            
+            RemovePossibilityAt(grid, coords, value);
+            
+            if (!grid.IsPossible) grids.RemoveAt(0);
+            
+            SetValueAt(clone, coords, value);
+            
+            if (clone.IsPossible) grids.Insert(0, clone);
+        }
+        
+        public static void AdvanceSolving(IList<Grid> grids)
+        {
+            if (grids.Count is 0) return;
+            
+            var grid = grids[0];
+            
+            if (!grid.IsPossible)
+            {
+                grids.RemoveAt(0);
+                
+                if (grids.Count is 0) return;
+            }
+            
+            RefineGrid(grid);
+            
+            if (!grid.IsComplete && grid.IsPossible)
+            {
+                SplitFirstGridToFront(grids);
+            }
         }
     }
 }

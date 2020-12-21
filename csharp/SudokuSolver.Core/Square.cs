@@ -10,9 +10,36 @@ namespace SudokuSolver.Core
 
         public ulong Bits { get; init; }
 
-        public ulong PossibilityCount => Popcnt.X64.PopCount(Bits);
+        public int PossibilityCount => (int)Popcnt.X64.PopCount(Bits);
+        
+        public int Value
+        {
+            get
+            {
+                if (PossibilityCount != 1) return 0;
+                
+                var value = 1;
+                
+                for (var mask = 1UL; ; mask <<= 1, ++value)
+                {
+                    if ((Bits & mask) != 0) return value;
+                }
+            }
+        }
         
         public bool HasPossibility(int value) => MaskMatch(GetMask(value));
+        
+        public int GetAPossibility()
+        {
+            if (PossibilityCount is 0) return 0;
+            
+            var value = 1;
+                
+            for (var mask = 1UL; ; mask <<= 1, ++value)
+            {
+                if ((Bits & mask) != 0) return value;
+            }
+        }
         
         public Square WithoutPossibility(int value) =>
             new () { Bits = Bits & ~GetMask(value) };

@@ -1,5 +1,6 @@
 
 using System;
+using System.Runtime.Intrinsics.X86;
 
 namespace SudokuSolver.Core
 {
@@ -23,15 +24,30 @@ namespace SudokuSolver.Core
             
             m_Squares = new Square[squareCount];
             
-            Array.Fill(m_Squares, new () { Bits = ulong.MaxValue });
+            var bits = Bmi1.X64.GetMaskUpToLowestSetBit(1UL << Dimension - 1);
+            
+            Array.Fill(m_Squares, new () { Bits = bits });
+        }
+        
+        public Grid Clone()
+        {
+            var grid = (Grid)MemberwiseClone();
+            
+            grid.m_Squares = (Square[])m_Squares.Clone();
+            
+            return grid;
         }
         
         public int SectorDimension { get; }
 
         public int Dimension { get; }
         
-        public Grid Clone() => (Grid)MemberwiseClone();
-
+        public bool IsPossible => m_ImpossibleSquares is 0;
+        
+        public bool IsComplete => m_IncompleteSquares is 0;
+        
+        public Square GetSquare(Coords coords) => m_Squares[ToIndex(coords)];
+        
         public void SetSquareValue(Coords coords, int value)
         {
             var index = ToIndex(coords);
@@ -43,11 +59,8 @@ namespace SudokuSolver.Core
             
             m_Squares[index] = Square.FromValue(value);
         }
-        
-        public bool SquareHasPossibility(Coords coords, int value) =>
-            m_Squares[ToIndex(coords)].HasPossibility(value);
 
-        public void RemoveSquarePossibility(Coords coords, int value)
+        public Square RemoveSquarePossibility(Coords coords, int value)
         {
             var index = ToIndex(coords);
             
@@ -66,36 +79,9 @@ namespace SudokuSolver.Core
             {
                 m_IncompleteSquares -= 1;
             }
+            
+            return square;
         }
-        
-        public int GetPossibilityCount(Coords coords) =>
-            (int)m_Squares[ToIndex(coords)].PossibilityCount;
-
-        /// <returns>
-        /// 0 if the square has multiple possibilities or no possibilities
-        /// </returns>
-        ///
-        public int GetSquareValue(Coords coords)
-        {
-            var square = m_Squares[ToIndex(coords)];
-            
-            if (square.PossibilityCount != 1) return 0;
-            
-            var value = 1;
-            
-            for (var mask = 1UL; value < Dimension; mask <<= 1, ++value)
-            {
-                if ((square.Bits & mask) != 0) return value;
-            }
-            
-            return value;
-        }
-        
-        public bool IsPossible => m_ImpossibleSquares is 0;
-        
-        public bool IsComplete => m_IncompleteSquares is 0;
-
-        public override string ToString() => this.ToGridString();
 
         public bool MustBeValue(Coords coords, int value)
         {
@@ -105,12 +91,16 @@ namespace SudokuSolver.Core
                 || MustBeValueByColumn(coords, mask)
                 || MustBeValueBySector(coords, mask);
         }
+        
+        public override string ToString() => this.ToGridString();
 
         private bool MustBeValueByRow(Coords coords, ulong mask)
         {
-            for (var index = ToIndex((0, coords.Y)); index < Dimension; ++index)
+            var index = ToIndex((0, coords.Y));
+            
+            for (var x = 0; x < Dimension; ++x)
             {
-                if (index != coords.X && m_Squares[index].MaskMatch(mask))
+                if (x != coords.X && m_Squares[index + x].MaskMatch(mask))
                 {
                     return false;
                 }
@@ -123,9 +113,9 @@ namespace SudokuSolver.Core
         {
             var index = coords.X;
 
-            for (var i = 0; i < Dimension; ++i, index += Dimension)
+            for (var y = 0; y < Dimension; ++y, index += Dimension)
             {
-                if (i != coords.Y && m_Squares[index].MaskMatch(mask))
+                if (y != coords.Y && m_Squares[index].MaskMatch(mask))
                 {
                     return false;
                 }
@@ -140,19 +130,15 @@ namespace SudokuSolver.Core
             
             var index = ToIndex((coords.X / SectorDimension * SectorDimension,
                                  coords.Y / SectorDimension * SectorDimension));
+            
+            var bumpSize = Dimension - SectorDimension;
 
-            for (var i = 0; i < Dimension; ++i)
+            for (var i = 0; i < SectorDimension; ++i, index += bumpSize)
+            for (var j = 0; j < SectorDimension; ++j, ++index)
             {
                 if (index != ignoreIndex && m_Squares[index].MaskMatch(mask))
                 {
                     return false;
-                }
-                
-                index += 1;
-                
-                if (index % SectorDimension is 0)
-                {
-                    index += Dimension - SectorDimension;
                 }
             }
             
@@ -165,6 +151,6 @@ namespace SudokuSolver.Core
         
         private int m_IncompleteSquares;
         
-        private readonly Square[] m_Squares;
+        private Square[] m_Squares;
     }
 }

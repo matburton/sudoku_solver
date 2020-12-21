@@ -1,11 +1,18 @@
 
 using System;
+using System.Collections.Generic;
+
 using SudokuSolver.Core;
 
-var grid = new Grid(4);
+var grids = new List<Grid> { new (5) };
 
-grid.SetSquareValue((1, 2), 3);
+Console.WriteLine("Searching for {0} x {0} solutions...", grids[0].Dimension);
 
-Console.WriteLine(grid);
+while (grids.Count > 0 && !grids[0].IsComplete)
+{
+    Solver.AdvanceSolving(grids);
+}
 
-Console.WriteLine("Done");
+if (grids.Count > 1) Console.WriteLine($"\r\nSolution {grids[0]}");
+
+Console.WriteLine("\r\nDone");

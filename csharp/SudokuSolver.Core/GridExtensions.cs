@@ -1,5 +1,4 @@
 
-using System.Collections.Concurrent;
 using System.Text;
 
 namespace SudokuSolver.Core
@@ -16,9 +15,7 @@ namespace SudokuSolver.Core
             
             stringBuilder.AppendLine();
             
-            var dividerLine = DividerLines.GetOrAdd
-                (grid.SectorDimension,
-                 _ => CreateDividerLine(grid, lineLength));
+            var dividerLine = CreateDividerLine(grid, lineLength);
             
             for (var y = 1; y <= grid.Dimension; ++y)
             {
@@ -62,14 +59,16 @@ namespace SudokuSolver.Core
         
         private static char FormatValue(Grid grid, Coords coords)
         {
-            var value = grid.GetSquareValue(coords);
+            var square = grid.GetSquare(coords);
+            
+            var value = square.Value;
             
             char FromBase(char c, int offset = 0) => (char)(c + value - offset);
             
             if (value is 0)
             {
-                return grid.GetPossibilityCount(coords) switch { 0 => '!',
-                                                                 _ => '.' };
+                return square.PossibilityCount switch { 0 => '!',
+                                                        _ => '.' };
             }
             
             if (grid.SectorDimension <= 3) return FromBase('0');
@@ -104,7 +103,5 @@ namespace SudokuSolver.Core
             
             return stringBuilder.ToString();
         }
-        
-        private static readonly ConcurrentDictionary<int, string> DividerLines = new ();
     }
 }
