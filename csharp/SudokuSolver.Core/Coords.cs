@@ -1,7 +1,7 @@
 
 namespace SudokuSolver.Core
 {
-    public readonly struct Coords
+    public readonly ref struct Coords
     {
         public static implicit operator Coords((int x, int y) t) =>
             new () { X = t.x, Y = t.y };

@@ -17,23 +17,25 @@ namespace SudokuSolver.Core
             SectorDimension = sectorDimension;
             
             Dimension = sectorDimension * sectorDimension;
+
+            m_IncompleteSquares = Dimension * Dimension;
             
-            var squareCount = Dimension * Dimension;
-            
-            m_IncompleteSquares = squareCount;
-            
-            m_Squares = new Square[squareCount];
+            m_Squares = new Square[Dimension, Dimension];
             
             var bits = Bmi1.X64.GetMaskUpToLowestSetBit(1UL << Dimension - 1);
-            
-            Array.Fill(m_Squares, new () { Bits = bits });
+
+            for (var x = 0; x < Dimension; ++x)
+            for (var y = 0; y < Dimension; ++y)
+            {
+                m_Squares.SetValue(new Square { Bits = bits }, x, y);
+            }
         }
         
         public Grid Clone()
         {
             var grid = (Grid)MemberwiseClone();
             
-            grid.m_Squares = (Square[])m_Squares.Clone();
+            grid.m_Squares = (Square[,])m_Squares.Clone();
             
             return grid;
         }
@@ -46,26 +48,23 @@ namespace SudokuSolver.Core
         
         public bool IsComplete => m_IncompleteSquares is 0;
         
-        public Square GetSquare(Coords coords) => m_Squares[ToIndex(coords)];
+        public Square GetSquare(Coords coords) => m_Squares[coords.X, coords.Y];
         
         public void SetSquareValue(Coords coords, int value)
         {
-            var index = ToIndex(coords);
-            
-            var possibilityCount = m_Squares[index].PossibilityCount;
+            var possibilityCount = m_Squares[coords.X, coords.Y]
+                                  .PossibilityCount;
             
             if (possibilityCount is 0) m_ImpossibleSquares -= 1;
             if (possibilityCount != 1) m_IncompleteSquares -= 1;
             
-            m_Squares[index] = Square.FromValue(value);
+            m_Squares[coords.X, coords.Y] = Square.FromValue(value);
         }
 
         public Square RemoveSquarePossibility(Coords coords, int value)
         {
-            var index = ToIndex(coords);
-            
-            var square = m_Squares[index]
-                       = m_Squares[index].WithoutPossibility(value);
+            var square = m_Squares[coords.X, coords.Y]
+                       = m_Squares[coords.X, coords.Y].WithoutPossibility(value);
 
             var possibilityCount = square.PossibilityCount;
             
@@ -96,11 +95,9 @@ namespace SudokuSolver.Core
 
         private bool MustBeValueByRow(Coords coords, ulong mask)
         {
-            var index = ToIndex((0, coords.Y));
-            
             for (var x = 0; x < Dimension; ++x)
             {
-                if (x != coords.X && m_Squares[index + x].MaskMatch(mask))
+                if (x != coords.X && m_Squares[x, coords.Y].MaskMatch(mask))
                 {
                     return false;
                 }
@@ -111,11 +108,9 @@ namespace SudokuSolver.Core
         
         private bool MustBeValueByColumn(Coords coords, ulong mask)
         {
-            var index = coords.X;
-
-            for (var y = 0; y < Dimension; ++y, index += Dimension)
+            for (var y = 0; y < Dimension; ++y)
             {
-                if (y != coords.Y && m_Squares[index].MaskMatch(mask))
+                if (y != coords.Y && m_Squares[coords.X, y].MaskMatch(mask))
                 {
                     return false;
                 }
@@ -126,31 +121,27 @@ namespace SudokuSolver.Core
         
         private bool MustBeValueBySector(Coords coords, ulong mask)
         {
-            var ignoreIndex = ToIndex(coords);
+            var startX = coords.X / SectorDimension * SectorDimension;
+            var startY = coords.Y / SectorDimension * SectorDimension;
             
-            var index = ToIndex((coords.X / SectorDimension * SectorDimension,
-                                 coords.Y / SectorDimension * SectorDimension));
-            
-            var bumpSize = Dimension - SectorDimension;
+            var endX = startX + SectorDimension;
+            var endY = startY + SectorDimension;
 
-            for (var i = 0; i < SectorDimension; ++i, index += bumpSize)
-            for (var j = 0; j < SectorDimension; ++j, ++index)
+            for (var x = startX; x < endX; ++x)
+            for (var y = startY; y < endY; ++y)
             {
-                if (index != ignoreIndex && m_Squares[index].MaskMatch(mask))
-                {
-                    return false;
-                }
+                if (x == coords.X && y == coords.Y) continue;
+                
+                if (m_Squares[x, y].MaskMatch(mask)) return false;
             }
             
             return true;
         }
         
-        private int ToIndex(Coords coords) => coords.Y * Dimension + coords.X;
-
         private int m_ImpossibleSquares;
         
         private int m_IncompleteSquares;
         
-        private Square[] m_Squares;
+        private Square[,] m_Squares;
     }
 }
