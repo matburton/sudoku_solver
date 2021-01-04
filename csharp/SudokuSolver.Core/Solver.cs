@@ -1,6 +1,4 @@
 
-using System.Collections.Generic;
-
 namespace SudokuSolver.Core
 {
     public static class Solver
@@ -110,14 +108,14 @@ namespace SudokuSolver.Core
             while (current != last);
         }
         
-        private static void SplitFirstGridToFront(IList<Grid> grids,
+        private static void SplitFirstGridToFront(GridCollection grids,
                                                   Counters counters)
         {
             Coords best = (0, 0);
             
             var bestCount = 0;
             
-            var grid = grids[0];
+            var grid = grids.Now;
             
             for (var y = 0; y < grid.Dimension; ++y)
             for (var x = 0; x < grid.Dimension; ++x)
@@ -145,26 +143,27 @@ namespace SudokuSolver.Core
             {
                 ++counters.ImpossibleGrids;
                 
-                grids.RemoveAt(0);
+                grids.Pop();
             }
             
             SetValueAt(clone, best, value);
             
-            if (clone.IsPossible) grids.Insert(0, clone);
+            if (clone.IsPossible) grids.Push(clone);
             else ++counters.ImpossibleGrids;
         }
         
-        public static void AdvanceSolving(IList<Grid> grids, Counters counters)
+        public static void AdvanceSolving(GridCollection grids,
+                                          Counters counters)
         {
             if (grids.Count is 0) return;
             
-            var grid = grids[0];
+            var grid = grids.Now;
             
             if (!grid.IsPossible)
             {
                 ++counters.ImpossibleGrids;
                 
-                grids.RemoveAt(0);
+                grids.Pop();
                 
                 if (grids.Count is 0) return;
             }

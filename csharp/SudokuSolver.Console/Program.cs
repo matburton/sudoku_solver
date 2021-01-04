@@ -1,13 +1,13 @@
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 using SudokuSolver.Core;
 
-var grids = new List<Grid> { new (6) };
+var grids = new GridCollection(new Grid(6));
 
-Console.WriteLine("\r\nSearching for {0} x {0} solutions...", grids[0].Dimension);
+Console.WriteLine("\r\nSearching for {0} x {0} solutions...",
+                  grids.Now.Dimension);
 
 var counters = new Counters();
 
@@ -23,17 +23,17 @@ while (counters.Solutions is 0)
     
     if (grids.Count is 0) break;
     
-    if (grids[0].IsComplete)
+    if (grids.Now.IsComplete)
     {
         ++counters.Solutions;
         
-        Console.WriteLine($"\r\nSolution: {grids[0]}");
+        Console.WriteLine($"\r\nSolution: {grids.Now}");
         
         Console.WriteLine(counters.ToString(grids));
     }
     else if (stopWatch.ElapsedMilliseconds >= 15000)
     {
-        Console.WriteLine(lastReportedCounters ? $"\r\nCurrent grid: {grids[0]}"
+        Console.WriteLine(lastReportedCounters ? $"\r\nCurrent grid: {grids.Now}"
                                                : counters.ToString(grids));
         stopWatch.Restart();
         

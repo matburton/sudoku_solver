@@ -1,5 +1,4 @@
 
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
@@ -17,7 +16,7 @@ namespace SudokuSolver.Core
         
         public int Solutions { get; set; }
         
-        public string ToString(IReadOnlyCollection<Grid> grids)
+        public string ToString(GridCollection grids)
         {
             var stringBuilder = new StringBuilder();
             
