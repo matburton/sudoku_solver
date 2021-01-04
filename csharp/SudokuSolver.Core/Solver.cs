@@ -34,13 +34,13 @@ namespace SudokuSolver.Core
             
             int Start(int i) => i / grid.SectorDimension * grid.SectorDimension;
             
-            var (startX, startY) = (Start(coords.X), Start(coords.Y));
+            Coords start = (Start(coords.X), Start(coords.Y));
             
-            var (endX, endY) = (startX + grid.SectorDimension,
-                                startY + grid.SectorDimension);
+            Coords end = (start.X + grid.SectorDimension,
+                          start.Y + grid.SectorDimension);
 
-            for (var y = startY; y < endY; ++y)
-            for (var x = startX; x < endX; ++x)
+            for (var y = start.Y; y < end.Y; ++y)
+            for (var x = start.X; x < end.X; ++x)
             {
                 if (x != coords.X && y != coords.Y)
                 {
@@ -82,38 +82,40 @@ namespace SudokuSolver.Core
         
         private static void RefineGrid(Grid grid)
         {
-            var (x, y, lastX, lastY) = (0, 0, 0, 0);
+            Coords current = (0, 0), last = (0, 0);
             
             do
             {
-                var value = GetDeducedValueAt(grid, (x, y));
+                var value = GetDeducedValueAt(grid, current);
                 
                 if (value != 0)
                 {
-                    SetValueAt(grid, (x, y), value);
+                    SetValueAt(grid, current, value);
                     
                     if (!grid.IsPossible) return;
                     
-                    (lastX, lastY) = (x, y);
+                    last = current;
                 }
                 
-                x += 1;
+                current.X += 1;
 
                 // ReSharper disable once InvertIf
-                if (grid.Dimension == x)
+                if (grid.Dimension == current.X)
                 {
-                    (x, y) = (0, y + 1);
+                    current = (0, current.Y + 1);
                     
-                    if (grid.Dimension == y) y = 0;
+                    if (grid.Dimension == current.Y) current.Y = 0;
                 }
             }
-            while (x != lastX || y != lastY);
+            while (current != last);
         }
         
         private static void SplitFirstGridToFront(IList<Grid> grids,
                                                   Counters counters)
         {
-            var (bestCount, bestX, bestY) = (0, 0, 0);
+            Coords best = (0, 0);
+            
+            var bestCount = 0;
             
             var grid = grids[0];
             
@@ -122,21 +124,22 @@ namespace SudokuSolver.Core
             {
                 var count = grid.GetSquare((x, y)).PossibilityCount;
                 
+                // ReSharper disable once InvertIf
                 if (count > 1 && (bestCount is 0 || count < bestCount))
                 {
-                    (bestCount, bestX, bestY) = (count, x, y);
+                    bestCount = count;
+                    
+                    best = (x, y);
                 }
             }
-            
-            Coords coords = (bestX, bestY);
-            
-            var value = grid.GetSquare(coords).GetAPossibility();
+
+            var value = grid.GetSquare(best).GetAPossibility();
 
             var clone = grid.Clone();
             
             ++counters.GridSplits;
 
-            RemovePossibilityAt(grid, coords, value);
+            RemovePossibilityAt(grid, best, value);
             
             if (!grid.IsPossible)
             {
@@ -145,7 +148,7 @@ namespace SudokuSolver.Core
                 grids.RemoveAt(0);
             }
             
-            SetValueAt(clone, coords, value);
+            SetValueAt(clone, best, value);
             
             if (clone.IsPossible) grids.Insert(0, clone);
             else ++counters.ImpossibleGrids;

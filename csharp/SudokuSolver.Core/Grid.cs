@@ -121,18 +121,21 @@ namespace SudokuSolver.Core
         
         private bool MustBeValueBySector(Coords coords, ulong mask)
         {
-            var startX = coords.X / SectorDimension * SectorDimension;
-            var startY = coords.Y / SectorDimension * SectorDimension;
+            // ReSharper disable UseDeconstruction
+            var start = (x: coords.X / SectorDimension * SectorDimension,
+                         y: coords.Y / SectorDimension * SectorDimension);
             
-            var endX = startX + SectorDimension;
-            var endY = startY + SectorDimension;
+            var end = (x: start.x + SectorDimension,
+                       y: start.y + SectorDimension);
+            // ReSharper restore UseDeconstruction
 
-            for (var x = startX; x < endX; ++x)
-            for (var y = startY; y < endY; ++y)
+            for (var x = start.x; x < end.x; ++x)
+            for (var y = start.y; y < end.y; ++y)
             {
-                if (x == coords.X && y == coords.Y) continue;
-                
-                if (m_Squares[x, y].MaskMatch(mask)) return false;
+                if ((x, y) != coords && m_Squares[x, y].MaskMatch(mask))
+                {
+                    return false;
+                }
             }
             
             return true;
