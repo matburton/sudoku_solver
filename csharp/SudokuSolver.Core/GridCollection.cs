@@ -1,5 +1,4 @@
 
-using System;
 using System.Collections.Generic;
 
 namespace SudokuSolver.Core
@@ -27,14 +26,14 @@ namespace SudokuSolver.Core
             
             m_Grids.Remove(node);
                 
-            m_Grids.AddFirst(node.Value);
+            m_Grids.AddFirst(node);
         }
 
         public int Count => m_Grids.Count;
         
         private LinkedListNode<Grid> GetRandomNode()
         {
-            var index = m_Random.Next(0, m_Grids.Count);
+            var index = m_Random.Next(m_Grids.Count);
 
             LinkedListNode<Grid> node;
             
@@ -60,6 +59,6 @@ namespace SudokuSolver.Core
         
         private int m_PopCount;
         
-        private readonly Random m_Random = new (0);
+        private readonly LinearCongruentialGenerator m_Random = new ();
     }
 }
