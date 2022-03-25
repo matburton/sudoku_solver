@@ -1,8 +1,6 @@
 
 import type Square from "./square.ts";
 
-const toMask = (value: number): number => 1 << (value - 1);
-
 export default class SmallSquare implements Square {
 
     public constructor(dimension: number) {
@@ -26,9 +24,11 @@ export default class SmallSquare implements Square {
         return (this.bits & toMask(value)) !== 0;
     }
 
-    public removePossibility(value: number): void {
+    public removePossibility(value: number): number {
 
         this.bits &= ~toMask(value);
+
+        return this.possibilityCount;
     }
 
     public get possibilityCount(): number {
@@ -66,3 +66,5 @@ export default class SmallSquare implements Square {
 
     private bits: number;
 }
+
+const toMask = (value: number): number => 1 << (value - 1);

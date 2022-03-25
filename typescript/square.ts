@@ -5,7 +5,7 @@ export default interface Square {
 
     hasPossibility(value: number): boolean;
 
-    removePossibility(value: number): void;
+    removePossibility(value: number): number;
 
     get possibilityCount(): number;
 
