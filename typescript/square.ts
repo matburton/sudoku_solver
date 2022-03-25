@@ -1,65 +1,15 @@
 
-const toMask = (value: number): number => 1 << (value - 1);
+export default interface Square {
 
-export default class Square {
+    clone(): Square;
 
-    public constructor(dimension: number) {
+    hasPossibility(value: number): boolean;
 
-        if (dimension < 0 || dimension > 31) {
+    removePossibility(value: number): void;
 
-            throw new Error(`Unsupported dimension ${dimension}`);
-        }
+    get possibilityCount(): number;
 
-        this.bits = (1 << dimension) - 1;
-    }
+    get value(): number;
 
-    public clone(): Square {
-
-        return Object.setPrototypeOf({ bits: this.bits }, Square.prototype);
-    }
-
-    public hasPossibility(value: number): boolean {
-
-        return (this.bits & toMask(value)) !== 0;
-    }
-
-    public removePossibility(value: number) {
-
-        this.bits &= ~toMask(value);
-    }
-
-    public get possibilityCount(): number {
-
-        let count = 0;
-
-        for (let bits = this.bits; bits; ++count) {
-
-            bits &= bits - 1;
-        }
-
-        return count;
-    }
-
-    public get value(): number {
-
-        if (this.possibilityCount !== 1) return 0;
-
-        let value = 1;
-
-        for (let mask = 1; value < 31; mask <<= 1) {
-
-            if ((this.bits & mask) !== 0) return value;
-
-            ++value;
-        }
-
-        return value;
-    }
-
-    public set value(value: number) {
-
-        this.bits = toMask(value);
-    }
-
-    private bits: number;
+    set value(value: number);
 }

@@ -1,7 +1,7 @@
 
-import Square from "./square.ts";
+import SmallSquare from "./small-square.ts";
 
-let square = new Square(9).clone();
+let square = new SmallSquare(9).clone();
 
 square.removePossibility(5);
 
