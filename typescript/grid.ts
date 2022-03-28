@@ -1,9 +1,21 @@
 
-import type Square from "./square.ts";
+import type { Square, ReadOnlySquare } from "./square.ts";
 
 import SmallSquare from "./small-square.ts";
 
 import { newArray } from "./array.ts";
+
+// TODO: Inherit to override behaviour, adding
+//       in removing related possibilities?
+
+// TODO: Maybe have another layer that also adds
+//       validation? Maybe a ReadOnlyGrid?
+
+// TODO: Or rather than inherit have another class
+//       take or use one of these and implement
+//       the same interface with extra behaviour?
+
+// TODO: Move sector dimension up to sudoku grid?
 
 export default class Grid {
 
@@ -33,9 +45,9 @@ export default class Grid {
                                      Grid.prototype);
     }
 
-    public getSquareClone(x: number, y: number): Square {
+    public getSquare(x: number, y: number): ReadOnlySquare {
 
-        return this.squares[x][y].clone();
+        return this.squares[x][y];
     }
 
     public setSquareValue(x: number, y: number, value: number): void {

@@ -1,15 +1,20 @@
 
-export default interface Square {
+interface ReadOnlySquare {
 
     clone(): Square;
 
     hasPossibility(value: number): boolean;
 
-    removePossibility(value: number): number;
-
     get possibilityCount(): number;
 
     get value(): number;
+}
+
+export default interface Square extends ReadOnlySquare {
+
+    removePossibility(value: number): number;
 
     set value(value: number);
 }
+
+export type { Square, ReadOnlySquare };

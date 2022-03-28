@@ -13,7 +13,7 @@ export default class SmallSquare implements Square {
         this.bits = (1 << dimension) - 1;
     }
 
-    public clone(): Square {
+    public clone(): SmallSquare {
 
         return Object.setPrototypeOf({ bits: this.bits },
                                      SmallSquare.prototype);

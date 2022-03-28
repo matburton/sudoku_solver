@@ -1,12 +1,13 @@
 
-import SmallSquare from "./small-square.ts";
+import Grid from "./grid.ts";
 
-let square = new SmallSquare(9).clone();
+import { toGridString } from "./serialisation.ts";
 
-square.removePossibility(5);
+const grid = new Grid(3);
 
-square = square.clone();
+grid.setSquareValue(0, 0, 1);
+grid.setSquareValue(0, 1, 1);
 
-console.log(square.possibilityCount);
+console.log(toGridString(grid));
 
 Deno.exit(0);

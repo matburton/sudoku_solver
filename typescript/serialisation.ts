@@ -10,7 +10,7 @@ function character(base: string, offset: number): string {
 
 function toCharacter(grid: Grid, x: number, y: number): string {
 
-    const value = grid.getSquareClone(x, y).value;
+    const value = grid.getSquare(x, y).value;
 
     if (value === 0) return ".";
 
