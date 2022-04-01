@@ -5,24 +5,14 @@ import SmallSquare from "./small-square.ts";
 
 import { newArray } from "./array.ts";
 
-// TODO: Inherit to override behaviour, adding
-//       in removing related possibilities?
-
 // TODO: Maybe have another layer that also adds
 //       validation? Maybe a ReadOnlyGrid?
 
-// TODO: Or rather than inherit have another class
-//       take or use one of these and implement
-//       the same interface with extra behaviour?
-
-// TODO: Move sector dimension up to sudoku grid?
-
 export default class Grid {
 
-    public constructor(sectorDimension: number) {
+    public constructor(dimension: number) {
 
-        this.sectorDimension   = sectorDimension;
-        this.dimension         = sectorDimension * sectorDimension;
+        this.dimension         = dimension;
         this.impossibleSquares = 0;
         this.incompleteSquares = this.dimension * this.dimension;
 
@@ -32,8 +22,6 @@ export default class Grid {
             this.dimension,
             () => newArray(this.dimension, () => square.clone()));
     }
-
-    public readonly sectorDimension: number;
 
     public readonly dimension: number;
 
@@ -50,7 +38,7 @@ export default class Grid {
         return this.squares[x][y];
     }
 
-    public setSquareValue(x: number, y: number, value: number): void {
+    public setValue(x: number, y: number, value: number): void {
 
         const square = this.squares[x][y];
 
@@ -63,9 +51,11 @@ export default class Grid {
         square.value = value;
     }
 
-    public removeSquarePossibility(x: number, y: number, value: number): void {
+    public removePossibility(x: number, y: number, value: number): boolean {
 
-        switch (this.squares[x][y].removePossibility(value)) {
+        if (!this.squares[x][y].removePossibility(value)) return false;
+
+        switch (this.squares[x][y].possibilityCount) {
             case 0: {
                 this.impossibleSquares += 1;
                 this.incompleteSquares += 1;
@@ -73,6 +63,8 @@ export default class Grid {
             }
             case 1: this.incompleteSquares -= 1; break;
         }
+
+        return true;
     }
 
     public get isPossible(): boolean { return 0 === this.impossibleSquares; }

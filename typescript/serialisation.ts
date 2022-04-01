@@ -1,6 +1,8 @@
 
 import Grid from "./grid.ts";
 
+import SudokuGrid from "./sudoku-grid.ts";
+
 import { newArray } from "./array.ts";
 
 function character(base: string, offset: number): string {
@@ -14,7 +16,7 @@ function toCharacter(grid: Grid, x: number, y: number): string {
 
     if (value === 0) return ".";
 
-    if (grid.sectorDimension <= 3) return character("0", value);
+    if (grid.dimension <= 9) return character("0", value);
 
     if (value < 11)   return character("0", value - 1);
     if (value < 37)   return character("A", value - 11);
@@ -32,7 +34,7 @@ function insertEvery<T>(array: T[], value: number, item: T): void {
     }
 }
 
-function toRowString(grid: Grid, y: number): string {
+function toRowString(grid: SudokuGrid, y: number): string {
 
     const characters = newArray(grid.dimension,
                                 x => toCharacter(grid, x, y));
@@ -42,7 +44,7 @@ function toRowString(grid: Grid, y: number): string {
     return characters.join(" ");
 }
 
-export function toGridString(grid: Grid): string {
+export function toGridString(grid: SudokuGrid): string {
 
     const sectorLine = "-".repeat(grid.sectorDimension * 2 - 1);
     

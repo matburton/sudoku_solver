@@ -12,7 +12,7 @@ interface ReadOnlySquare {
 
 export default interface Square extends ReadOnlySquare {
 
-    removePossibility(value: number): number;
+    removePossibility(value: number): boolean;
 
     set value(value: number);
 }

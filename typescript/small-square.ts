@@ -24,11 +24,13 @@ export default class SmallSquare implements Square {
         return (this.bits & toMask(value)) !== 0;
     }
 
-    public removePossibility(value: number): number {
+    public removePossibility(value: number): boolean {
+
+        let originalBits = this.bits;
 
         this.bits &= ~toMask(value);
 
-        return this.possibilityCount;
+        return this.bits != originalBits;
     }
 
     public get possibilityCount(): number {
