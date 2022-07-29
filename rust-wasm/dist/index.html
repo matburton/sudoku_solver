@@ -79,27 +79,27 @@
                 return lines.join("\r\n");
             }
 
+            const settings = window.location.search
+                .replace("?", "")
+                .split("&")
+                .filter(s => s !== "")
+                .map(s => s.split(/[,=\(\)]/)
+                            .filter(f => f !== "")
+                            .map((f, i) => i <= 1 ? parseInt(f) : f));
+
+            const sectorSize = settings.at(0)?.at(0) ?? 5;
+
+            const dimension = sectorSize * sectorSize;
+
+            const toValue = (str) => fromCharacter(str) + (dimension <= 9 ? -1 : 0);
+
+            const puzzle = newArray(dimension, () => newArray(dimension, () => 0));
+
+            settings.slice(1).forEach(([x, y, str]) => puzzle[y][x] = toValue(str));
+
             import init, { solve } from "./sudoku_solver_wasm.js";
 
             init().then(() => new Promise(r => setTimeout(r, 1))).then(() => {
-
-                const settings = window.location.search
-                    .replace("?", "")
-                    .split("&")
-                    .filter(s => s !== "")
-                    .map(s => s.split(/[,=\(\)]/)
-                               .filter(f => f !== "")
-                               .map((f, i) => i <= 1 ? parseInt(f) : f));
-
-                const sectorSize = settings.at(0)?.at(0) ?? 5;
-
-                const dimension = sectorSize * sectorSize;
-
-                const toValue = (str) => fromCharacter(str) + (dimension <= 9 ? -1 : 0);
-
-                const puzzle = newArray(dimension, () => newArray(dimension, () => 0));
-
-                settings.slice(1).forEach(([x, y, str]) => puzzle[y][x] = toValue(str));
 
                 const before = performance.now();
 
