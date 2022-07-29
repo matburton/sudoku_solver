@@ -1,0 +1,117 @@
+<html>
+    <body>
+        <output><pre id="solution">Solving...</pre></output>
+        <script type="module">
+
+            const newArray = (length, factory) => {
+
+                const array = new Array(length);
+
+                for (let index = 0; index < length; ++index) {
+
+                    array[index] = factory(index);
+                }
+
+                return array;
+            }
+
+            const character = (base, offset) =>
+                String.fromCharCode(base.charCodeAt(0) + offset);
+
+            const toCharacter = (grid, x, y) => {
+
+                const value = grid[y][x];
+
+                if (value === 0) return ".";
+
+                if (grid.length <= 9) return character("0", value);
+
+                if (value < 11)   return character("0", value - 1);
+                if (value < 37)   return character("A", value - 11);
+                if (value < 63)   return character("a", value - 37);
+                if (value === 63) return "$";
+
+                return "@";
+            }
+
+            const fromCharacter = (str) => {
+
+                if (str === "@") return 64;
+                if (str === "$") return 63;
+
+                const base = str.charCodeAt(0);
+
+                if (str >= "a") return 37 - "a".charCodeAt(0) + base;
+                if (str >= "A") return 11 - "A".charCodeAt(0) + base;
+                
+                return 1 - "0".charCodeAt(0) + base;
+            }
+
+            const insertEvery = (array, value, item) => {
+
+                for (let index = array.length - value; index > 0; index -= value) {
+                    
+                    array.splice(index, 0, item);
+                }
+            }
+
+            const toRowString = (grid, sectorDimension, y) => {
+
+                const characters = newArray(grid.length,
+                                            x => toCharacter(grid, x, y));
+
+                insertEvery(characters, sectorDimension, "|");
+
+                return characters.join(" ");
+            }
+
+            const toGridString = (grid, sectorDimension) => {
+
+                const sectorLine = "-".repeat(sectorDimension * 2 - 1);
+                
+                const dividerLine =
+                    newArray(sectorDimension, () => sectorLine).join("-+-");
+
+                const lines = newArray(grid.length, y => toRowString(grid, sectorDimension, y));
+
+                insertEvery(lines, sectorDimension, dividerLine);
+
+                return lines.join("\r\n");
+            }
+
+            import init, { solve } from "./sudoku_solver_wasm.js";
+
+            init().then(() => new Promise(r => setTimeout(r, 1))).then(() => {
+
+                const settings = window.location.search
+                    .replace("?", "")
+                    .split("&")
+                    .filter(s => s !== "")
+                    .map(s => s.split(/[,=\(\)]/)
+                               .filter(f => f !== "")
+                               .map((f, i) => i <= 1 ? parseInt(f) : f));
+
+                const sectorSize = settings.at(0)?.at(0) ?? 5;
+
+                const dimension = sectorSize * sectorSize;
+
+                const toValue = (str) => fromCharacter(str) + (dimension <= 9 ? -1 : 0);
+
+                const puzzle = newArray(dimension, () => newArray(dimension, () => 0));
+
+                settings.slice(1).forEach(([x, y, str]) => puzzle[y][x] = toValue(str));
+
+                const before = performance.now();
+
+                const solution = solve(puzzle.flat());
+                
+                const millisecondsElapsed = Math.round(performance.now() - before);
+
+                document.getElementById("solution").innerText =
+                    toGridString(solution, sectorSize)
+                    + `\r\n\r\Solution found in ${millisecondsElapsed}ms`;
+            });
+          
+        </script>
+    </body>
+</html>

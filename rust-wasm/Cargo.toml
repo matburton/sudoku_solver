@@ -1,0 +1,20 @@
+[package]
+name = "sudoku_solver_wasm"
+version = "0.1.0"
+
+[profile.release]
+opt-level = "s"
+overflow-checks = false
+lto = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+js-sys = "0.3.59"
+wasm-bindgen = "0.2.82"
+wee_alloc = "0.4.5"
+
+# rustup target add wasm32-unknown-unknown
+# cargo install wasm-bindgen-cli
+# cargo build --release --target wasm32-unknown-unknown & wasm-bindgen --out-dir dist --no-typescript --target web target\wasm32-unknown-unknown\release\sudoku_solver_wasm.wasm
