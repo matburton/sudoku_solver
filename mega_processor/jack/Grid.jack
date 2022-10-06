@@ -1,0 +1,70 @@
+
+class Grid {
+   
+    // High byte is incomplete squares count
+    // Low byte is impossible square count
+    //
+    field int cache;
+    
+    // 81 squares in-lined, one word each
+    // - Lowest 9 bits are the possibilities
+    // - Highest 4 bits is the cached possibility count
+    
+    method Grid newGrid() {
+    
+        var Grid grid;
+        
+        let grid = Array.new(82); // 81 squares and 1 word cache
+        
+        do grid.initialise();
+        
+        return grid;
+    }
+    
+    method void initialise() {
+    
+        var Array squares;
+    
+        var int index;
+        
+        let squares = this;
+
+        let cache = 20736; // 81 incomplete squares, 0 impossible
+        
+        let index = 81;
+        
+        while (index > 0) {
+
+            let squares[index] = -28161; // All 9 values are possible
+
+            let index = index + 1;
+        }
+    
+        return;
+    }
+
+    method void cloneFromGrid(Grid source) {
+
+        /* TODO: word-by-word copy */
+    
+        return;
+    }
+
+    method void setSquareValue(int x, int y, int value) { return; }
+    
+    method boolean squareHasPossibility(int x, int y, int value) { return false; }
+
+    method void removeSquarePossibility(int x, int y, int value) { return; }
+
+    method int getPossibilityCount(int x, int y) { return 0; }
+    
+    // Returns 0 if the square has multiple possibilities or no possibilities
+    //
+    method int getSquareValue(int x, int y) { return 0; }
+   
+    method boolean isPossible() { return false; }
+
+    method boolean isComplete() { return false; }
+    
+    method boolean mustBeValue(int x, int y, int value) { return false; }
+}
