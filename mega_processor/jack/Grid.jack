@@ -1,41 +1,42 @@
 
 class Grid {
-   
-    // High byte is incomplete squares count
-    // Low byte is impossible square count
-    //
-    field int cache;
+
+    method int gridWordSize() {
     
-    // 81 squares in-lined, one word each
-    // - Lowest 9 bits are the possibilities
-    // - Highest 4 bits is the cached possibility count
-    
-    method Grid newGrid() {
-    
-        var Grid grid;
+        // 81 squares, 2 words each and 1 word grid cache
+        //
+        return 163;
+    }
+
+    method Array initialise(Array grid) {
+           
+        var int index;
+       
+        let index = 0;
         
-        let grid = Array.new(82); // 81 squares and 1 word cache
+        while (index < 162) {
         
-        do grid.initialise();
+            let grid[index] = 511; // All 9 values are possible
+
+            let grid[index + 1] = 2304; // 9 possibilities and no value
+
+            let index = index + 2;
+        }
+        
+        let grid[162] = 81; // All squares incomplete, grid possible
         
         return grid;
     }
-    
-    method void initialise() {
-    
-        var Array squares;
-    
+
+    method void cloneToGrid(Array source, Array target) {
+
         var int index;
         
-        let squares = this;
-
-        let cache = 20736; // 81 incomplete squares, 0 impossible
+        let index = 0;
         
-        let index = 81;
-        
-        while (index > 0) {
+        while (index < 163) {
 
-            let squares[index] = -28161; // All 9 values are possible
+            let target[index] = source[index];
 
             let index = index + 1;
         }
@@ -43,28 +44,123 @@ class Grid {
         return;
     }
 
-    method void cloneFromGrid(Grid source) {
+    // Cannot be used to stop isPossible returning false
+    //
+    // Assumes the square has the given value as a possibility
+    // and is incomplete, i.e. has at least one other possibility
+    //
+    method void setSquareValue(Array grid, int value, int x, int y) {
+    
+        var Array square;
+        
+        let square = y * 9 + x * 2 + grid;
 
-        /* TODO: word-by-word copy */
+        let square[0] = Math.two_to_the(value - 1); // No shifting available
+        
+        let square[1] = value | 256;
+        
+        let grid[162] = grid[162] - 1;
     
         return;
     }
-
-    method void setSquareValue(int x, int y, int value) { return; }
     
-    method boolean squareHasPossibility(int x, int y, int value) { return false; }
+    method boolean squareHasPossibility(Array grid, int value, int x, int y) {
+    
+        return grid[y * 9 + x * 2] & Math.two_to_the(value - 1) > 0;
+    }
 
-    method void removeSquarePossibility(int x, int y, int value) { return; }
+    // Returns the new square value if the square was previously incomplete,
+    // i.e. had multiple possibilities, but now only has one. Otherwise
+    // returns zero, e.g. if the square is still incomplete or did not have
+    // the given value as a possibility
+    //
+    method int removeSquarePossibility(Array grid, int value, int x, int y) { 
+    
+        var Array square;
+        
+        var int variable;
+        
+        let square = y * 9 + x * 2 + grid;
+        
+        let variable = Math.two_to_the(value - 1);
 
-    method int getPossibilityCount(int x, int y) { return 0; }
+        if (square[0] & variable = 0) {
+        
+            return 0;
+        }
+        
+        let square[0] = square[0] & ~variable;
+        
+        let variable = square[1] / 256 - 1; // No shifting available
+        
+        if (0 = variable) {
+
+            let square[1] = 0;
+
+            let grid[162] = grid[162] + 257;
+            
+            return 0;
+        }
+        
+        if (1 = variable) {
+        
+            let variable = calculateValue(square[0]);
+            
+            let square[1] = variable + 256;
+        
+            let grid[162] = grid[162] - 1;
+            
+            return variable;
+        }
+        
+        let square[1] = variable * 256;
+        
+        return 0;
+    }
+
+    method int getPossibilityCount(Array grid, int x, int y) {
+    
+        return grid[y * 9 + x * 2 + 1] / 256; // No shifting available
+    }
     
     // Returns 0 if the square has multiple possibilities or no possibilities
     //
-    method int getSquareValue(int x, int y) { return 0; }
-   
-    method boolean isPossible() { return false; }
-
-    method boolean isComplete() { return false; }
+    method int getSquareValue(Array grid, int x, int y) {
+  
+        return grid[y * 9 + x * 2 + 1] & 15;
+    }
     
-    method boolean mustBeValue(int x, int y, int value) { return false; }
+    // Once this returns false it will always return false
+    // Using setSquareValue cannot make this return true again
+    //
+    method boolean isPossible(Array grid) {
+    
+        return grid[162] < 256;
+    }
+
+    method boolean isComplete(Array grid) {
+    
+        return 0 = grid[162];
+    }
+    
+    method boolean mustBeValue(Array grid, int x, int y, int value) {
+    
+        return false; // TODO
+    }
+    
+    // Assumes there is one one possibility 
+    //
+    method int calculateValue(int possibilities) {
+    
+        var int value;
+    
+        let value = 0;
+        
+        while (possibilities > Math.two_to_the(value)) {
+        
+            let value = value + 1;
+        }
+    
+        return value + 1;
+    }
 }
