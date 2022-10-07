@@ -8,27 +8,18 @@ class Main {
         let grid = Array.new(Grid.gridWordSize());
         
         do Grid.initialise(grid);
+                     
+        do Main.printDivider("Setting 1 at (0,0)");
         
-        do Main.printBool("Square (1,2) has 4", Grid.squareHasPossibility(grid, 4, 1, 2));
-        do Main.printBool("Square (1,2) has 5", Grid.squareHasPossibility(grid, 5, 1, 2));
-        do Main.printBool("Square (1,2) has 6", Grid.squareHasPossibility(grid, 6, 1, 2));
-               
-        do Main.printDivider("Removing all but 5 from (1,2)");
-               
-        do Grid.removeSquarePossibility(grid, 1, 1, 2);
-        do Grid.removeSquarePossibility(grid, 2, 1, 2);
-        do Grid.removeSquarePossibility(grid, 3, 1, 2);
-        do Grid.removeSquarePossibility(grid, 4, 1, 2);
-        do Grid.removeSquarePossibility(grid, 6, 1, 2);
-        do Grid.removeSquarePossibility(grid, 7, 1, 2);
-        do Grid.removeSquarePossibility(grid, 8, 1, 2);
-        do Grid.removeSquarePossibility(grid, 9, 1, 2);
-        
-        do Main.printBool("Square (1,2) has 4", Grid.squareHasPossibility(grid, 4, 1, 2));
-        do Main.printBool("Square (1,2) has 5", Grid.squareHasPossibility(grid, 5, 1, 2));
-        do Main.printBool("Square (1,2) has 6", Grid.squareHasPossibility(grid, 6, 1, 2));
+        do Grid.setSquareValue(grid, 1, 0, 0);
 
-        do Main.printGridStuff(grid);
+        do Main.printGridStuff(grid, 0, 0);
+        
+        do Main.printDivider("Setting 9 at (8,8)");
+        
+        do Grid.setSquareValue(grid, 9, 8, 8);
+
+        do Main.printGridStuff(grid, 8, 8);
         
         return;
     }
@@ -46,15 +37,27 @@ class Main {
         return;
     }
     
-    function void printGridStuff(Array grid) {
+    function void printGridStuff(Array grid, int x, int y) {
     
         do Main.printBool("Grid complete", Grid.isComplete(grid));
         
         do Main.printBool("Grid possible", Grid.isPossible(grid));
         
-        do Main.printInt("Possibility count at (1,2)", Grid.getPossibilityCount(grid, 1, 2));
+        do Output.printString("At (");
         
-        do Main.printInt("Value at (1,2)", Grid.getSquareValue(grid, 1, 2));
+        do Output.printInt(x);
+        
+        do Output.printString(",");
+        
+        do Output.printInt(y);
+        
+        do Output.printString("):");
+        
+        do Output.println();
+        
+        do Main.printInt("Possibility count", Grid.getPossibilityCount(grid, x, y));
+        
+        do Main.printInt("Value", Grid.getSquareValue(grid, x, y));
         
         return;
     }
