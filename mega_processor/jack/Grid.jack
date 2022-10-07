@@ -1,14 +1,14 @@
 
 class Grid {
 
-    method int gridWordSize() {
+    function int gridWordSize() {
     
         // 81 squares, 2 words each and 1 word grid cache
         //
         return 163;
     }
 
-    method Array initialise(Array grid) {
+    function Array initialise(Array grid) {
            
         var int index;
        
@@ -28,7 +28,7 @@ class Grid {
         return grid;
     }
 
-    method void cloneToGrid(Array source, Array target) {
+    function void cloneToGrid(Array source, Array target) {
 
         var int index;
         
@@ -49,13 +49,13 @@ class Grid {
     // Assumes the square has the given value as a possibility
     // and is incomplete, i.e. has at least one other possibility
     //
-    method void setSquareValue(Array grid, int value, int x, int y) {
+    function void setSquareValue(Array grid, int value, int x, int y) {
     
         var Array square;
         
         let square = y * 9 + x * 2 + grid;
 
-        let square[0] = Math.two_to_the(value - 1); // No shifting available
+        let square[0] = Grid.two_to_the(value - 1); // No shifting available
         
         let square[1] = value | 256;
         
@@ -64,9 +64,9 @@ class Grid {
         return;
     }
     
-    method boolean squareHasPossibility(Array grid, int value, int x, int y) {
+    function boolean squareHasPossibility(Array grid, int value, int x, int y) {
     
-        return grid[y * 9 + x * 2] & Math.two_to_the(value - 1) > 0;
+        return grid[y * 9 + x * 2] & Grid.two_to_the(value - 1) > 0;
     }
 
     // Returns the new square value if the square was previously incomplete,
@@ -74,7 +74,7 @@ class Grid {
     // returns zero, e.g. if the square is still incomplete or did not have
     // the given value as a possibility
     //
-    method int removeSquarePossibility(Array grid, int value, int x, int y) { 
+    function int removeSquarePossibility(Array grid, int value, int x, int y) { 
     
         var Array square;
         
@@ -82,7 +82,7 @@ class Grid {
         
         let square = y * 9 + x * 2 + grid;
         
-        let variable = Math.two_to_the(value - 1);
+        let variable = Grid.two_to_the(value - 1);
 
         if (square[0] & variable = 0) {
         
@@ -104,7 +104,7 @@ class Grid {
         
         if (1 = variable) {
         
-            let variable = calculateValue(square[0]);
+            let variable = Grid.calculateValue(square[0]);
             
             let square[1] = variable + 256;
         
@@ -118,14 +118,14 @@ class Grid {
         return 0;
     }
 
-    method int getPossibilityCount(Array grid, int x, int y) {
+    function int getPossibilityCount(Array grid, int x, int y) {
     
         return grid[y * 9 + x * 2 + 1] / 256; // No shifting available
     }
     
     // Returns 0 if the square has multiple possibilities or no possibilities
     //
-    method int getSquareValue(Array grid, int x, int y) {
+    function int getSquareValue(Array grid, int x, int y) {
   
         return grid[y * 9 + x * 2 + 1] & 15;
     }
@@ -133,34 +133,50 @@ class Grid {
     // Once this returns false it will always return false
     // Using setSquareValue cannot make this return true again
     //
-    method boolean isPossible(Array grid) {
+    function boolean isPossible(Array grid) {
     
-        return grid[162] < 256;
+        return grid[162] < 82;
     }
 
-    method boolean isComplete(Array grid) {
+    function boolean isComplete(Array grid) {
     
         return 0 = grid[162];
     }
     
-    method boolean mustBeValue(Array grid, int x, int y, int value) {
+    function boolean mustBeValue(Array grid, int x, int y, int value) {
     
         return false; // TODO
     }
     
     // Assumes there is one one possibility 
     //
-    method int calculateValue(int possibilities) {
+    function int calculateValue(int possibilities) {
     
         var int value;
     
         let value = 0;
         
-        while (possibilities > Math.two_to_the(value)) {
+        while (possibilities > Grid.two_to_the(value)) {
         
             let value = value + 1;
         }
     
         return value + 1;
+    }
+    
+    function int two_to_the(int value) {
+    
+        var int output;
+        
+        let output = 1;
+        
+        while (value > 0) {
+        
+            let output = output * 2;
+            
+            let value = value - 1;
+        }
+        
+        return output;
     }
 }

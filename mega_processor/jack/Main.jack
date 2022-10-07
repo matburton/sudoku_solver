@@ -1,0 +1,95 @@
+
+class Main {
+
+    function void main() {
+        
+        var Array grid;
+        
+        let grid = Array.new(Grid.gridWordSize());
+        
+        do Grid.initialise(grid);
+        
+        do Main.printBool("Square (1,2) has 4", Grid.squareHasPossibility(grid, 4, 1, 2));
+        do Main.printBool("Square (1,2) has 5", Grid.squareHasPossibility(grid, 5, 1, 2));
+        do Main.printBool("Square (1,2) has 6", Grid.squareHasPossibility(grid, 6, 1, 2));
+               
+        do Main.printDivider("Removing all but 5 from (1,2)");
+               
+        do Grid.removeSquarePossibility(grid, 1, 1, 2);
+        do Grid.removeSquarePossibility(grid, 2, 1, 2);
+        do Grid.removeSquarePossibility(grid, 3, 1, 2);
+        do Grid.removeSquarePossibility(grid, 4, 1, 2);
+        do Grid.removeSquarePossibility(grid, 6, 1, 2);
+        do Grid.removeSquarePossibility(grid, 7, 1, 2);
+        do Grid.removeSquarePossibility(grid, 8, 1, 2);
+        do Grid.removeSquarePossibility(grid, 9, 1, 2);
+        
+        do Main.printBool("Square (1,2) has 4", Grid.squareHasPossibility(grid, 4, 1, 2));
+        do Main.printBool("Square (1,2) has 5", Grid.squareHasPossibility(grid, 5, 1, 2));
+        do Main.printBool("Square (1,2) has 6", Grid.squareHasPossibility(grid, 6, 1, 2));
+
+        do Main.printGridStuff(grid);
+        
+        return;
+    }
+    
+    function void printDivider(String string) {
+    
+        do Output.println();
+        
+        do Output.printString(string);
+        
+        do Output.println();
+        
+        do Output.println();
+        
+        return;
+    }
+    
+    function void printGridStuff(Array grid) {
+    
+        do Main.printBool("Grid complete", Grid.isComplete(grid));
+        
+        do Main.printBool("Grid possible", Grid.isPossible(grid));
+        
+        do Main.printInt("Possibility count at (1,2)", Grid.getPossibilityCount(grid, 1, 2));
+        
+        do Main.printInt("Value at (1,2)", Grid.getSquareValue(grid, 1, 2));
+        
+        return;
+    }
+    
+    function void printInt(String string, int value) {
+    
+        do Output.printString(string);
+        
+        do Output.printString(": ");
+        
+        do Output.printInt(value);
+        
+        do Output.println();
+        
+        return;
+    }
+    
+    function void printBool(String string, boolean bool) {
+    
+        do Output.printString(string);
+        
+        do Output.printString("? ");
+    
+        if (bool) {
+        
+            do Output.printString("true");
+        }
+        
+        if (~bool) {
+        
+            do Output.printString("false");
+        }
+        
+        do Output.println();
+        
+        return;
+    }
+}
