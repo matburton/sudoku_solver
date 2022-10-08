@@ -3,34 +3,162 @@ class Solver {
 
     function void removePossibilitiesRelatedTo(Array grid, int value, int x, int y) {
     
-        return; // TODO
+        var int indexX, indexY, startX, startY;
+        
+        let indexX = 0;
+        
+        while (indexX < 9) {
+        
+            if (~(indexX = x)) {
+            
+                do Solver.removePossibilityAt(grid, value, indexX, y);
+            }
+            
+            let indexX = indexX + 1;
+        }
+        
+        let indexY = 0;
+        
+        while (indexY < 9) {
+        
+            if (~(indexY = y)) {
+            
+                do Solver.removePossibilityAt(grid, value, x, indexY);
+            }
+            
+            let indexY = indexY + 1;
+        }
+        
+        let startX = x / 3 * 3;
+        let startY = y / 3 * 3;
+        
+        let indexY = startY;
+        
+        while (indexY < startY + 3) {
+        
+            let indexX = startX;
+            
+            while (indexX < startX + 3) {
+            
+                if (~(indexX = x) & (~(indexY = y))) {
+                
+                    do Solver.removePossibilityAt(grid, value, indexX, indexY);
+                }
+                
+                let indexX = indexX + 1;
+            }
+            
+            let indexY = indexY + 1;
+        }
+    
+        return;
     }
     
     function void removePossibilityAt(Array grid, int value, int x, int y) {
     
-        return; // TODO
+        let value = Grid.removeSquarePossibility(grid, value, x, y);
+        
+        if (value > 0) {
+        
+            do Solver.removePossibilitiesRelatedTo(grid, value, x, y);
+        }
+
+        return;
     }
     
     function void setValueAt(Array grid, int value, int x, int y) {
     
-        return; // TODO
+        do Grid.setSquareValue(grid, value, x, y);
+
+        do Solver.removePossibilitiesRelatedTo(grid, value, x, y);
+
+        return;
     }
     
     // Returns zero if no value could be deduced
     //
     function int getDeducedValueAt(Array grid, int x, int y) {
     
-        return 0; // TODO
+        var int value;
+    
+        if (Grid.getPossibilityCount(grid, x, y) > 1) {
+        
+            let value = 1;
+            
+            while (value < 10) {
+            
+                if (  Grid.squareHasPossibility(grid, value, x, y)
+                    & Grid.mustBeValue(grid, value, x, y)) {
+                
+                    return value;
+                }
+            
+                let value = value + 1;
+            }
+        }
+        
+        return 0;
     }
     
     function void refineGrid(Array grid) {
     
-        return; // TODO
+        var int x, y, lastX, lastY, value;
+        
+        while (true) {
+        
+            let value = Solver.getDeducedValueAt(grid, x, y);
+            
+            if (value > 0) {
+            
+                do Solver.setValueAt(grid, value, x, y);
+                
+                if (~Grid.isPossible(grid)) { return; }
+                
+                let lastX = x;
+                let lastY = y;
+            }
+            
+            if (x < 8) {
+            
+                let x = x + 1;
+            }
+            else {
+            
+                let x = 0;
+                
+                if (y < 8) {
+                
+                    let y = y + 1;
+                }
+                else {
+                
+                    let y = 0;
+                }
+            }
+            
+            if (x = lastX & (y = lastY)) { return; }
+        }
+        
+        return;
     }
     
     function int getAPossibilityAt(Array grid, int x, int y) {
     
-        return 0; // TODO
+        var int value;
+        
+        let value = 1;
+        
+        while (value < 10) {
+
+            if (Grid.squareHasPossibility(grid, value, x, y)) {
+            
+                return value;
+            }
+            
+            let value = value + 1;
+        }
+    
+        return 0;
     }
     
     // TODO: Grid stack-y stuff, but we're going to use the actual stack:
