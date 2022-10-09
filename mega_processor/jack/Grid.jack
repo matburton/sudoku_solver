@@ -44,7 +44,7 @@ class Grid {
         return;
     }
 
-    // Cannot be used to stop isPossible returning false
+    // Cannot be used to stop isImpossible returning false
     //
     // Assumes the square has the given value as a possibility
     // and is incomplete, i.e. has at least one other possibility
@@ -135,9 +135,9 @@ class Grid {
     // Once this returns false it will always return false
     // Using setSquareValue cannot make this return true again
     //
-    function boolean isPossible(Array grid) {
+    function boolean isImpossible(Array grid) {
     
-        return grid[162] < 82;
+        return grid[162] > 255;
     }
 
     function boolean isComplete(Array grid) {

@@ -18,14 +18,7 @@ class Printer {
         
         if (0 = value) {
         
-            if (0 = Grid.getPossibilityCount(grid, x, y)) {
-            
-                do Printer.writeString("X");
-            }
-            else {
-            
-                do Printer.writeString(".");
-            }
+            do Printer.writeString(".");
         }
         else {
         
