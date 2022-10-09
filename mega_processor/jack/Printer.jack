@@ -1,0 +1,79 @@
+
+class Printer {
+
+    function void writeSquareValue(Array grid, int x, int y) {
+    
+        var int value;
+        
+        let value = Grid.getSquareValue(grid, x, y);
+        
+        if (0 = value) {
+        
+            do Output.printString(".");
+        }
+        else {
+        
+            do Output.printInt(value);
+        }
+    
+        return;
+    }
+    
+    function void writeRow(Array grid, int y) {
+    
+        var int x;
+        
+        let x = 1;
+        
+        while (x < 10) {
+        
+            do Printer.writeSquareValue(grid, x - 1, y);
+            
+            if (x < 9) {
+            
+                do Output.printString(" ");
+                
+                if (3 = x | (6 = x)) {
+                
+                    do Output.printString("| ");
+                }
+            }
+            
+            let x = x + 1;
+        }
+        
+        return;
+    }
+    
+    function void writeGridString(Array grid) {
+    
+        var int y;
+    
+        do Output.println();
+    
+        let y = 1;
+        
+        while (y < 10) {
+        
+            do Printer.writeRow(grid, y - 1);
+            
+            if (y < 9) {
+            
+                do Output.println();
+                
+                if (3 = y | (6 = y)) {
+                
+                    do Output.printString("------+-------+------");
+                    
+                    do Output.println();
+                }
+            }
+        
+            let y = y + 1;
+        }
+        
+        do Output.println();
+        
+        return;
+    }
+}
