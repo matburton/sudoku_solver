@@ -5,94 +5,58 @@ class Main {
         
         var Array grid;
         
+        var int x, y, value;
+        
         let grid = Array.new(Grid.gridWordSize());
         
         do Grid.initialise(grid);
-                     
-        do Main.printDivider("Setting 1 at (0,0)");
         
-        do Grid.setSquareValue(grid, 1, 0, 0);
-
-        do Main.printGridStuff(grid, 0, 0);
-        
-        do Main.printDivider("Setting 9 at (8,8)");
-        
-        do Grid.setSquareValue(grid, 9, 8, 8);
-
-        do Main.printGridStuff(grid, 8, 8);
-        
-        return;
-    }
-    
-    function void printDivider(String string) {
-    
-        do Output.println();
-        
-        do Output.printString(string);
+        do Printer.writeGridString(grid);
         
         do Output.println();
         
-        do Output.println();
+        let x = Keyboard.readInt("x: ");
         
-        return;
-    }
-    
-    function void printGridStuff(Array grid, int x, int y) {
-    
-        do Main.printBool("Grid complete", Grid.isComplete(grid));
+        while (x > 0) {
         
-        do Main.printBool("Grid possible", Grid.isPossible(grid));
-        
-        do Output.printString("At (");
-        
-        do Output.printInt(x);
-        
-        do Output.printString(",");
-        
-        do Output.printInt(y);
-        
-        do Output.printString("):");
-        
-        do Output.println();
-        
-        do Main.printInt("Possibility count", Grid.getPossibilityCount(grid, x, y));
-        
-        do Main.printInt("Value", Grid.getSquareValue(grid, x, y));
-        
-        return;
-    }
-    
-    function void printInt(String string, int value) {
-    
-        do Output.printString(string);
-        
-        do Output.printString(": ");
-        
-        do Output.printInt(value);
-        
-        do Output.println();
-        
-        return;
-    }
-    
-    function void printBool(String string, boolean bool) {
-    
-        do Output.printString(string);
-        
-        do Output.printString("? ");
-    
-        if (bool) {
-        
-            do Output.printString("true");
+            let y = Keyboard.readInt("y: ");
+            
+            let value = Keyboard.readInt("value: ");
+            
+            do Main.setValueAt(grid, value, x - 1, y - 1);
+            
+            do Output.moveCursor(0, 0);
+            
+            do Printer.writeGridString(grid);
+            
+            do Output.println();
+            
+            let x = Keyboard.readInt("x: ");
         }
         
-        if (~bool) {
+        do Output.moveCursor(0, 0);
         
-            do Output.printString("false");
+        do Printer.writeGridString(grid);
+        
+        do Solver.solve(grid);
+        
+        do Output.printString("No solution found");
+        
+        return;
+    }
+    
+    function void setValueAt(Array grid, int value, int x, int y) {
+    
+        if (x < 0 | (x > 8) | (y < 0) | (y > 8) | (value < 1) | (value > 9)) {
+        
+            return;
         }
+    
+        if (Grid.squareHasPossibility(grid, value, x, y)) {
         
-        do Output.println();
-        
+            do Solver.setValueAt(grid, value, x, y);
+        }
+    
         return;
     }
 }

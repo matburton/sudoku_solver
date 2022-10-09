@@ -34,13 +34,13 @@ class Solver {
         
         let indexY = startY;
         
-        while (indexY < startY + 3) {
+        while (indexY < (startY + 3)) {
         
             let indexX = startX;
             
-            while (indexX < startX + 3) {
+            while (indexX < (startX + 3)) {
             
-                if (~(indexX = x) & (~(indexY = y))) {
+                if (~(indexX = x | (indexY = y))) {
                 
                     do Solver.removePossibilityAt(grid, value, indexX, indexY);
                 }
@@ -161,7 +161,96 @@ class Solver {
         return 0;
     }
     
-    // TODO: Grid stack-y stuff, but we're going to use the actual stack:
-    //
-    // function void splitGrid(Array grid) { return; }
+    function void splitGrid(Array grid) {
+    
+        var Array cloneGrid;
+    
+        var int x, y, count, possibility, bestCount, bestX, bestY;
+        
+        let y = 0;
+        
+        while (y < 9) {
+        
+            let x = 0;
+            
+            while (x < 9) {
+            
+                let count = Grid.getPossibilityCount(grid, x, y);
+                
+                if (count > 1) {
+                
+                    if (0 = bestCount | (count < bestCount)) {
+                    
+                        let bestCount = count;
+                        
+                        let bestX = x;
+                        let bestY = y;
+                    }
+                }
+            
+                let x = x + 1;
+            }
+        
+            let y = y + 1;
+        }
+        
+        let possibility = Solver.getAPossibilityAt(grid, bestX, bestY);
+        
+        let cloneGrid = Array.new(Grid.gridWordSize());
+        
+        do Grid.copyFromTo(grid, cloneGrid);
+        
+        do Solver.removePossibilityAt(grid, possibility, bestX, bestY);
+        
+        if (~Grid.isPossible(grid)) {
+        
+            do Grid.copyFromTo(cloneGrid, grid);
+            
+            do cloneGrid.dispose();
+            
+            do Solver.setValueAt(grid, possibility, bestX, bestY);
+            
+            return;
+        }
+        
+        do Solver.setValueAt(cloneGrid, possibility, bestX, bestY);
+        
+        do Solver.solve(cloneGrid);
+        
+        do cloneGrid.dispose();
+    
+        return;
+    }
+    
+    function void solve(Array grid) {
+    
+        if (~Grid.isPossible(grid)) { return; }        
+    
+        while (true) {
+        
+            do Solver.refineGrid(grid);
+            
+            do Output.moveCursor(0, 0);
+            
+            do Printer.writeGridString(grid);
+            
+            if (Grid.isComplete(grid)) {
+                
+                do Solver.halt();
+            }
+            
+            if (~Grid.isPossible(grid)) { return; }
+            
+            do Solver.splitGrid(grid);
+        }
+    
+        return;
+    }
+    
+    function void halt() {
+    
+        while (true) {}
+        
+        return;
+    }
 }

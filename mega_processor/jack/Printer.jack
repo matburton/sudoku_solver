@@ -1,6 +1,15 @@
 
 class Printer {
 
+    function void writeString(String string) {
+    
+        do Output.printString(string);
+        
+        do string.dispose();
+        
+        return;
+    }
+
     function void writeSquareValue(Array grid, int x, int y) {
     
         var int value;
@@ -9,7 +18,14 @@ class Printer {
         
         if (0 = value) {
         
-            do Output.printString(".");
+            if (0 = Grid.getPossibilityCount(grid, x, y)) {
+            
+                do Printer.writeString("X");
+            }
+            else {
+            
+                do Printer.writeString(".");
+            }
         }
         else {
         
@@ -31,11 +47,11 @@ class Printer {
             
             if (x < 9) {
             
-                do Output.printString(" ");
+                do Printer.writeString(" ");
                 
                 if (3 = x | (6 = x)) {
                 
-                    do Output.printString("| ");
+                    do Printer.writeString("| ");
                 }
             }
             
@@ -63,7 +79,7 @@ class Printer {
                 
                 if (3 = y | (6 = y)) {
                 
-                    do Output.printString("------+-------+------");
+                    do Printer.writeString("------+-------+------");
                     
                     do Output.println();
                 }
