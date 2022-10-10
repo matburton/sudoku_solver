@@ -5,36 +5,29 @@ class Main {
         
         var Array grid;
         
-        var int x, y, value;
+        var String puzzle;
+        
+        var int index, value;
+        
+        let puzzle = "000000010400000000020000000000050407008000300001090000300400200050100000000806000";
+        
+        let index = 0;
         
         let grid = Array.new(Grid.gridWordSize());
         
         do Grid.initialise(grid);
         
-        do Printer.writeGridString(grid);
-        
-        do Output.println();
-        
-        let x = Keyboard.readInt("x: ");
-        
-        while (x > 0) {
-        
-            let y = Keyboard.readInt("y: ");
-            
-            let value = Keyboard.readInt("value: ");
-            
-            do Main.setValueAt(grid, value, x - 1, y - 1);
-            
-            do Screen.clearScreen();
-            
-            do Output.moveCursor(0, 0);
-            
-            do Printer.writeGridString(grid);
-            
-            do Output.println();
-            
-            let x = Keyboard.readInt("x: ");
+        while (index < puzzle.length() & (index < 81)) {
+
+            do Main.setValueAt(grid,
+                               puzzle.charAt(index) - 48,
+                               index - (index / 9 * 9),
+                               index / 9);
+                               
+            let index = index + 1;
         }
+        
+        do puzzle.dispose();
         
         do Screen.clearScreen();
         
@@ -48,17 +41,17 @@ class Main {
         
         if (value = 0) {
         
-            do Output.printString("No solutions found");
+            do Printer.writeString("No solutions found");
         }
         else {
         
             if (value = 1) {
             
-                do Output.printString("Solution is unique");
+                do Printer.writeString("Solution is unique");
             }
             else {
             
-                do Output.printString("Solution is not unique");
+                do Printer.writeString("Solution is not unique");
             }
         }
         
@@ -72,10 +65,7 @@ class Main {
             return;
         }
     
-        if (Grid.squareHasPossibility(grid, value, x, y)) {
-        
-            do Solver.setValueAt(grid, value, x, y);
-        }
+        do Solver.setValueAt(grid, value, x, y);
     
         return;
     }
