@@ -161,7 +161,9 @@ class Solver {
         return 0;
     }
     
-    function void splitGrid(Array grid) {
+    // Returns the number of solutions found so far
+    //
+    function int splitGrid(Array grid) {
     
         var Array cloneGrid;
     
@@ -210,47 +212,51 @@ class Solver {
             
             do Solver.setValueAt(grid, possibility, bestX, bestY);
             
-            return;
+            return 0;
         }
         
         do Solver.setValueAt(cloneGrid, possibility, bestX, bestY);
         
-        do Solver.solve(cloneGrid);
+        let count = Solver.solve(cloneGrid);
         
         do cloneGrid.dispose();
     
-        return;
+        return count;
     }
     
-    function void solve(Array grid) {
+    // Returns the number of solutions found so far
+    //
+    function int solve(Array grid) {
     
-        if (Grid.isImpossible(grid)) { return; }        
+        var int solutions;
     
-        while (true) {
+        if (Grid.isImpossible(grid)) { return 0; }
+
+        let solutions = 0;        
+    
+        while (solutions < 2) {
         
             do Solver.refineGrid(grid);
             
-            do Output.moveCursor(0, 0);
+            if (0 = solutions) {
             
-            do Printer.writeGridString(grid);
+                do Output.moveCursor(0, 0);
             
-            if (Grid.isComplete(grid)) {
-                
-                do Solver.halt();
+                do Printer.writeGridString(grid);
             }
             
-            if (Grid.isImpossible(grid)) { return; }
+            if (Grid.isComplete(grid)) {
             
-            do Solver.splitGrid(grid);
+                let solutions = solutions + 1;
+            
+                return solutions;
+            }
+            
+            if (Grid.isImpossible(grid)) { return solutions; }
+            
+            let solutions = Solver.splitGrid(grid);
         }
     
-        return;
-    }
-    
-    function void halt() {
-    
-        while (true) {}
-        
-        return;
+        return solutions;
     }
 }
