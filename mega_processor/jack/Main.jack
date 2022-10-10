@@ -48,17 +48,17 @@ class Main {
         
         if (value = 0) {
         
-            do Output.printString("No solutions found");
+            do Printer.writeString("No solutions found");
         }
         else {
         
             if (value = 1) {
             
-                do Output.printString("Solution is unique");
+                do Printer.writeString("Solution is unique");
             }
             else {
             
-                do Output.printString("Solution is not unique");
+                do Printer.writeString("Solution is not unique");
             }
         }
         
@@ -72,10 +72,7 @@ class Main {
             return;
         }
     
-        if (Grid.squareHasPossibility(grid, value, x, y)) {
-        
-            do Solver.setValueAt(grid, value, x, y);
-        }
+        do Solver.setValueAt(grid, value, x, y);
     
         return;
     }
