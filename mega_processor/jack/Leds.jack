@@ -1,0 +1,139 @@
+
+class Leds {
+    
+    // target should be 50 words
+    //
+    function void createDigitsCache(Array target) {
+    
+        let target[0] = 0; // Line 0 of digit 0
+        let target[1] = 2; // Line 0 of digit 1
+        let target[2] = 3; // etc ...
+        let target[3] = 3;
+        let target[4] = 1;
+        let target[5] = 3;
+        let target[6] = 3;
+        let target[7] = 3;
+        let target[8] = 3;
+        let target[9] = 3;
+        
+        let target = target + 10;
+        
+        let target[0] = 0; // Line 1 of digit 0
+        let target[1] = 2; // Line 1 of digit 1
+        let target[2] = 2; // etc ...
+        let target[3] = 2;
+        let target[4] = 3;
+        let target[5] = 1;
+        let target[6] = 1;
+        let target[7] = 2;
+        let target[8] = 3;
+        let target[9] = 3;
+        
+        let target = target + 10;
+        
+        let target[0] = 0; // Line 2 of digit 0
+        let target[1] = 2; // Line 2 of digit 1
+        let target[2] = 3; // etc ...
+        let target[3] = 3;
+        let target[4] = 3;
+        let target[5] = 3;
+        let target[6] = 3;
+        let target[7] = 2;
+        let target[8] = 3;
+        let target[9] = 3;
+        
+        let target = target + 10;
+        
+        let target[0] = 0; // Line 3 of digit 0
+        let target[1] = 2; // Line 3 of digit 1
+        let target[2] = 1; // etc ...
+        let target[3] = 2;
+        let target[4] = 2;
+        let target[5] = 2;
+        let target[6] = 3;
+        let target[7] = 2;
+        let target[8] = 3;
+        let target[9] = 2;
+        
+        let target = target + 10;
+        
+        let target[0] = 3; // Line 4 of digit 0
+        let target[1] = 2; // Line 4 of digit 1
+        let target[2] = 3; // etc ...
+        let target[3] = 3;
+        let target[4] = 2;
+        let target[5] = 3;
+        let target[6] = 3;
+        let target[7] = 2;
+        let target[8] = 3;
+        let target[9] = 2;
+    
+        return;
+    }
+    
+    // target should be 112 words
+    //
+    function void renderGrid(Array grid, Array target, Array digitsCache) {
+       
+        var Array nextLeds, digitLine;
+       
+        var int gridY, line, remainder;
+        
+        let nextLeds = target + 2;
+        
+        let gridY = 0;
+        
+        while (gridY < 9) {
+        
+            let line = 0;
+            
+            while (line < 5) {
+                
+                let digitLine = line * 10 + digitsCache;
+                
+                let nextLeds[0] = digitLine[Grid.getSquareValue(grid, 4, gridY)]
+                                * 8
+                                | digitLine[Grid.getSquareValue(grid, 3, gridY)]
+                                * 32
+                                | digitLine[Grid.getSquareValue(grid, 2, gridY)]
+                                * 8
+                                | digitLine[Grid.getSquareValue(grid, 1, gridY)]
+                                * 8
+                                | digitLine[Grid.getSquareValue(grid, 0, gridY)];
+                
+                let nextLeds[1] = digitLine[Grid.getSquareValue(grid, 8, gridY)]
+                                * 8
+                                | digitLine[Grid.getSquareValue(grid, 7, gridY)]
+                                * 8
+                                | digitLine[Grid.getSquareValue(grid, 6, gridY)]
+                                * 32
+                                | digitLine[Grid.getSquareValue(grid, 5, gridY)]
+                                * 4;
+                                
+                if (nextLeds[0] < 0) {
+                
+                    let nextLeds[1] = nextLeds[1] | 1;
+                }
+                
+                let nextLeds[0] = nextLeds[0] * 2;
+            
+                let line = line + 1;
+                
+                let nextLeds = nextLeds + 2;
+            }
+            
+            if (2 = gridY | (5 = gridY)) {
+            
+                let nextLeds = nextLeds + 4;
+            }
+            else {
+        
+                let nextLeds = nextLeds + 2;
+            }
+            
+            let gridY = gridY + 1;
+        }
+        
+        return;
+    }
+}
