@@ -1,0 +1,18 @@
+
+class Stack {
+
+    // Intended to be translated to growing the stack frame
+    // such that the Array is allocated in the callers frame
+    //
+    // Recommended to only be called unconditionally at
+    // the start of a function to be on the safe side
+    //
+    // The pointer (Array) returned can be passed to methods
+    // subsequently called but should never be returned out
+    // of the caller
+    //
+    function Array grow(int wordCount) {
+    
+        return Array.new(wordCount);
+    }
+}

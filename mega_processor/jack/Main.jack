@@ -7,7 +7,7 @@ class Main {
         
         var int x, y, value;
         
-        let grid = Array.new(Grid.gridWordSize());
+        let grid = Stack.grow(Grid.gridWordSize());
         
         do Grid.initialise(grid);
         

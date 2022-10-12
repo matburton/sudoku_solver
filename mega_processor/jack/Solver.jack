@@ -169,6 +169,8 @@ class Solver {
     
         var int x, y, count, possibility, bestCount, bestX, bestY;
         
+        let cloneGrid = Stack.grow(Grid.gridWordSize());
+        
         let y = 0;
         
         while (y < 9) {
@@ -197,8 +199,6 @@ class Solver {
         }
         
         let possibility = Solver.getAPossibilityAt(grid, bestX, bestY);
-        
-        let cloneGrid = Array.new(Grid.gridWordSize());
         
         do Grid.copyFromTo(grid, cloneGrid);
         
