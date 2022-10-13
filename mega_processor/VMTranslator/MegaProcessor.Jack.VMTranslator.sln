@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegaProcessor.Jack.VMTranslator.Console", "Console\MegaProcessor.Jack.VMTranslator.Console.csproj", "{FEBC2778-91CF-4641-8607-6AC3DBB8CC76}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FEBC2778-91CF-4641-8607-6AC3DBB8CC76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEBC2778-91CF-4641-8607-6AC3DBB8CC76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEBC2778-91CF-4641-8607-6AC3DBB8CC76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEBC2778-91CF-4641-8607-6AC3DBB8CC76}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {89BC2AAE-74F6-4312-A5BC-5030A0C85BD4}
+	EndGlobalSection
+EndGlobal
