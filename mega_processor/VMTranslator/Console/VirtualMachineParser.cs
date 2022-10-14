@@ -35,5 +35,10 @@ internal sealed class VirtualMachineParser
                                       value));
             }
         }
+
+        if (label is not null)
+        {
+            yield return new VirtualFunction(label, instructions);
+        }
     }
 }

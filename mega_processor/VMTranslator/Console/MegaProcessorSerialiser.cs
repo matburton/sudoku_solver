@@ -1,4 +1,5 @@
 ﻿
+using System.Runtime.InteropServices.ComTypes;
 using MegaProcessor.Jack.VMTranslator.Console.Domain;
 
 namespace MegaProcessor.Jack.VMTranslator.Console;
@@ -65,15 +66,47 @@ internal sealed class MegaProcessorSerialiser
 
             "eq" => new [] { "pop  r0",
                              "pop  r1",
+                             "andi ps, #0",
+                             "push ps",
                              "cmp  r0, r1",
                              "andi ps, #0b100",
-                             "move r0, sp",
+                             "push ps",
+                             "pop  r0",
                              "lsr  r0, #2",
                              "dec  r0",
                              "inv  r0",
                              "push r0" },
 
             "goto" => new [] { $"jmp  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
+
+            "gt" => new [] { "pop  r0",
+                             "pop  r1",
+                             "andi ps, #0",
+                             "push ps",
+                             "cmp  r0, r1",
+                             "andi ps, #0b10",
+                             "push ps",
+                             "pop  r0",
+                             "lsr  r0, #1",
+                             "dec  r0",
+                             "inv  r0",
+                             "push r0" },
+
+            "if-goto" => new [] { "pop  r0",
+                                  $"bne  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
+
+            "lt" => new [] { "pop  r0",
+                             "pop  r1",
+                             "andi ps, #0",
+                             "push ps",
+                             "cmp  r1, r0",
+                             "andi ps, #0b10",
+                             "push ps",
+                             "pop  r0",
+                             "lsr  r0, #1",
+                             "dec  r0",
+                             "inv  r0",
+                             "push r0" },
 
             "not" => new [] { "pop  r0",
                               "inv  r0",
@@ -83,6 +116,21 @@ internal sealed class MegaProcessorSerialiser
                              "pop  r1",
                              "or   r0, r1",
                              "push r0" },
+
+            "push" => ToPushAssemblyLines(function, virtualInstruction),
+
+            _ => Array.Empty<string>()
+        };
+    }
+
+    private static IEnumerable<string> ToPushAssemblyLines
+        (VirtualFunction function,
+         VirtualInstruction virtualInstruction)
+    {
+        return virtualInstruction.SegmentOrLabel switch
+        {
+            "constant" => new [] { $"ld.w r0, #{virtualInstruction.Value}",
+                                   "push r0" },
 
             _ => Array.Empty<string>()
         };
