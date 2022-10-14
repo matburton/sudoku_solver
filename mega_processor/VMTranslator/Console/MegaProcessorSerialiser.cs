@@ -7,6 +7,29 @@ internal sealed class MegaProcessorSerialiser
 {
     public static IEnumerable<string> ToAssembly(VirtualFunction function)
     {
+        string? previousLine = null;
+
+        foreach (var line in ToRawAssembly(function))
+        {
+            if (   line.Contains("pop  r1;")
+                && previousLine?.Contains("push r1;") is true)
+            {
+                previousLine = null;
+
+                continue;
+            }
+
+            if (previousLine is not null) yield return previousLine;
+
+            previousLine = line;
+        }
+
+        if (previousLine is not null) yield return previousLine;
+    }
+
+    public static IEnumerable<string> ToRawAssembly
+        (VirtualFunction function)
+    {
         yield return string.Empty;
 
         yield return ToAssemblyFunctionLabel($"{function.Label}: // {function.Label}");
@@ -126,8 +149,8 @@ internal sealed class MegaProcessorSerialiser
     {
         return virtualInstruction.SegmentOrLabel switch
         {
-            "constant" => new [] { $"ld.w r0, #{virtualInstruction.Value}",
-                                   "push r0" },
+            "constant" => new [] { $"ld.w r1, #{virtualInstruction.Value}",
+                                   "push r1" },
 
             _ => Array.Empty<string>()
         };
