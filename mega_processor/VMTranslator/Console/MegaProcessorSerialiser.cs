@@ -36,6 +36,11 @@ internal sealed class MegaProcessorSerialiser
 
         yield return "        move r0, sp;";
 
+        if (function.ArgumentCount > 0)
+        {
+            yield return "        push r1;";
+        }
+
         var localTempCount = function.LocalCount + function.TempCount;
 
         if (localTempCount > 0)
@@ -93,11 +98,7 @@ internal sealed class MegaProcessorSerialiser
                               "and  r1, r2",
                               "push r1" },
 
-            "call" => new [] { "push r0",
-                               $"jsr  {ToAssemblyFunctionLabel(virtualInstruction.SegmentOrLabel!)}",
-                               "pop  r0",
-                               $"addi sp, #{virtualInstruction.Value * 2}", // TODO: Avoid for no args
-                               "push r1" },
+            "call" => ToCall(function, virtualInstruction),
 
             "eq" => new [] { "pop  r1",
                              "pop  r2",
@@ -146,6 +147,35 @@ internal sealed class MegaProcessorSerialiser
 
             _ => Array.Empty<string>()
         };
+    }
+
+    private static IEnumerable<string> ToCall
+        (VirtualFunction function,
+         VirtualInstruction virtualInstruction)
+    {
+        if (virtualInstruction.Value > 0)
+        {
+            yield return $"ld.w r1, (sp+{(virtualInstruction.Value - 1) * 2})";
+            yield return $"st.w (sp+{(virtualInstruction.Value - 1) * 2}), r0";
+        }
+        else
+        {
+            yield return "push r0";
+        }
+
+        yield return  $"jsr  {ToAssemblyFunctionLabel(virtualInstruction.SegmentOrLabel!)}";
+
+        if (virtualInstruction.Value > 0)
+        {
+            yield return $"ld.w r0, (sp+{(virtualInstruction.Value - 1) * 2})";
+            yield return $"addi sp, #{virtualInstruction.Value * 2}";
+        }
+        else
+        {
+            yield return "pop  r0";
+        }
+
+        yield return  "push r1";
     }
 
     private static IEnumerable<string> ToPushAssemblyLines
