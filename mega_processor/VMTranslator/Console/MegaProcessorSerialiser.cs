@@ -35,8 +35,13 @@ internal sealed class MegaProcessorSerialiser
         yield return ToAssemblyFunctionLabel($"{function.Label}: // {function.Label}");
 
         yield return "        move r0, sp;";
-        yield return "        move r3, r0;";
-        yield return $"        addi sp, #-{(function.LocalCount + function.TempCount) * 2};";
+
+        var localTempCount = function.LocalCount + function.TempCount;
+
+        if (localTempCount > 0)
+        {
+            yield return $"        addi sp, #-{localTempCount * 2};";
+        }
 
         foreach (var virtualInstruction in function.Instructions)
         {
@@ -79,63 +84,63 @@ internal sealed class MegaProcessorSerialiser
         return virtualInstruction.Command switch
         {
             "add" => new [] { "pop  r1",
-                              "pop  r0",
-                              "add  r1, r0",
+                              "pop  r2",
+                              "add  r1, r2",
                               "push r1" },
 
             "and" => new [] { "pop  r1",
-                              "pop  r0",
-                              "and  r1, r0",
+                              "pop  r2",
+                              "and  r1, r2",
                               "push r1" },
 
-            "call" => new [] { "push r3",
+            "call" => new [] { "push r0",
                                $"jsr  {ToAssemblyFunctionLabel(virtualInstruction.SegmentOrLabel!)}",
-                               "pop  r3",
-                               $"addi sp, #{virtualInstruction.Value * 2}",
+                               "pop  r0",
+                               $"addi sp, #{virtualInstruction.Value * 2}", // TODO: Avoid for no args
                                "push r1" },
 
             "eq" => new [] { "pop  r1",
-                             "pop  r0",
-                             "ld.w r2, #-1",
-                             "cmp  r1, r0",
+                             "pop  r2",
+                             "ld.w r3, #-1",
+                             "cmp  r1, r2",
                              "beq  $+3",
-                             "inc  r2",
-                             "push r2" },
+                             "inc  r3",
+                             "push r3" },
 
             "goto" => new [] { $"jmp  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
 
             "gt" => new [] { "pop  r1",
-                             "pop  r0",
-                             "ld.w r2, #-1",
-                             "cmp  r0, r1",
+                             "pop  r2",
+                             "ld.w r3, #-1",
+                             "cmp  r2, r1",
                              "bgt  $+3",
-                             "inc  r2",
-                             "push r2" },
+                             "inc  r3",
+                             "push r3" },
 
-            "if-goto" => new [] { "pop  r1",
+            "if-goto" => new [] { "pop  r1", // This could be 'optimised' out
+                                  "test r1",
                                   $"bne  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
 
             "lt" => new [] { "pop  r1",
-                             "pop  r0",
-                             "ld.w r2, #-1",
-                             "cmp  r0, r1",
+                             "pop  r2",
+                             "ld.w r3, #-1",
+                             "cmp  r2, r1",
                              "blt  $+3",
-                             "inc  r2",
-                             "push r2" },
+                             "inc  r3",
+                             "push r3" },
 
             "not" => new [] { "pop  r1",
                               "inv  r1",
                               "push r1" },
 
             "or" => new [] { "pop  r1",
-                             "pop  r0",
-                             "or   r1, r0",
+                             "pop  r2",
+                             "or   r1, r2",
                              "push r1" },
 
             "push" => ToPushAssemblyLines(function, virtualInstruction),
 
             "return" => new [] { "pop  r1",
-                                 "move r0, r3",
                                  "move sp, r0",
                                  "ret" },
 
