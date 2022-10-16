@@ -59,7 +59,7 @@ internal sealed class MegaProcessorSerialiser
             {
                 yield return $"    {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}:";
 
-                yield return "        nop;"; // TODO: Needed?
+                yield return "        nop;";
 
                 continue;
             }
@@ -91,6 +91,19 @@ internal sealed class MegaProcessorSerialiser
         (VirtualFunction function,
          VirtualInstruction virtualInstruction)
     {
+        if (   virtualInstruction.Command is "call"
+            && virtualInstruction.SegmentOrLabel is "Stack.grow")
+        {
+            return new [] { "pop  r1",
+                            "move r2, r0",
+                            "move r0, sp",
+                            "sub  r0, r1",
+                            "move sp, r0",
+                            "move r1, r0",
+                            "move r0, r2",
+                            "push r1" };
+        }
+
         return virtualInstruction.Command switch
         {
             "add" => new [] { "pop  r1",
@@ -127,7 +140,8 @@ internal sealed class MegaProcessorSerialiser
             "if-goto" => new []
                 { "pop  r1", // This could be 'optimised' out
                   "test r1",
-                  $"bne  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
+                  "beq  $+5",
+                  $"jmp  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
 
             "lt" => new [] { "pop  r1",
                              "pop  r2",
