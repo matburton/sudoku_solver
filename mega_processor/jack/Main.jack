@@ -3,77 +3,37 @@ class Main {
 
     function void main() {
         
-        var Array grid;
+        var Array grid, digitsCache;
         
-        var int x, y, value;
+        let digitsCache = Stack.grow(100);
         
-        let grid = Stack.grow(Grid.gridWordSize());
+        do Leds.createDigitsCache(digitsCache);
+        
+        let grid = Stack.grow(Grid.gridByteSize());
         
         do Grid.initialise(grid);
         
-        do Printer.writeGridString(grid);
+        do Solver.setValueAt(grid, 1, 0, 0);
+        do Solver.setValueAt(grid, 2, 1, 0);
+        do Solver.setValueAt(grid, 3, 2, 0);
+        do Solver.setValueAt(grid, 4, 3, 0);
+        do Solver.setValueAt(grid, 5, 4, 0);
+        do Solver.setValueAt(grid, 6, 5, 0);
+        do Solver.setValueAt(grid, 7, 6, 0);
+        do Solver.setValueAt(grid, 8, 7, 0);
+        do Solver.setValueAt(grid, 9, 8, 0);
         
-        do Output.println();
+        do Solver.setValueAt(grid, 4, 0, 1);
+        do Solver.setValueAt(grid, 5, 0, 2);
+        do Solver.setValueAt(grid, 6, 0, 3);
+        do Solver.setValueAt(grid, 7, 0, 4);
+        do Solver.setValueAt(grid, 8, 0, 5);
+        do Solver.setValueAt(grid, 9, 0, 6);
+        do Solver.setValueAt(grid, 2, 0, 7);
+        do Solver.setValueAt(grid, 3, 0, 8);
         
-        let x = Keyboard.readInt("x: ");
+        do Leds.renderGrid(grid, -24576, digitsCache);
         
-        while (x > 0) {
-        
-            let y = Keyboard.readInt("y: ");
-            
-            let value = Keyboard.readInt("value: ");
-            
-            do Main.setValueAt(grid, value, x - 1, y - 1);
-            
-            do Screen.clearScreen();
-            
-            do Output.moveCursor(0, 0);
-            
-            do Printer.writeGridString(grid);
-            
-            do Output.println();
-            
-            let x = Keyboard.readInt("x: ");
-        }
-        
-        do Screen.clearScreen();
-        
-        do Output.moveCursor(0, 0);
-        
-        do Printer.writeGridString(grid);
-        
-        let value = Solver.solve(grid);
-        
-        do Output.println();
-        
-        if (value = 0) {
-        
-            do Printer.writeString("No solutions found");
-        }
-        else {
-        
-            if (value = 1) {
-            
-                do Printer.writeString("Solution is unique");
-            }
-            else {
-            
-                do Printer.writeString("Solution is not unique");
-            }
-        }
-        
-        return;
-    }
-    
-    function void setValueAt(Array grid, int value, int x, int y) {
-    
-        if (x < 0 | (x > 8) | (y < 0) | (y > 8) | (value < 1) | (value > 9)) {
-        
-            return;
-        }
-    
-        do Solver.setValueAt(grid, value, x, y);
-    
         return;
     }
 }

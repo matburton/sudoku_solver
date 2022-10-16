@@ -169,7 +169,7 @@ class Solver {
     
         var int x, y, count, possibility, bestCount, bestX, bestY;
         
-        let cloneGrid = Stack.grow(Grid.gridWordSize());
+        let cloneGrid = Stack.grow(Grid.gridByteSize());
         
         let y = 0;
         
@@ -208,7 +208,7 @@ class Solver {
         
             do Grid.copyFromTo(cloneGrid, grid);
             
-            do cloneGrid.dispose();
+            //do cloneGrid.dispose();
             
             do Solver.setValueAt(grid, possibility, bestX, bestY);
             
@@ -219,7 +219,7 @@ class Solver {
         
         let count = Solver.solve(cloneGrid);
         
-        do cloneGrid.dispose();
+        //do cloneGrid.dispose();
     
         return count;
     }
@@ -240,9 +240,9 @@ class Solver {
             
             if (0 = solutions) {
             
-                do Output.moveCursor(0, 0);
+                //do Output.moveCursor(0, 0);
             
-                do Printer.writeGridString(grid);
+                //do Printer.writeGridString(grid);
             }
             
             if (Grid.isComplete(grid)) {

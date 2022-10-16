@@ -5,68 +5,68 @@ class Leds {
     //
     function void createDigitsCache(Array target) {
     
-        let target[0] = 0; // Line 0 of digit 0
-        let target[1] = 2; // Line 0 of digit 1
-        let target[2] = 3; // etc ...
-        let target[3] = 3;
-        let target[4] = 1;
-        let target[5] = 3;
-        let target[6] = 3;
-        let target[7] = 3;
-        let target[8] = 3;
-        let target[9] = 3;
+        let target[0]  = 0; // Line 0 of digit 0
+        let target[2]  = 2; // Line 0 of digit 1
+        let target[4]  = 3; // etc ...
+        let target[6]  = 3;
+        let target[8]  = 1;
+        let target[10] = 3;
+        let target[12] = 3;
+        let target[14] = 3;
+        let target[16] = 3;
+        let target[18] = 3;
         
-        let target = target + 10;
+        let target = target + 20;
         
-        let target[0] = 0; // Line 1 of digit 0
-        let target[1] = 2; // Line 1 of digit 1
-        let target[2] = 2; // etc ...
-        let target[3] = 2;
-        let target[4] = 3;
-        let target[5] = 1;
-        let target[6] = 1;
-        let target[7] = 2;
-        let target[8] = 3;
-        let target[9] = 3;
+        let target[0]  = 0; // Line 1 of digit 0
+        let target[2]  = 2; // Line 1 of digit 1
+        let target[4]  = 2; // etc ...
+        let target[6]  = 2;
+        let target[8]  = 3;
+        let target[10] = 1;
+        let target[12] = 1;
+        let target[14] = 2;
+        let target[16] = 3;
+        let target[18] = 3;
         
-        let target = target + 10;
+        let target = target + 20;
         
-        let target[0] = 0; // Line 2 of digit 0
-        let target[1] = 2; // Line 2 of digit 1
-        let target[2] = 3; // etc ...
-        let target[3] = 3;
-        let target[4] = 3;
-        let target[5] = 3;
-        let target[6] = 3;
-        let target[7] = 2;
-        let target[8] = 3;
-        let target[9] = 3;
+        let target[0]   = 0; // Line 2 of digit 0
+        let target[2]   = 2; // Line 2 of digit 1
+        let target[4]   = 3; // etc ...
+        let target[6]   = 3;
+        let target[8]   = 3;
+        let target[10]  = 3;
+        let target[12]  = 3;
+        let target[14]  = 2;
+        let target[16]  = 3;
+        let target[18]  = 3;
         
-        let target = target + 10;
+        let target = target + 20;
         
-        let target[0] = 0; // Line 3 of digit 0
-        let target[1] = 2; // Line 3 of digit 1
-        let target[2] = 1; // etc ...
-        let target[3] = 2;
-        let target[4] = 2;
-        let target[5] = 2;
-        let target[6] = 3;
-        let target[7] = 2;
-        let target[8] = 3;
-        let target[9] = 2;
+        let target[0]   = 0; // Line 3 of digit 0
+        let target[2]   = 2; // Line 3 of digit 1
+        let target[4]   = 1; // etc ...
+        let target[6]   = 2;
+        let target[8]   = 2;
+        let target[10]  = 2;
+        let target[12]  = 3;
+        let target[14]  = 2;
+        let target[16]  = 3;
+        let target[18]  = 2;
         
-        let target = target + 10;
+        let target = target + 20;
         
-        let target[0] = 3; // Line 4 of digit 0
-        let target[1] = 2; // Line 4 of digit 1
-        let target[2] = 3; // etc ...
-        let target[3] = 3;
-        let target[4] = 2;
-        let target[5] = 3;
-        let target[6] = 3;
-        let target[7] = 2;
-        let target[8] = 3;
-        let target[9] = 2;
+        let target[0]   = 3; // Line 4 of digit 0
+        let target[2]   = 2; // Line 4 of digit 1
+        let target[4]   = 3; // etc ...
+        let target[6]   = 3;
+        let target[8]   = 2;
+        let target[10]  = 3;
+        let target[12]  = 3;
+        let target[14]  = 2;
+        let target[16]  = 3;
+        let target[18]  = 2;
     
         return;
     }
@@ -79,7 +79,7 @@ class Leds {
        
         var int gridY, line, remainder;
         
-        let nextLeds = target + 2;
+        let nextLeds = target + 4;
         
         let gridY = 0;
         
@@ -89,46 +89,46 @@ class Leds {
             
             while (line < 5) {
                 
-                let digitLine = line * 10 + digitsCache;
+                let digitLine = line * 20 + digitsCache;
                 
-                let nextLeds[0] = digitLine[Grid.getSquareValue(grid, 4, gridY)]
+                let nextLeds[0] = digitLine[Grid.getSquareValue(grid, 4, gridY) * 2]
                                 * 8
-                                | digitLine[Grid.getSquareValue(grid, 3, gridY)]
+                                | digitLine[Grid.getSquareValue(grid, 3, gridY) * 2]
                                 * 32
-                                | digitLine[Grid.getSquareValue(grid, 2, gridY)]
+                                | digitLine[Grid.getSquareValue(grid, 2, gridY) * 2]
                                 * 8
-                                | digitLine[Grid.getSquareValue(grid, 1, gridY)]
+                                | digitLine[Grid.getSquareValue(grid, 1, gridY) * 2]
                                 * 8
-                                | digitLine[Grid.getSquareValue(grid, 0, gridY)];
+                                | digitLine[Grid.getSquareValue(grid, 0, gridY) * 2];
                 
-                let nextLeds[1] = digitLine[Grid.getSquareValue(grid, 8, gridY)]
+                let nextLeds[2] = digitLine[Grid.getSquareValue(grid, 8, gridY) * 2]
                                 * 8
-                                | digitLine[Grid.getSquareValue(grid, 7, gridY)]
+                                | digitLine[Grid.getSquareValue(grid, 7, gridY) * 2]
                                 * 8
-                                | digitLine[Grid.getSquareValue(grid, 6, gridY)]
+                                | digitLine[Grid.getSquareValue(grid, 6, gridY) * 2]
                                 * 32
-                                | digitLine[Grid.getSquareValue(grid, 5, gridY)]
+                                | digitLine[Grid.getSquareValue(grid, 5, gridY) * 2]
                                 * 4;
                                 
                 if (nextLeds[0] < 0) {
                 
-                    let nextLeds[1] = nextLeds[1] | 1;
+                    let nextLeds[2] = nextLeds[2] | 1;
                 }
                 
                 let nextLeds[0] = nextLeds[0] * 2;
             
                 let line = line + 1;
                 
-                let nextLeds = nextLeds + 2;
+                let nextLeds = nextLeds + 4;
             }
             
             if (2 = gridY | (5 = gridY)) {
             
-                let nextLeds = nextLeds + 4;
+                let nextLeds = nextLeds + 8;
             }
             else {
         
-                let nextLeds = nextLeds + 2;
+                let nextLeds = nextLeds + 4;
             }
             
             let gridY = gridY + 1;

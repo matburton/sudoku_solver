@@ -11,8 +11,8 @@ class Stack {
     // subsequently called but should never be returned out
     // of the caller
     //
-    function Array grow(int wordCount) {
+    function Array grow(int byteCount) {
     
-        return Array.new(wordCount);
+        return Array.new(byteCount);
     }
 }
