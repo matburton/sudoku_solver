@@ -137,6 +137,10 @@ internal sealed class MegaProcessorSerialiser
                              "inc  r3",
                              "push r3" },
 
+            "neg" => new [] { "pop  r1",
+                              "neg  r1",
+                              "push r1" },
+
             "not" => new [] { "pop  r1",
                               "inv  r1",
                               "push r1" },
@@ -222,15 +226,20 @@ internal sealed class MegaProcessorSerialiser
                   "add  r3, r0",
                   "st.w (r3), r1" },
 
-            "pointer" => Array.Empty<string>(),
-
+            "pointer" => new [] { "pop  r1",
+                                  "move r3, r0",
+                                  "st.w (r3), r1" },
             "temp" => new []
                 { "pop  r1",
                   $"ld.w r3, #{function.GetTempOffset(virtualInstruction.Value!.Value)}",
                   "add  r3, r0",
                   "st.w (r3), r1" },
 
-            "that" => Array.Empty<string>(),
+            "that" => new [] { "move r3, r0",
+                               "ld.w r1, (r3)",
+                               "move r2, r1",
+                               "pop  r1",
+                               "st.w (r2), r1" },
 
             var s => throw new Exception
                 ($"Unsupported pop memory segment '{s}'")
@@ -259,12 +268,16 @@ internal sealed class MegaProcessorSerialiser
                   "push r1" },
 
             "temp" => new []
-                { "ld.w r3, #{function.GetTempOffset(virtualInstruction.Value!.Value)}",
+                { $"ld.w r3, #{function.GetTempOffset(virtualInstruction.Value!.Value)}",
                   "add  r3, r0",
                   "ld.w r1, (r3)",
                   "push r1" },
 
-            "that" => Array.Empty<string>(),
+            "that" => new [] { "move r3, r0",
+                               "ld.w r1, (r3)",
+                               "move r2, r1",
+                               "ld.w r1, (r2)",
+                               "push r1" },
 
             var s => throw new Exception
                 ($"Unsupported push memory segment '{s}'")
