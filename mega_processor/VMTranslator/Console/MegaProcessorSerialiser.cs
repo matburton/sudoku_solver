@@ -34,6 +34,11 @@ internal sealed class MegaProcessorSerialiser
 
         yield return ToAssemblyFunctionLabel($"{function.Label}: // {function.Label}");
 
+        if (function.UsesThat)
+        {
+            yield return "        addi sp, #-2;";
+        }
+
         yield return "        move r0, sp;";
 
         if (function.ArgumentCount > 0)
@@ -98,7 +103,7 @@ internal sealed class MegaProcessorSerialiser
                               "and  r1, r2",
                               "push r1" },
 
-            "call" => ToCall(function, virtualInstruction),
+            "call" => ToCall(virtualInstruction),
 
             "eq" => new [] { "pop  r1",
                              "pop  r2",
@@ -139,19 +144,24 @@ internal sealed class MegaProcessorSerialiser
                              "or   r1, r2",
                              "push r1" },
 
+            "pop" => ToPopAssemblyLines(function, virtualInstruction),
+
             "push" => ToPushAssemblyLines(function, virtualInstruction),
 
-            "return" => new [] { "pop  r1",
-                                 "move sp, r0",
-                                 "ret" },
+            "sub" => new [] { "pop  r1",
+                              "pop  r2",
+                              "sub  r2, r1",
+                              "move r1, r2",
+                              "push r1" },
 
-            _ => Array.Empty<string>()
+            "return" => ToReturn(function),
+
+            var c => throw new Exception($"Unsupported command '{c}'")
         };
     }
 
     private static IEnumerable<string> ToCall
-        (VirtualFunction function,
-         VirtualInstruction virtualInstruction)
+        (VirtualInstruction virtualInstruction)
     {
         if (virtualInstruction.Value > 0)
         {
@@ -178,6 +188,41 @@ internal sealed class MegaProcessorSerialiser
         yield return  "push r1";
     }
 
+    private static IEnumerable<string> ToReturn
+        (VirtualFunction function)
+    {
+        yield return "pop  r1";
+        yield return "move sp, r0";
+
+        if (function.UsesThat)
+        {
+            yield return "addi sp, #2";
+        }
+
+        yield return "ret";
+    }
+
+    private static IEnumerable<string> ToPopAssemblyLines
+        (VirtualFunction function,
+         VirtualInstruction virtualInstruction)
+    {
+        return virtualInstruction.SegmentOrLabel switch
+        {
+            "argument" => Array.Empty<string>(),
+
+            "local" => Array.Empty<string>(),
+
+            "pointer" => Array.Empty<string>(),
+
+            "temp" => Array.Empty<string>(),
+
+            "that" => Array.Empty<string>(),
+
+            var s => throw new Exception
+                ($"Unsupported pop memory segment '{s}'")
+        };
+    }
+
     private static IEnumerable<string> ToPushAssemblyLines
         (VirtualFunction function,
          VirtualInstruction virtualInstruction)
@@ -187,7 +232,16 @@ internal sealed class MegaProcessorSerialiser
             "constant" => new [] { $"ld.w r1, #{virtualInstruction.Value}",
                                    "push r1" },
 
-            _ => Array.Empty<string>()
+            "argument" => Array.Empty<string>(),
+
+            "local" => Array.Empty<string>(),
+
+            "temp" => Array.Empty<string>(),
+
+            "that" => Array.Empty<string>(),
+
+            var s => throw new Exception
+                ($"Unsupported push memory segment '{s}'")
         };
     }
 

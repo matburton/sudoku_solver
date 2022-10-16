@@ -39,4 +39,27 @@ internal sealed class VirtualFunction
     public int LocalCount { get; }
 
     public int TempCount { get; }
+
+    public bool UsesThat => Instructions
+        .Where(i => i.Command is "pop" or "push")
+        .Any(i => i.SegmentOrLabel is "that" or "pointer");
+
+    public int GetArgumentOffset(int index)
+    {
+        if (index is 0) return -2;
+
+        return 2 * (UsesThat ? ArgumentCount - index + 1
+                             : ArgumentCount - index);
+    }
+
+    public int GetLocalOffset(int index) =>
+        -2 * (ArgumentCount > 0 ? index + 2
+                                : index + 1);
+
+    public int GetTempOffset(int index)
+    {
+        if (ArgumentCount > 0) index += 1;
+
+        return 2 * (-index - LocalCount - 1);
+    }
 }
