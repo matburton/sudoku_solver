@@ -113,7 +113,8 @@ internal sealed class MegaProcessorSerialiser
                              "inc  r3",
                              "push r3" },
 
-            "goto" => new [] { $"jmp  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
+            "goto" => new []
+                { $"jmp  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
 
             "gt" => new [] { "pop  r1",
                              "pop  r2",
@@ -123,9 +124,10 @@ internal sealed class MegaProcessorSerialiser
                              "inc  r3",
                              "push r3" },
 
-            "if-goto" => new [] { "pop  r1", // This could be 'optimised' out
-                                  "test r1",
-                                  $"bne  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
+            "if-goto" => new []
+                { "pop  r1", // This could be 'optimised' out
+                  "test r1",
+                  $"bne  {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}" },
 
             "lt" => new [] { "pop  r1",
                              "pop  r2",
@@ -208,13 +210,25 @@ internal sealed class MegaProcessorSerialiser
     {
         return virtualInstruction.SegmentOrLabel switch
         {
-            "argument" => Array.Empty<string>(),
+            "argument" => new []
+                { "pop  r1",
+                  $"ld.w r3, #{function.GetArgumentOffset(virtualInstruction.Value!.Value)}",
+                  "add  r3, r0",
+                  "st.w (r3), r1" },
 
-            "local" => Array.Empty<string>(),
+            "local" => new []
+                { "pop  r1",
+                  $"ld.w r3, #{function.GetLocalOffset(virtualInstruction.Value!.Value)}",
+                  "add  r3, r0",
+                  "st.w (r3), r1" },
 
             "pointer" => Array.Empty<string>(),
 
-            "temp" => Array.Empty<string>(),
+            "temp" => new []
+                { "pop  r1",
+                  $"ld.w r3, #{function.GetTempOffset(virtualInstruction.Value!.Value)}",
+                  "add  r3, r0",
+                  "st.w (r3), r1" },
 
             "that" => Array.Empty<string>(),
 
@@ -232,11 +246,23 @@ internal sealed class MegaProcessorSerialiser
             "constant" => new [] { $"ld.w r1, #{virtualInstruction.Value}",
                                    "push r1" },
 
-            "argument" => Array.Empty<string>(),
+            "argument" => new []
+                { $"ld.w r3, #{function.GetArgumentOffset(virtualInstruction.Value!.Value)}",
+                  "add  r3, r0",
+                  "ld.w r1, (r3)",
+                  "push r1" },
 
-            "local" => Array.Empty<string>(),
+            "local" => new []
+                { $"ld.w r3, #{function.GetLocalOffset(virtualInstruction.Value!.Value)}",
+                  "add  r3, r0",
+                  "ld.w r1, (r3)",
+                  "push r1" },
 
-            "temp" => Array.Empty<string>(),
+            "temp" => new []
+                { "ld.w r3, #{function.GetTempOffset(virtualInstruction.Value!.Value)}",
+                  "add  r3, r0",
+                  "ld.w r1, (r3)",
+                  "push r1" },
 
             "that" => Array.Empty<string>(),
 
