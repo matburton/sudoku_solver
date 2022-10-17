@@ -21,6 +21,13 @@ Grid_initialise:
         st.w (r3), r0;
         ret;
         
+Grid_isImpossible:
+        ld.w r2, #325;
+        add  r2, r1;
+        ld.b r1, (r2);
+        sxt  r1;
+        ret;
+        
 Grid_copyFromTo:
         move r2, r1;
         ld.w r3, (sp+2);

@@ -60,7 +60,7 @@ class Grid {
 
             let square[2] = 0;
 
-            let grid[324] = grid[324] + 257;
+            let grid[324] = grid[324] - 255;
             
             return 0;
         }
@@ -98,10 +98,7 @@ class Grid {
     // Once this returns false it will always return false
     // Using setSquareValue cannot make this return true again
     //
-    function boolean isImpossible(Array grid) {
-    
-        return grid[324] > 255;
-    }
+    function boolean isImpossible(Array grid) { return false; }
 
     function boolean isComplete(Array grid) {
     
