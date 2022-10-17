@@ -57,7 +57,7 @@ class Leds {
         
         let target = target + 20;
         
-        let target[0]   = 3; // Line 4 of digit 0
+        let target[0]   = 0; // Line 4 of digit 0
         let target[2]   = 2; // Line 4 of digit 1
         let target[4]   = 3; // etc ...
         let target[6]   = 3;
@@ -71,7 +71,7 @@ class Leds {
         return;
     }
     
-    // target should be 112 words
+    // target should be 120 words
     //
     function void renderGrid(Array grid, Array target, Array digitsCache) {
        
@@ -79,7 +79,7 @@ class Leds {
        
         var int gridY, line, remainder;
         
-        let nextLeds = target + 4;
+        let nextLeds = target;
         
         let gridY = 0;
         
@@ -94,7 +94,9 @@ class Leds {
                 let nextLeds[0] = digitLine[Grid.getSquareValue(grid, 4, gridY) * 2]
                                 * 8
                                 | digitLine[Grid.getSquareValue(grid, 3, gridY) * 2]
-                                * 32
+                                * 4
+                                | 1
+                                * 8
                                 | digitLine[Grid.getSquareValue(grid, 2, gridY) * 2]
                                 * 8
                                 | digitLine[Grid.getSquareValue(grid, 1, gridY) * 2]
@@ -106,7 +108,9 @@ class Leds {
                                 | digitLine[Grid.getSquareValue(grid, 7, gridY) * 2]
                                 * 8
                                 | digitLine[Grid.getSquareValue(grid, 6, gridY) * 2]
-                                * 32
+                                * 4
+                                | 1
+                                * 8
                                 | digitLine[Grid.getSquareValue(grid, 5, gridY) * 2]
                                 * 4;
                                 
@@ -122,12 +126,24 @@ class Leds {
                 let nextLeds = nextLeds + 4;
             }
             
+            if (gridY < 8) {
+            
+                let nextLeds[0] = 1024;
+                let nextLeds[2] = 32;
+                
+                let nextLeds = nextLeds + 4;
+            }
+            
             if (2 = gridY | (5 = gridY)) {
             
-                let nextLeds = nextLeds + 8;
-            }
-            else {
-        
+                let nextLeds[0] = -2;
+                let nextLeds[2] = 32767;
+            
+                let nextLeds = nextLeds + 4;
+                
+                let nextLeds[0] = 1024;
+                let nextLeds[2] = 32;
+                
                 let nextLeds = nextLeds + 4;
             }
             

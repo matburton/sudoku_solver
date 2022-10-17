@@ -53,16 +53,25 @@ internal sealed class MegaProcessorSerialiser
             yield return $"        addi sp, #-{localTempCount * 2};";
         }
 
+        var lastWasLabel = false;
+
         foreach (var virtualInstruction in function.Instructions)
         {
             if (virtualInstruction.Command is "label")
             {
+                if (lastWasLabel)
+                {
+                    yield return "        nop;";
+                }
+
                 yield return $"    {ToAssemblyGotoLabel(function.Label, virtualInstruction.SegmentOrLabel!)}:";
 
-                yield return "        nop;";
+                lastWasLabel = true;
 
                 continue;
             }
+            
+            lastWasLabel = false;
 
             var lines = ToAssemblyLines(function, virtualInstruction)
                        .Select(l => $"        {l};")

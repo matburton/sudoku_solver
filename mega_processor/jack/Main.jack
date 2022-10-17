@@ -21,7 +21,6 @@ class Main {
         do Solver.setValueAt(grid, 6, 5, 0);
         do Solver.setValueAt(grid, 7, 6, 0);
         do Solver.setValueAt(grid, 8, 7, 0);
-        do Solver.setValueAt(grid, 9, 8, 0);
         
         do Solver.setValueAt(grid, 4, 0, 1);
         do Solver.setValueAt(grid, 5, 0, 2);
@@ -30,9 +29,8 @@ class Main {
         do Solver.setValueAt(grid, 8, 0, 5);
         do Solver.setValueAt(grid, 9, 0, 6);
         do Solver.setValueAt(grid, 2, 0, 7);
-        do Solver.setValueAt(grid, 3, 0, 8);
         
-        do Leds.renderGrid(grid, -24576, digitsCache);
+        do Leds.renderGrid(grid, -24572, digitsCache);
         
         return;
     }
