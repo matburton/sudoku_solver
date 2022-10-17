@@ -21,21 +21,26 @@ Grid_initialise:
         st.w (r3), r0;
         ret;
         
-possibilityValueMasks:
-        dw   0b000000000;
-        dw   0b000000001;
-        dw   0b000000010;
-        dw   0b000000100;
-        dw   0b000001000;
-        dw   0b000010000;
-        dw   0b000100000;
-        dw   0b001000000;
-        dw   0b010000000;
-        dw   0b100000000;
+Grid_copyFromTo:
+        move r2, r1;
+        ld.w r3, (sp+2);
+        ld.b r0, #54;
+    Grid_copyFromTo_loop:
+        ld.w r1, (r2++);
+        st.w (r3++), r1;
+        ld.w r1, (r2++);
+        st.w (r3++), r1;
+        ld.w r1, (r2++);
+        st.w (r3++), r1;
+        dec  r0;
+        bne  Grid_copyFromTo_loop;
+        ld.w r1, (r2++);
+        st.w (r3++), r1;
+        ret;        
 
 Grid_toMask:
-        ld.w r3, #possibilityValueMasks;
-        add  r3, r1;
-        add  r3, r1;
-        ld.w r1, (r3);
+        ld.b r0, #0;
+        dec  r1;
+        bset r0, r1;
+        move r1, r0;
         ret;

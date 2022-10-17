@@ -5,21 +5,7 @@ class Grid {
 
     function Array initialise(Array grid) { return 0; }
 
-    function void copyFromTo(Array source, Array target) {
-
-        var int index;
-        
-        let index = 0;
-        
-        while (index < 326) {
-
-            let target[index] = source[index];
-
-            let index = index + 2;
-        }
-    
-        return;
-    }
+    function void copyFromTo(Array source, Array target) { return; }
 
     // Cannot be used to stop isImpossible returning false
     //
