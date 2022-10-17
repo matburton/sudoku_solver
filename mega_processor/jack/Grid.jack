@@ -1,12 +1,7 @@
 
 class Grid {
 
-    function int gridByteSize() {
-    
-        // 81 squares, 2 words each and 1 word grid cache
-        //
-        return 326;
-    }
+    function int gridByteSize() { return 0; }
 
     function Array initialise(Array grid) {
            
@@ -256,19 +251,5 @@ class Grid {
         return value;
     }
     
-    function int toMask(int value) {
-    
-        var int output;
-        
-        let output = 1;
-        
-        while (value > 1) {
-        
-            let output = output * 2;
-            
-            let value = value - 1;
-        }
-        
-        return output;
-    }
+    function int toMask(int value) { return 0; }
 }

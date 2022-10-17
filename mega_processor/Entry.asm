@@ -12,10 +12,12 @@ start:
     jsr  Main_main;
     jmp  $;
     
-include "Main.asm";
-include "Grid.asm";
-include "Solver.asm";
-include "Leds.asm";
+include "jack/Main.asm";
+include "jack/Grid.asm";
+include "jack/Solver.asm";
+include "jack/Leds.asm";
+
+include "asm/Grid.asm";
     
 Math_multiply:
     ld.w r0, (sp+2);
