@@ -3,25 +3,7 @@ class Grid {
 
     function int gridByteSize() { return 0; }
 
-    function Array initialise(Array grid) {
-           
-        var int index;
-       
-        let index = 0;
-        
-        while (index < 324) {
-        
-            let grid[index] = 511; // All 9 values are possible
-
-            let grid[index + 2] = 2304; // 9 possibilities and no value
-
-            let index = index + 4;
-        }
-        
-        let grid[324] = 81; // All squares incomplete, grid possible
-        
-        return grid;
-    }
+    function Array initialise(Array grid) { return 0; }
 
     function void copyFromTo(Array source, Array target) {
 

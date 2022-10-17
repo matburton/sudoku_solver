@@ -3,6 +3,24 @@ Grid_gridByteSize:
         ld.w r1, #326;
         ret;
         
+Grid_initialise:
+        ld.b r2, #27;
+        move r3, r1;
+        ld.w r0, #0b111111111;
+        ld.w r1, #0x900;
+    Grid_initialise_loop:
+        st.w (r3++), r0;
+        st.w (r3++), r1;
+        st.w (r3++), r0;
+        st.w (r3++), r1;
+        st.w (r3++), r0;
+        st.w (r3++), r1;
+        dec  r2;
+        bne  Grid_initialise_loop;
+        ld.b r0, #81;
+        st.w (r3), r0;
+        ret;
+        
 possibilityValueMasks:
         dw   0b000000000;
         dw   0b000000001;
