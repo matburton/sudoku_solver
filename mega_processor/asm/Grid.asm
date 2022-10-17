@@ -6,7 +6,7 @@ Grid_gridByteSize:
 Grid_initialise:
         ld.b r2, #27;
         move r3, r1;
-        ld.w r0, #0b111111111;
+        ld.w r0, #0b1111111110;
         ld.w r1, #0x900;
     Grid_initialise_loop:
         st.w (r3++), r0;
@@ -36,11 +36,10 @@ Grid_copyFromTo:
         bne  Grid_copyFromTo_loop;
         ld.w r1, (r2++);
         st.w (r3++), r1;
-        ret;        
+        ret;
 
 Grid_toMask:
         ld.b r0, #0;
-        dec  r1;
         bset r0, r1;
         move r1, r0;
         ret;
