@@ -199,19 +199,7 @@ class Grid {
     
     // Assumes there is only one possibility 
     //
-    function int calculateValue(int possibilities) {
-    
-        var int value;
-    
-        let value = 1;
-        
-        while (possibilities > Grid.toMask(value)) {
-        
-            let value = value + 1;
-        }
-    
-        return value;
-    }
+    function int calculateValue(int possibilities) { return 0; }
     
     function int toMask(int value) { return 0; }
 }

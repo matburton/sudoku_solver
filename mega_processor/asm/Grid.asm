@@ -28,7 +28,7 @@ Grid_isImpossible:
         ld.w r2, #GRID_SIZE - 1;
         add  r2, r1;
         ld.b r1, (r2);
-        sxt  r1;
+        sxt  r1; // TODO: Remove in the future
         ret;
         
 Grid_isComplete:
@@ -54,6 +54,26 @@ Grid_copyFromTo:
         bne  Grid_copyFromTo_loop;
         ld.w r1, (r2++);
         st.w (r3++), r1;
+        ret;
+        
+Grid_calculateValue:
+        ld.b r0, #1;
+        ld.b r2, #0;
+    Grid_calculateValue_loop:
+        add  r0, r0;
+        inc  r2;
+        cmp  r1, r0;
+        beq  Grid_calculateValue_return;
+        add  r0, r0;
+        inc  r2;
+        cmp  r1, r0;
+        beq  Grid_calculateValue_return;
+        add  r0, r0;
+        inc  r2;
+        cmp  r1, r0;
+        bne  Grid_calculateValue_loop;
+    Grid_calculateValue_return:
+        move r1, r2;
         ret;
 
 Grid_toMask:
