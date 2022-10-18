@@ -65,6 +65,44 @@ Grid_setSquareValue:
         st.w (r3), r0;
         ret;
         
+// Returns 0 if the square has multiple possibilities or no possibilities
+//
+// function int getSquareValue(Array grid, int x, int y)
+//
+Grid_getSquareValue:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add  r3, r1;
+        addq r3, #2;
+        ld.b r1, (r3);
+        ret;
+        
+// function boolean squareHasPossibility(Array grid, int value, int x, int y)
+//
+Grid_squareHasPossibility:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add  r3, r1;
+        ld.w r0, (r3);
+        ld.w r2, (sp+6);
+        ld.b r1, #0;
+        btst r0, r2;
+        beq  Grid_squareHasPossibility_return;
+        dec  r1;
+    Grid_squareHasPossibility_return:
+        ret;
+        
+// function int getPossibilityCount(Array grid, int x, int y)
+//
+Grid_getPossibilityCount:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add  r3, r1;
+        addq r3, #2;
+        inc  r3;
+        ld.b r1, (r3);
+        ret;
+        
 // function boolean isImpossible(Array grid)
 //
 Grid_isImpossible:

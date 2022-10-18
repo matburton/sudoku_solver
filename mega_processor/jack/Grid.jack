@@ -14,14 +14,7 @@ class Grid {
     //
     function void setSquareValue(Array grid, int value, int x, int y) { return; }
     
-    function boolean squareHasPossibility(Array grid, int value, int x, int y) {
-    
-        var Array square;
-        
-        let square = Grid.getSquare(grid, x, y);
-    
-        return square[0] & Grid.toMask(value) > 0;
-    }
+    function boolean squareHasPossibility(Array grid, int value, int x, int y) { return false; }
 
     // Returns the new square value if the square was previously incomplete,
     // i.e. had multiple possibilities, but now only has one. Otherwise
@@ -74,25 +67,11 @@ class Grid {
         return 0;
     }
 
-    function int getPossibilityCount(Array grid, int x, int y) {
-    
-        var Array square;
-        
-        let square = Grid.getSquare(grid, x, y);
-    
-        return square[2] / 256; // No shifting available
-    }
+    function int getPossibilityCount(Array grid, int x, int y) { return 0; }
     
     // Returns 0 if the square has multiple possibilities or no possibilities
     //
-    function int getSquareValue(Array grid, int x, int y) {
-  
-        var Array square;
-        
-        let square = Grid.getSquare(grid, x, y);
-  
-        return square[2] & 15;
-    }
+    function int getSquareValue(Array grid, int x, int y) { return 0; }
     
     // Once this returns false it will always return false
     // Using setSquareValue cannot make this return true again
