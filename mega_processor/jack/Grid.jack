@@ -100,10 +100,7 @@ class Grid {
     //
     function boolean isImpossible(Array grid) { return false; }
 
-    function boolean isComplete(Array grid) {
-    
-        return 0 = grid[324];
-    }
+    function boolean isComplete(Array grid) { return false; }
     
     function boolean mustBeValue(Array grid, int value, int x, int y) {
     
@@ -200,7 +197,7 @@ class Grid {
         return true;
     }
     
-    // Assumes there is one one possibility 
+    // Assumes there is only one possibility 
     //
     function int calculateValue(int possibilities) {
     

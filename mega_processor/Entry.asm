@@ -1,5 +1,7 @@
 
-RAM_END equ 0x8000;
+RAM_END   equ 0x8000;
+LED_START equ 0xA000;
+LED_SIZE  equ 256;
 
 org 0;
     jmp  start;
@@ -32,5 +34,5 @@ Math_divide:
     move r1, r2;
     ret;
 
-org 0xA000; // Blank LEDs on load
-    ds   256, 0;
+org LED_START; // Blank LEDs on load
+    ds   LED_SIZE, 0;
