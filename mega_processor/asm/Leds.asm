@@ -1,7 +1,25 @@
 
+// function void addGridRenderDisable()
+//
+Leds_addGridRenderDisable:
+    ld.b r0, gridRenderDisableCount;
+    inc  r0;
+    st.b gridRenderDisableCount, r0;
+    ret;
+
+// function void undoGridRenderDisable()
+//
+Leds_undoGridRenderDisable:
+    ld.b r0, gridRenderDisableCount;
+    dec  r0;
+    st.b gridRenderDisableCount, r0;
+    ret;
+
 // function void renderGrid(Array grid)
 //    
 Leds_renderGrid:
+        ld.b r0, gridRenderDisableCount;
+        bne  Leds_renderGrid_return;
         push r1;
         ld.b r0, #9;
     Leds_renderGrid_loop:
@@ -12,11 +30,18 @@ Leds_renderGrid:
         pop  r0;        
         bne  Leds_renderGrid_loop;
         addi sp, #2;
+    Leds_renderGrid_return:
         ret;
 
 // function void renderGridLine(Array grid, int y)
 //
 Leds_renderGridLine:
+
+        ld.b r0, gridRenderDisableCount;
+        beq  Leds_renderGridLine_setup;
+        ret;
+        
+    Leds_renderGridLine_setup:
 
         move r3, r1;
         ld.b r0, (sp+2);

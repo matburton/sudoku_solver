@@ -60,6 +60,8 @@ class Solver {
         
         if (value > 0) {
         
+            do Leds.renderGridLine(grid, y);
+        
             do Solver.removePossibilitiesRelatedTo(grid, value, x, y);
         }
 
@@ -69,6 +71,8 @@ class Solver {
     function void setValueAt(Array grid, int value, int x, int y) {
     
         do Grid.setSquareValue(grid, value, x, y);
+        
+        do Leds.renderGridLine(grid, y);
 
         do Solver.removePossibilitiesRelatedTo(grid, value, x, y);
 
@@ -202,13 +206,15 @@ class Solver {
         
         do Grid.copyFromTo(grid, cloneGrid);
         
+        do Leds.addGridRenderDisable();
+        
         do Solver.removePossibilityAt(grid, possibility, bestX, bestY);
+        
+        do Leds.undoGridRenderDisable();
         
         if (Grid.isImpossible(grid)) {
         
             do Grid.copyFromTo(cloneGrid, grid);
-            
-            //do cloneGrid.dispose();
             
             do Solver.setValueAt(grid, possibility, bestX, bestY);
             
@@ -216,11 +222,11 @@ class Solver {
         }
         
         do Solver.setValueAt(cloneGrid, possibility, bestX, bestY);
-        
+    
         let count = Solver.solve(cloneGrid);
         
-        //do cloneGrid.dispose();
-    
+        do Leds.renderGrid(grid);
+        
         return count;
     }
     
@@ -237,19 +243,12 @@ class Solver {
         while (solutions < 2) {
         
             do Solver.refineGrid(grid);
-            
-            if (0 = solutions) {
-            
-                //do Output.moveCursor(0, 0);
-            
-                //do Printer.writeGridString(grid);
-            }
-            
+          
             if (Grid.isComplete(grid)) {
             
-                let solutions = solutions + 1;
+                do Leds.addGridRenderDisable();
             
-                return solutions;
+                return solutions + 1;
             }
             
             if (Grid.isImpossible(grid)) { return solutions; }

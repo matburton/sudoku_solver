@@ -1,6 +1,9 @@
 
 LED_START equ 0xA000;
 
+gridRenderDisableCount:
+    db   0;
+
 numberShapes: // Numbers should look horizontally backwards here
     db   0b00, 0b10, 0b11, 0b11, 0b01, 0b11, 0b11, 0b11, 0b11, 0b11;
     db   0b00, 0b10, 0b10, 0b10, 0b11, 0b01, 0b01, 0b10, 0b11, 0b11;
