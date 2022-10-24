@@ -3,11 +3,7 @@ class Main {
 
     function void main() {
         
-        var Array grid, digitsCache;
-        
-        let digitsCache = Stack.grow(100);
-        
-        do Leds.createDigitsCache(digitsCache);
+        var Array grid;
         
         let grid = Stack.grow(Grid.gridByteSize());
         
@@ -30,7 +26,7 @@ class Main {
         do Solver.setValueAt(grid, 9, 0, 6);
         do Solver.setValueAt(grid, 2, 0, 7);
         
-        do Leds.renderGrid(grid, -24572, digitsCache);
+        do Leds.renderGrid(grid);
         
         return;
     }

@@ -1,12 +1,10 @@
 
-RAM_END   equ 0x8000;
-LED_START equ 0xA000;
-LED_SIZE  equ 256;
+RAM_END equ 0x8000;
 
 org 0;
     jmp  start;
     
-org 0xF;
+org 0x10;
 
 start:
     ld.w r0, #RAM_END;
@@ -15,6 +13,7 @@ start:
     jmp  $;
     
 include "asm/Grid.asm";
+include "asm/Leds.asm";
     
 include "jack/Main.asm";
 include "jack/Grid.asm";
@@ -33,6 +32,5 @@ Math_divide:
     divu;
     move r1, r2;
     ret;
-
-org LED_START; // Blank LEDs on load
-    ds   LED_SIZE, 0;
+    
+include "asm/Leds_data.asm";
