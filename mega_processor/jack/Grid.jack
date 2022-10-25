@@ -21,51 +21,7 @@ class Grid {
     // returns zero, e.g. if the square is still incomplete or did not have
     // the given value as a possibility
     //
-    function int removeSquarePossibility(Array grid, int value, int x, int y) { 
-    
-        var Array square;
-        
-        var int variable;
-        
-        let square = Grid.getSquare(grid, x, y);
-        
-        let variable = Grid.toMask(value);
-
-        if (square[0] & variable = 0) {
-        
-            return 0;
-        }
-        
-        let square[0] = square[0] & ~variable;
-        
-        let variable = square[2] / 256 - 1; // No shifting available
-        
-        if (0 = variable) {
-
-            let square[2] = 0;
-
-            let grid[324] = grid[324] - 255;
-            
-            return 0;
-        }
-        else {
-        
-            if (1 = variable) {
-            
-                let variable = Grid.calculateValue(square[0]);
-                
-                let square[2] = variable + 256;
-            
-                let grid[324] = grid[324] - 1;
-                
-                return variable;
-            }
-        }
-        
-        let square[2] = variable * 256;
-        
-        return 0;
-    }
+    function int removeSquarePossibility(Array grid, int value, int x, int y) { return 0; }
 
     function int getPossibilityCount(Array grid, int x, int y) { return 0; }
     

@@ -77,6 +77,60 @@ Grid_getSquareValue:
         ld.b r1, (r3);
         ret;
         
+// Returns the new square value if the square was previously incomplete,
+// i.e. had multiple possibilities, but now only has one. Otherwise
+// returns zero, e.g. if the square is still incomplete or did not have
+// the given value as a possibility
+//
+// function int removeSquarePossibility(Array grid, int value, int x, int y)
+//
+Grid_removeSquarePossibility:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add r3, r1;
+        ld.w r0, (r3);
+        ld.w r2, (sp+6);
+        bclr r0, r2;
+        bne  Grid_removeSquarePossibility_continue;
+        ld.b r1, #0;
+        ret;
+    Grid_removeSquarePossibility_continue:
+        move r2, r1;
+        st.w (r3), r0;
+        addq r3, #2;
+        inc  r3;
+        ld.b r1, (r3);
+        dec  r1;
+        beq  Grid_removeSquarePossibility_impossible;
+        st.b (r3), r1;
+        dec  r1;
+        beq  Grid_removeSquarePossibility_value;
+        ld.b r1, #0;
+        ret;
+    Grid_removeSquarePossibility_impossible:
+        dec  r3;
+        st.w (r3), r1;
+        ld.w r0, #GRID_SIZE - 1;
+        add  r2, r0;
+        ld.b r0, #-1;
+        st.b (r2), r0;
+        dec  r2;
+        ld.b r0, (r2);
+        inc  r0;
+        st.b (r2), r0;
+        ret;
+    Grid_removeSquarePossibility_value:
+        ld.w r1, #GRID_SIZE - 2;
+        add  r2, r1;
+        ld.b r1, (r2);
+        dec  r1;
+        st.b (r2), r1;
+        move r1, r0;
+        jsr  Grid_calculateValue;
+        dec  r3;
+        st.b (r3), r1;
+        ret;
+        
 // function boolean squareHasPossibility(Array grid, int value, int x, int y)
 //
 Grid_squareHasPossibility:
@@ -109,7 +163,7 @@ Grid_isImpossible:
         ld.w r2, #GRID_SIZE - 1;
         add  r2, r1;
         ld.b r1, (r2);
-        sxt  r1; // TODO: Remove in the future
+        sxt  r1;
         ret;
        
 // function boolean isComplete(Array grid)
