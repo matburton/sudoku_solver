@@ -91,10 +91,12 @@ class Solver {
             
             while (value < 10) {
             
-                if (  Grid.squareHasPossibility(grid, value, x, y)
-                    & Grid.mustBeValue(grid, value, x, y)) {
+                if (Grid.squareHasPossibility(grid, value, x, y)) {
                 
-                    return value;
+                    if (Grid.mustBeValue(grid, value, x, y)) {
+                    
+                        return value;
+                    }
                 }
             
                 let value = value + 1;
@@ -179,6 +181,8 @@ class Solver {
         var int x, y, count, possibility, bestCount, bestX, bestY;
         
         let cloneGrid = Stack.grow(Grid.gridByteSize());
+        
+        let bestCount = 0;
         
         let y = 0;
         
