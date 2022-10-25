@@ -108,6 +108,11 @@ class Solver {
     
         var int x, y, lastX, lastY, value;
         
+        let x = 0;
+        let y = 0;
+        let lastX = 0;
+        let lastY = 0;
+        
         while (true) {
         
             let value = Solver.getDeducedValueAt(grid, x, y);

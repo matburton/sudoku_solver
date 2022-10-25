@@ -85,10 +85,14 @@ class Grid {
         var int mask;
         
         let mask = Grid.toMask(value);
-    
-        return Grid.mustBeValueByRow   (grid, mask, x, y)
-             | Grid.mustBeValueByColumn(grid, mask, x, y)
-             | Grid.mustBeValueBySector(grid, mask, x, y);
+        
+        if (Grid.mustBeValueByRow(grid, mask, x, y)) { return true; }
+        
+        if (Grid.mustBeValueByColumn(grid, mask, x, y)) { return true; }
+        
+        if (Grid.mustBeValueBySector(grid, mask, x, y)) { return true; }
+        
+        return false;
     }
     
     function boolean mustBeValueByRow(Array grid, int mask, int x, int y) {
