@@ -51,6 +51,7 @@ Leds_renderGridLine:
         ld.w r1, (r2); // value of the last
         add  r3, r1;   // square in the row
         
+        addi sp, #-2;
         ld.w r2, #numberShapes;  // Push static
         push r2;                 // digit line
 
@@ -92,9 +93,8 @@ Leds_renderGridLine:
         add  r1, r1;
         
     include "asm/Leds_addValue.asm";
-        
-        ld.w r2, (sp+0); // Write word
-        st.w (r2), r1;   // to LEDs
+    
+        st.w (sp+4), r1;
     
         ld.b r0, (r3);   // Add
         ld.w r2, (sp+2); // value
@@ -124,25 +124,21 @@ Leds_renderGridLine:
         ld.b r0, (r2);   // square
         or   r1, r0;     // to r1
         
-        ld.w r2, (sp+0);
+        ld.w r0, (sp+4);
         add  r1, r1;
         bcc  Leds_renderGridLine_end_carry;
-        ld.w r0, (r2);
         inc  r0;
-        st.w (r2), r0;
     Leds_renderGridLine_end_carry:
-        addq r2, #-2;
+        ld.w r2, (sp+0);
         st.w (r2++), r1;
-        addq r2, #2;     // Move to
-        addq r2, #2;     // the next  
-        st.w (sp+0), r2; // LED line
+        st.w (r2++), r0;
+        st.w (sp+0), r2;
         
         ld.w r0, (sp+2);
         ld.w r2, #numberShapes + 4 * 10;
         cmp  r2, r0;
-        beq  Leds_renderGridLine_return;
-        jmp  Leds_renderGridLine_loop;
+        bne  Leds_renderGridLine_loop;
     
     Leds_renderGridLine_return:
-        addi sp, #4;
+        addi sp, #6;
         ret;

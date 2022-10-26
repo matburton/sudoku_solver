@@ -23,15 +23,15 @@ valueStartOffsetLookupFromY:
     dw   (8 * 9 + 8) * 4 + 2;
 
 ledStartLookupFromY:
-    dw   LED_START + (1  * 4) + 2;
-    dw   LED_START + (7  * 4) + 2;
-    dw   LED_START + (13 * 4) + 2;
-    dw   LED_START + (21 * 4) + 2;
-    dw   LED_START + (27 * 4) + 2;
-    dw   LED_START + (33 * 4) + 2;
-    dw   LED_START + (41 * 4) + 2;
-    dw   LED_START + (47 * 4) + 2;
-    dw   LED_START + (53 * 4) + 2;
+    dw   LED_START + (1  * 4);
+    dw   LED_START + (7  * 4);
+    dw   LED_START + (13 * 4);
+    dw   LED_START + (21 * 4);
+    dw   LED_START + (27 * 4);
+    dw   LED_START + (33 * 4);
+    dw   LED_START + (41 * 4);
+    dw   LED_START + (47 * 4);
+    dw   LED_START + (53 * 4);
     
 org LED_START;
     dw   0b0000000000000000, 0b0000000000000000;
