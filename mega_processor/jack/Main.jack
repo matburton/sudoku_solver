@@ -9,6 +9,8 @@ class Main {
         
         do Grid.initialise(grid);
         
+        do Leds.addGridRenderDisable();
+        
         do Solver.setValueAt(grid, 1, 7, 0);
         do Solver.setValueAt(grid, 4, 0, 1);
         do Solver.setValueAt(grid, 2, 1, 2);
@@ -26,6 +28,10 @@ class Main {
         do Solver.setValueAt(grid, 1, 3, 7);
         do Solver.setValueAt(grid, 8, 3, 8);
         do Solver.setValueAt(grid, 7, 5, 8);
+        
+        do Leds.undoGridRenderDisable();
+        
+        do Leds.renderGrid(grid);
         
         do Solver.solve(grid);
         
