@@ -61,6 +61,8 @@ class Solver {
         do Grid.setSquareValue(grid, value, x, y);
         
         do Leds.renderGridLine(grid, y);
+        
+        if (Grid.isComplete(grid)) { return; }
 
         do Solver.removePossibilitiesRelatedTo(grid, value, x, y);
 
@@ -111,6 +113,7 @@ class Solver {
             
                 do Solver.setValueAt(grid, value, x, y);
                 
+                if (Grid.isComplete(grid))   { return; }
                 if (Grid.isImpossible(grid)) { return; }
                 
                 let lastX = x;
