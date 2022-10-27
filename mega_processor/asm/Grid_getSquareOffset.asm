@@ -1,6 +1,5 @@
-    // Assumes grid address is in r0
     // Assumes x, y words under a return address on the stack
-    // Puts the square offset in r3, Clobbers r2
+    // Puts the square offset in r3, Clobbers r2 with x
         ld.b r2, (sp+2);
         move r3, r2;
         add  r3, r3;

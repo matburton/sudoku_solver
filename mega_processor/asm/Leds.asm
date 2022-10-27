@@ -138,7 +138,5 @@ Leds_renderGridLine:
         ld.w r2, #numberShapes + 4 * 10;
         cmp  r2, r0;
         bne  Leds_renderGridLine_loop;
-    
-    Leds_renderGridLine_return:
         addi sp, #6;
         ret;

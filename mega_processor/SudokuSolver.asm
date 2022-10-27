@@ -32,5 +32,5 @@ Math_divide:
     divu;
     move r1, r2;
     ret;
-    
+
 include "asm/Leds_data.asm";

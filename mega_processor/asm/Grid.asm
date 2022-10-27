@@ -220,6 +220,39 @@ Grid_mustBeValueByRow:
         addi sp, #2;
         ld.w r1, #-1;
         ret;
+        
+// function boolean mustBeValueByColumn(Array grid, int mask, int x, int y)
+//
+Grid_mustBeValueByColumn:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add  r3, r1;
+        push r3;
+        add  r2, r2;
+        add  r2, r2;
+        move r3, r2;
+        add  r3, r1;
+        ld.b r0, #9;
+        ld.w r2, (sp+8);jmp  Grid_mustBeValueByColumn_start;
+    Grid_mustBeValueByColumn_loop:
+        dec  r0;
+        beq  Grid_mustBeValueByColumn_true;
+        ld.b r1, #9 * 4;
+        add  r3, r1;
+    Grid_mustBeValueByColumn_start:
+        ld.w r1, (r3);
+        and  r1, r2;
+        beq  Grid_mustBeValueByColumn_loop;
+        ld.w r1, (sp+0);
+        cmp  r3, r1;
+        beq  Grid_mustBeValueByColumn_loop;
+        addi sp, #2;
+        ld.w r1, #0;
+        ret;
+    Grid_mustBeValueByColumn_true:
+        addi sp, #2;
+        ld.w r1, #-1;
+        ret;
                 
 // function Array getSquare(Array grid, int x, int y)
 //
