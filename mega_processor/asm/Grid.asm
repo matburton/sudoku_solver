@@ -193,32 +193,37 @@ Grid_mustBeValueByRow:
         add  r3, r3;
         add  r3, r3;
         add  r3, r1;
-        ld.b r0, #9;
         ld.w r2, (sp+6);
-        ld.b r1, (sp+4);
-        add  r1, r1;
-        add  r1, r1;
-        add  r1, r3;
-        push r1;
-        jmp  Grid_mustBeValueByRow_start;
-    Grid_mustBeValueByRow_loop:
-        dec  r0;
-        beq  Grid_mustBeValueByRow_true;
-        addq r3, #2;
-        addq r3, #2;
-    Grid_mustBeValueByRow_start:
+        ld.b r0, (sp+4);
+        beq  Grid_mustBeValueByRow_second;
+    Grid_mustBeValueByRow_first_loop:
         ld.w r1, (r3);
         and  r1, r2;
-        beq  Grid_mustBeValueByRow_loop;
-        ld.w r1, (sp+0);
-        cmp  r3, r1;
-        beq  Grid_mustBeValueByRow_loop;
-        addi sp, #2;
-        ld.w r1, #0;
-        ret;
+        bne  Grid_mustBeValueByRow_false;
+        addq r3, #2;
+        addq r3, #2;
+        dec  r0;
+        bne  Grid_mustBeValueByRow_first_loop;
+    Grid_mustBeValueByRow_second:
+        addq r3, #2;
+        addq r3, #2;
+        ld.b r0, #8;
+        ld.b r1, (sp+4);
+        sub  r0, r1;
+        beq  Grid_mustBeValueByRow_true;
+    Grid_mustBeValueByRow_second_loop:
+        ld.w r1, (r3);
+        and  r1, r2;
+        bne  Grid_mustBeValueByRow_false;
+        addq r3, #2;
+        addq r3, #2;
+        dec  r0;
+        bne  Grid_mustBeValueByRow_second_loop;
     Grid_mustBeValueByRow_true:
-        addi sp, #2;
         ld.w r1, #-1;
+        ret;
+    Grid_mustBeValueByRow_false:
+        ld.w r1, #0;
         ret;
         
 // function boolean mustBeValueByColumn(Array grid, int mask, int x, int y)
@@ -233,7 +238,8 @@ Grid_mustBeValueByColumn:
         move r3, r2;
         add  r3, r1;
         ld.b r0, #9;
-        ld.w r2, (sp+8);jmp  Grid_mustBeValueByColumn_start;
+        ld.w r2, (sp+8);
+        jmp  Grid_mustBeValueByColumn_start;
     Grid_mustBeValueByColumn_loop:
         dec  r0;
         beq  Grid_mustBeValueByColumn_true;
