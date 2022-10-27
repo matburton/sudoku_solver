@@ -54,19 +54,7 @@ class Solver {
         return;
     }
     
-    function void removePossibilityAt(Array grid, int value, int x, int y) {
-    
-        let value = Grid.removeSquarePossibility(grid, value, x, y);
-        
-        if (value > 0) {
-        
-            do Leds.renderGridLine(grid, y);
-        
-            do Solver.removePossibilitiesRelatedTo(grid, value, x, y);
-        }
-
-        return;
-    }
+    function void removePossibilityAt(Array grid, int value, int x, int y) { return; }
     
     function void setValueAt(Array grid, int value, int x, int y) {
     

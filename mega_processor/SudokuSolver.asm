@@ -13,6 +13,7 @@ start:
     jmp  $;
     
 include "asm/Grid.asm";
+include "asm/Solver.asm";
 include "asm/Leds.asm";
     
 include "jack/Main.asm";
