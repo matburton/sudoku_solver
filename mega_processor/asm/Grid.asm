@@ -85,14 +85,20 @@ Grid_getSquareValue:
 // returns zero, e.g. if the square is still incomplete or did not have
 // the given value as a possibility
 //
-// function int removeSquarePossibility(Array grid, int value, int x, int y)
+// r0: x, r1: grid, r2: y, sp+2: value
 //
 Grid_removeSquarePossibility:
-        nop;
-    include "asm/Grid_getSquareOffset.asm";
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        add  r3, r0;
+        add  r3, r3;
+        add  r3, r3;
         add  r3, r1;
         ld.w r0, (r3);
-        ld.w r2, (sp+6);
+        ld.w r2, (sp+2);
         bclr r0, r2;
         bne  Grid_removeSquarePossibility_continue;
         ld.b r1, #0;
