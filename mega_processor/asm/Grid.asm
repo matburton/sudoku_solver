@@ -229,35 +229,41 @@ Grid_mustBeValueByRow:
 // function boolean mustBeValueByColumn(Array grid, int mask, int x, int y)
 //
 Grid_mustBeValueByColumn:
-        nop;
-    include "asm/Grid_getSquareOffset.asm";
+        ld.b r3, (sp+4);
+        add  r3, r3;
+        add  r3, r3;
         add  r3, r1;
-        push r3;
-        add  r2, r2;
-        add  r2, r2;
-        move r3, r2;
-        add  r3, r1;
-        ld.b r0, #9;
-        ld.w r2, (sp+8);
-        jmp  Grid_mustBeValueByColumn_start;
-    Grid_mustBeValueByColumn_loop:
-        dec  r0;
-        beq  Grid_mustBeValueByColumn_true;
-        ld.b r1, #9 * 4;
-        add  r3, r1;
-    Grid_mustBeValueByColumn_start:
+        ld.w r2, (sp+6);
+        ld.b r0, (sp+2);
+        beq  Grid_mustBeValueByColumn_second;
+    Grid_mustBeValueByColumn_first_loop:
         ld.w r1, (r3);
         and  r1, r2;
-        beq  Grid_mustBeValueByColumn_loop;
-        ld.w r1, (sp+0);
-        cmp  r3, r1;
-        beq  Grid_mustBeValueByColumn_loop;
-        addi sp, #2;
-        ld.w r1, #0;
-        ret;
+        bne  Grid_mustBeValueByColumn_false;
+        ld.b r1, #9 * 4;
+        add  r3, r1;
+        dec  r0;
+        bne  Grid_mustBeValueByColumn_first_loop;
+    Grid_mustBeValueByColumn_second:
+        ld.b r1, #9 * 4;
+        add  r3, r1;
+        ld.b r0, #8;
+        ld.b r1, (sp+2);
+        sub  r0, r1;
+        beq  Grid_mustBeValueByColumn_true;
+    Grid_mustBeValueByColumn_second_loop:
+        ld.w r1, (r3);
+        and  r1, r2;
+        bne  Grid_mustBeValueByColumn_false;
+        ld.b r1, #9 * 4;
+        add  r3, r1;
+        dec  r0;
+        bne  Grid_mustBeValueByColumn_second_loop;
     Grid_mustBeValueByColumn_true:
-        addi sp, #2;
         ld.w r1, #-1;
+        ret;
+    Grid_mustBeValueByColumn_false:
+        ld.w r1, #0;
         ret;
                 
 // function Array getSquare(Array grid, int x, int y)
