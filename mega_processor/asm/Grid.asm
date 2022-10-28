@@ -127,6 +127,31 @@ Grid_isComplete:
     Grid_isComplete_return:
         ret;
         
+// function boolean mustBeValue(Array grid, int value, int x, int y)
+//
+Grid_mustBeValue:
+        push r1;
+        ld.b r2, (sp+8);
+        ld.b r0, #0;
+        bset r0, r2;
+        push r0;
+        ld.b r0, (sp+8);
+        push r0;
+        ld.b r0, (sp+8);
+        push r0;
+        jsr  Grid_mustBeValueByRow;
+        test r1;
+        bne  Grid_mustBeValue_return;
+        ld.w r1, (sp+6);
+        jsr  Grid_mustBeValueByColumn;
+        test r1;
+        bne  Grid_mustBeValue_return;
+        ld.w r1, (sp+6);
+        jsr  Grid_mustBeValueBySector;
+    Grid_mustBeValue_return:
+        addi sp, #8;
+        ret;
+        
 // function boolean mustBeValueByRow(Array grid, int mask, int x, int y)
 //
 Grid_mustBeValueByRow:
@@ -240,12 +265,4 @@ Grid_calculateValue:
         bne  Grid_calculateValue_loop;
     Grid_calculateValue_return:
         move r1, r2;
-        ret;
-
-// function int toMask(int value)
-//
-Grid_toMask:
-        ld.b r0, #0;
-        bset r0, r1;
-        move r1, r0;
         ret;

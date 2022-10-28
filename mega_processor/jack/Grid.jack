@@ -36,20 +36,7 @@ class Grid {
 
     function boolean isComplete(Array grid) { return false; }
     
-    function boolean mustBeValue(Array grid, int value, int x, int y) {
-    
-        var int mask;
-        
-        let mask = Grid.toMask(value);
-        
-        if (Grid.mustBeValueByRow(grid, mask, x, y)) { return true; }
-        
-        if (Grid.mustBeValueByColumn(grid, mask, x, y)) { return true; }
-        
-        if (Grid.mustBeValueBySector(grid, mask, x, y)) { return true; }
-        
-        return false;
-    }
+    function boolean mustBeValue(Array grid, int value, int x, int y) { return false; }
     
     function boolean mustBeValueByRow(Array grid, int mask, int x, int y) { return false; }
     
@@ -90,6 +77,4 @@ class Grid {
     }
     
     function Array getSquare(Array grid, int x, int y) { return 0; }
-
-    function int toMask(int value) { return 0; }
 }
