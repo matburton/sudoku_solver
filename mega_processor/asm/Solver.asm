@@ -75,6 +75,24 @@ Solver_removePossibilityAt:
         addi sp, #6;
         ret;
         
+// function void setValueAt(Array grid, int value, int x, int y)
+//
+Solver_setValueAt:
+        push r1;
+        ld.b r0, (sp+8);
+        push r0;
+        ld.b r0, (sp+8);
+        push r0;
+        ld.b r0, (sp+8);
+        push r0;
+        jsr  Grid_setSquareValue;
+        ld.w r1, (sp+6);
+        jsr  Leds_renderGridLine;
+        ld.w r1, (sp+6);
+        jsr  Solver_removePossibilitiesRelatedTo;
+        addi sp, #8;
+        ret;
+        
 // Returns zero if no value could be deduced
 //
 // function int getDeducedValueAt(Array grid, int x, int y)

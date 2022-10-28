@@ -56,16 +56,7 @@ class Solver {
     
     function void removePossibilityAt(Array grid, int value, int x, int y) { return; }
     
-    function void setValueAt(Array grid, int value, int x, int y) {
-    
-        do Grid.setSquareValue(grid, value, x, y);
-        
-        do Leds.renderGridLine(grid, y);
-
-        do Solver.removePossibilitiesRelatedTo(grid, value, x, y);
-
-        return;
-    }
+    function void setValueAt(Array grid, int value, int x, int y) { return; }
     
     // Returns zero if no value could be deduced
     //
