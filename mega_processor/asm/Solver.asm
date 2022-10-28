@@ -74,3 +74,50 @@ Solver_removePossibilityAt:
         jsr  Solver_removePossibilitiesRelatedTo;
         addi sp, #6;
         ret;
+        
+// Returns zero if no value could be deduced
+//
+// function int getDeducedValueAt(Array grid, int x, int y)
+//
+Solver_getDeducedValueAt:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add  r3, r1;
+        addq r3, #2;
+        inc  r3;
+        ld.b r0, (r3);
+        addq r0, #-2;
+        bmi  Solver_getDeducedValueAt_early_zero;
+        addq r3, #-2;
+        dec  r3;
+        ld.w r0, (r3);        
+        push r1;
+        push r0;                
+        addi sp, #-2;
+        ld.b r3, (sp+10);
+        push r3;
+        ld.b r3, (sp+10);
+        push r3;
+        ld.b r2, #10;
+    Solver_getDeducedValueAt_loop:
+        dec  r2;
+        beq  Solver_getDeducedValueAt_return_zero;
+        btst r0, r2;
+        beq  Solver_getDeducedValueAt_loop;
+        st.b (sp+4), r2;       
+        jsr  Grid_mustBeValue;
+        test r1;
+        bne  Solver_getDeducedValueAt_return_value;
+        ld.b r2, (sp+4);
+        ld.w r0, (sp+6);
+        ld.w r1, (sp+8);
+        jmp  Solver_getDeducedValueAt_loop;        
+    Solver_getDeducedValueAt_return_zero:
+        addi sp, #10;
+    Solver_getDeducedValueAt_early_zero:
+        ld.b r1, #0;
+        ret;
+    Solver_getDeducedValueAt_return_value:
+        ld.b r1, (sp+4);
+        addi sp, #10;
+        ret;

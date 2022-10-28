@@ -69,30 +69,7 @@ class Solver {
     
     // Returns zero if no value could be deduced
     //
-    function int getDeducedValueAt(Array grid, int x, int y) {
-    
-        var int value;
-    
-        if (Grid.getPossibilityCount(grid, x, y) > 1) {
-        
-            let value = 1;
-            
-            while (value < 10) {
-            
-                if (Grid.squareHasPossibility(grid, value, x, y)) {
-                
-                    if (Grid.mustBeValue(grid, value, x, y)) {
-                    
-                        return value;
-                    }
-                }
-            
-                let value = value + 1;
-            }
-        }
-        
-        return 0;
-    }
+    function int getDeducedValueAt(Array grid, int x, int y) { return 0; }
     
     function void refineGrid(Array grid) {
     
