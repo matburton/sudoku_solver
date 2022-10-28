@@ -62,53 +62,7 @@ class Solver {
     //
     function int getDeducedValueAt(Array grid, int x, int y) { return 0; }
     
-    function void refineGrid(Array grid) {
-    
-        var int x, y, lastX, lastY, value;
-        
-        let x = 0;
-        let y = 0;
-        let lastX = 0;
-        let lastY = 0;
-        
-        while (true) {
-        
-            let value = Solver.getDeducedValueAt(grid, x, y);
-            
-            if (value > 0) {
-            
-                do Solver.setValueAt(grid, value, x, y);
-                
-                if (Grid.isComplete(grid))   { return; }
-                if (Grid.isImpossible(grid)) { return; }
-                
-                let lastX = x;
-                let lastY = y;
-            }
-            
-            if (x < 8) {
-            
-                let x = x + 1;
-            }
-            else {
-            
-                let x = 0;
-                
-                if (y < 8) {
-                
-                    let y = y + 1;
-                }
-                else {
-                
-                    let y = 0;
-                }
-            }
-            
-            if (x = lastX & (y = lastY)) { return; }
-        }
-        
-        return;
-    }
+    function void refineGrid(Array grid) { return; }
     
     function int getAPossibilityAt(Array grid, int x, int y) {
     

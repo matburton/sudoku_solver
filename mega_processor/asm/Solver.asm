@@ -139,3 +139,58 @@ Solver_getDeducedValueAt:
         ld.b r1, (sp+4);
         addi sp, #10;
         ret;
+        
+// function void refineGrid(Array grid)
+//
+Solver_refineGrid:
+        push r1;
+        ld.b r0, #0;
+        move r2, r0;
+        push r0;
+        push r2;
+    Solver_refineGrid_loop:
+        push r0;
+        push r2;
+        jsr  Solver_getDeducedValueAt;
+        pop  r2;
+        pop  r0;
+        test r1;
+        beq  Solver_refineGrid_no_value;
+        push r1;
+        ld.w r1, (sp+6);
+        push r0;
+        push r2;        
+        jsr  Solver_setValueAt;
+        pop  r2;
+        pop  r0;
+        addi sp, #2;
+        ld.w r1, (sp+4);
+        ld.w r3, #GRID_INCOMPLETE_SQUARE_COUNT_OFFSET;
+        add  r3, r1;
+        ld.b r1, (r3++);
+        beq  Solver_refineGrid_return;
+        ld.b r1, (r3);
+        bne  Solver_refineGrid_return;
+        st.b (sp+2), r0;
+        st.b (sp+0), r2;        
+    Solver_refineGrid_no_value:
+        ld.w r1, (sp+4);
+        btst r0, #3;
+        beq  Solver_refineGrid_no_reset_x;
+        btst r2, #3;
+        beq  Solver_refineGrid_no_reset_y;
+        ld.b r2, #-1;
+    Solver_refineGrid_no_reset_y:
+        inc  r2;
+        ld.b r0, #-1;
+    Solver_refineGrid_no_reset_x:
+        inc  r0;
+        ld.b r3, (sp+2);
+        cmp  r0, r3;
+        bne  Solver_refineGrid_loop;
+        ld.b r3, (sp+0);
+        cmp  r2, r3;
+        bne  Solver_refineGrid_loop;
+    Solver_refineGrid_return:
+        addi sp, #6;
+        ret;
