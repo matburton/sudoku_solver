@@ -61,8 +61,6 @@ class Solver {
         do Grid.setSquareValue(grid, value, x, y);
         
         do Leds.renderGridLine(grid, y);
-        
-        if (Grid.isComplete(grid)) { return; }
 
         do Solver.removePossibilitiesRelatedTo(grid, value, x, y);
 

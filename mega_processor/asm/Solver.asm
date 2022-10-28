@@ -8,7 +8,8 @@ Solver_removePossibilityAt:
         addi sp, #-2;
         push r1;
         push r3;
-        jsr  Grid_removeSquarePossibility;
+    include "asm/Grid_removeSquarePossibility.asm";
+    Grid_removeSquarePossibility_return:
         bne  Solver_removePossibilityAt_value;
         addi sp, #6;
         ret;
@@ -27,4 +28,4 @@ Solver_removePossibilityAt:
         push r3;
         jsr  Solver_removePossibilitiesRelatedTo;
         addi sp, #6;
-        ret;        
+        ret;
