@@ -1,4 +1,43 @@
 
+// function void removePossibilitiesRelatedToRow(Array grid, int value, int x, int y)
+//
+// r1 - preserved
+//
+Solver_removePossibilitiesRelatedToRow:
+        push r1;
+        ld.b r0, (sp+8);
+        push r0;
+        addi sp, #-2;
+        ld.b r0, (sp+8);
+        push r0;
+        ld.b r2, (sp+12);
+        beq  Solver_removePossibilitiesRelatedToRow_second;
+        dec  r2;
+    Solver_removePossibilitiesRelatedToRow_first_loop:
+        st.b (sp+2), r2;        
+        jsr  Solver_removePossibilityAt;
+        ld.w r1, (sp+6);
+        ld.b r2, (sp+2);
+        dec  r2;
+        bpl  Solver_removePossibilitiesRelatedToRow_first_loop;
+    Solver_removePossibilitiesRelatedToRow_second:
+        ld.b r2, #8;
+        ld.b r0, (sp+12);
+        cmp  r2, r0;
+        beq  Grid_mustBeValueByRow_return;
+    Solver_removePossibilitiesRelatedToRow_second_loop:
+        st.b (sp+2), r2;        
+        jsr  Solver_removePossibilityAt;
+        ld.w r1, (sp+6);
+        ld.b r2, (sp+2);
+        dec  r2;
+        ld.b r0, (sp+12);
+        cmp  r2, r0;
+        bne  Solver_removePossibilitiesRelatedToRow_second_loop;
+    Grid_mustBeValueByRow_return:
+        addi sp, #8;
+        ret;
+
 // function void removePossibilityAt(Array grid, int value, int x, int y)
 //
 Solver_removePossibilityAt:

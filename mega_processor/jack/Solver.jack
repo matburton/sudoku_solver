@@ -5,17 +5,7 @@ class Solver {
     
         var int indexX, indexY, startX, startY;
         
-        let indexX = 0;
-        
-        while (indexX < 9) {
-        
-            if (~(indexX = x)) {
-            
-                do Solver.removePossibilityAt(grid, value, indexX, y);
-            }
-            
-            let indexX = indexX + 1;
-        }
+        do Solver.removePossibilitiesRelatedToRow(grid, value, x, y);
         
         let indexY = 0;
         
@@ -53,6 +43,8 @@ class Solver {
     
         return;
     }
+    
+    function void removePossibilitiesRelatedToRow(Array grid, int value, int x, int y) { return; }
     
     function void removePossibilityAt(Array grid, int value, int x, int y) { return; }
     
