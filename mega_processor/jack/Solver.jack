@@ -1,12 +1,6 @@
 
 class Solver {
-
-    function void removePossibilitiesRelatedTo(Array grid, int value, int x, int y) { return; }
-    
-    function void removePossibilitiesRelatedToRow(Array grid, int value, int x, int y) { return; }
-    
-    function void removePossibilitiesRelatedToColumn(Array grid, int value, int x, int y) { return; }
-    
+   
     function void removePossibilitiesRelatedToSector(Array grid, int value, int x, int y) {
     
         var int indexX, indexY, startX, startY;
@@ -39,10 +33,6 @@ class Solver {
     function void removePossibilityAt(Array grid, int value, int x, int y) { return; }
     
     function void setValueAt(Array grid, int value, int x, int y) { return; }
-    
-    // Returns zero if no value could be deduced
-    //
-    function int getDeducedValueAt(Array grid, int x, int y) { return 0; }
     
     function void refineGrid(Array grid) { return; }
     
