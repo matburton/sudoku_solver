@@ -1,16 +1,7 @@
 
 class Solver {
 
-    function void removePossibilitiesRelatedTo(Array grid, int value, int x, int y) {
-       
-        do Solver.removePossibilitiesRelatedToRow(grid, value, x, y);
-        
-        do Solver.removePossibilitiesRelatedToColumn(grid, value, x, y);
-        
-        do Solver.removePossibilitiesRelatedToSector(grid, value, x, y);
-    
-        return;
-    }
+    function void removePossibilitiesRelatedTo(Array grid, int value, int x, int y) { return; }
     
     function void removePossibilitiesRelatedToRow(Array grid, int value, int x, int y) { return; }
     

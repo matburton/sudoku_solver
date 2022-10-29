@@ -1,4 +1,18 @@
 
+// function void removePossibilitiesRelatedTo(Array grid, int value, int x, int y)
+//
+Solver_removePossibilitiesRelatedTo:
+        ld.b r0, (sp+6);
+        push r0;
+        ld.b r0, (sp+6);
+        push r0;
+        ld.b r0, (sp+6);
+        push r0;
+        jsr  Solver_removePossibilitiesRelatedToRow;
+        jsr  Solver_removePossibilitiesRelatedToColumn;
+        addi sp, #6;
+        jmp  Solver_removePossibilitiesRelatedToSector;
+
 // function void removePossibilitiesRelatedToRow(Array grid, int value, int x, int y)
 //
 // r1 - preserved
