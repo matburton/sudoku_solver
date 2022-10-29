@@ -2,22 +2,23 @@
 class Solver {
 
     function void removePossibilitiesRelatedTo(Array grid, int value, int x, int y) {
-    
-        var int indexX, indexY, startX, startY;
-        
+       
         do Solver.removePossibilitiesRelatedToRow(grid, value, x, y);
         
-        let indexY = 0;
+        do Solver.removePossibilitiesRelatedToColumn(grid, value, x, y);
         
-        while (indexY < 9) {
-        
-            if (~(indexY = y)) {
-            
-                do Solver.removePossibilityAt(grid, value, x, indexY);
-            }
-            
-            let indexY = indexY + 1;
-        }
+        do Solver.removePossibilitiesRelatedToSector(grid, value, x, y);
+    
+        return;
+    }
+    
+    function void removePossibilitiesRelatedToRow(Array grid, int value, int x, int y) { return; }
+    
+    function void removePossibilitiesRelatedToColumn(Array grid, int value, int x, int y) { return; }
+    
+    function void removePossibilitiesRelatedToSector(Array grid, int value, int x, int y) {
+    
+        var int indexX, indexY, startX, startY;
         
         let startX = x / 3 * 3;
         let startY = y / 3 * 3;
@@ -43,8 +44,6 @@ class Solver {
     
         return;
     }
-    
-    function void removePossibilitiesRelatedToRow(Array grid, int value, int x, int y) { return; }
     
     function void removePossibilityAt(Array grid, int value, int x, int y) { return; }
     

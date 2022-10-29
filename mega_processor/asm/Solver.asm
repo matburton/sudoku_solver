@@ -24,7 +24,7 @@ Solver_removePossibilitiesRelatedToRow:
         ld.b r2, #8;
         ld.b r0, (sp+12);
         cmp  r2, r0;
-        beq  Grid_mustBeValueByRow_return;
+        beq  Solver_removePossibilitiesRelatedToRow_return;
     Solver_removePossibilitiesRelatedToRow_second_loop:
         st.b (sp+2), r2;        
         jsr  Solver_removePossibilityAt;
@@ -34,8 +34,46 @@ Solver_removePossibilitiesRelatedToRow:
         ld.b r0, (sp+12);
         cmp  r2, r0;
         bne  Solver_removePossibilitiesRelatedToRow_second_loop;
-    Grid_mustBeValueByRow_return:
+    Solver_removePossibilitiesRelatedToRow_return:
         addi sp, #8;
+        ret;
+        
+// function void removePossibilitiesRelatedToColumn(Array grid, int value, int x, int y)
+//
+// r1 - preserved
+//
+Solver_removePossibilitiesRelatedToColumn:
+        push r1;
+        ld.b r0, (sp+8);
+        push r0;
+        ld.b r0, (sp+8);
+        push r0;
+        ld.b r2, (sp+8);
+        beq  Solver_removePossibilitiesRelatedToColumn_second;
+        dec  r2;
+    Solver_removePossibilitiesRelatedToColumn_first_loop:
+        push r2;       
+        jsr  Solver_removePossibilityAt;
+        ld.w r1, (sp+6);
+        pop  r2;            
+        dec  r2;
+        bpl  Solver_removePossibilitiesRelatedToColumn_first_loop;
+    Solver_removePossibilitiesRelatedToColumn_second:
+        ld.b r2, #8;
+        ld.b r0, (sp+8);
+        cmp  r2, r0;
+        beq  Solver_removePossibilitiesRelatedToColumn_return;
+    Solver_removePossibilitiesRelatedToColumn_second_loop:
+        push r2;      
+        jsr  Solver_removePossibilityAt;
+        ld.w r1, (sp+6);
+        pop  r2;
+        dec  r2;
+        ld.b r0, (sp+8);
+        cmp  r2, r0;
+        bne  Solver_removePossibilitiesRelatedToColumn_second_loop;
+    Solver_removePossibilitiesRelatedToColumn_return:
+        addi sp, #6;
         ret;
 
 // function void removePossibilityAt(Array grid, int value, int x, int y)
