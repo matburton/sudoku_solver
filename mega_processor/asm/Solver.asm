@@ -194,3 +194,24 @@ Solver_refineGrid:
     Solver_refineGrid_return:
         addi sp, #6;
         ret;
+
+// function int getAPossibilityAt(Array grid, int x, int y)
+//
+// Note: De-optimised to prefer low values like reference
+//
+Solver_getAPossibilityAt:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add  r3, r1;
+        ld.w r0, (r3);
+        ld.b r1, #1;
+        ld.b r2, #10;
+    Solver_getAPossibilityAt_loop:
+        btst r0, r1;
+        bne  Solver_getAPossibilityAt_return;
+        inc  r1;
+        cmp  r2, r1;
+        bne  Solver_getAPossibilityAt_loop;
+        ld.b r1, #0;
+    Solver_getAPossibilityAt_return:
+        ret;

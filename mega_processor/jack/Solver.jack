@@ -64,24 +64,7 @@ class Solver {
     
     function void refineGrid(Array grid) { return; }
     
-    function int getAPossibilityAt(Array grid, int x, int y) {
-    
-        var int value;
-        
-        let value = 1;
-        
-        while (value < 10) {
-
-            if (Grid.squareHasPossibility(grid, value, x, y)) {
-            
-                return value;
-            }
-            
-            let value = value + 1;
-        }
-    
-        return 0;
-    }
+    function int getAPossibilityAt(Array grid, int x, int y) { return 0; }
     
     // Returns the number of solutions found so far
     //
