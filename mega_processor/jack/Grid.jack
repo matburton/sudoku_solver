@@ -17,8 +17,4 @@ class Grid {
     function boolean isComplete(Array grid) { return false; }
     
     function boolean mustBeValue(Array grid, int value, int x, int y) { return false; }
-    
-    function boolean mustBeValueBySector(Array grid, int mask, int x, int y) { return false; }
-    
-    function Array getSquare(Array grid, int x, int y) { return 0; }
 }

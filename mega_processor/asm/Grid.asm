@@ -253,15 +253,7 @@ Grid_mustBeValueBySector:
     Grid_mustBeValueBySector_false:
         ld.b r1, #0;
         ret;
-                
-// function Array getSquare(Array grid, int x, int y)
-//
-Grid_getSquare:
-        nop;
-    include "asm/Grid_getSquareOffset.asm";
-        add  r1, r3;
-        ret;
-        
+
 // function int calculateValue(int possibilities)
 //
 Grid_calculateValue:
