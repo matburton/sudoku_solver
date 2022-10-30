@@ -18,39 +18,7 @@ class Grid {
     
     function boolean mustBeValue(Array grid, int value, int x, int y) { return false; }
     
-    function boolean mustBeValueBySector(Array grid, int mask, int x, int y) {
-        
-        var Array square, ignoreSquare;
-        
-        var int index;
-        
-        let square = Grid.getSquare(grid, x / 3 * 3, y / 3 * 3);
-        
-        let ignoreSquare = Grid.getSquare(grid, x, y);
-        
-        let index = 0;
-        
-        while (index < 9) {
-        
-            if (~(square = ignoreSquare) & square[0] & mask) {
-                       
-                return false;
-            }
-            
-            if (index = 2 | (index = 5)) {
-            
-                let square = square + 28;
-            }
-            else {
-            
-                let square = square + 4;
-            }
-            
-            let index = index + 1;
-        }
-        
-        return true;
-    }
+    function boolean mustBeValueBySector(Array grid, int mask, int x, int y) { return false; }
     
     function Array getSquare(Array grid, int x, int y) { return 0; }
 }

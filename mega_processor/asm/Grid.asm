@@ -209,6 +209,50 @@ Grid_mustBeValueByColumn:
     Grid_mustBeValueByColumn_false:
         ld.w r1, #0;
         ret;
+        
+// function boolean mustBeValueBySector(Array grid, int mask, int x, int y)
+//
+Grid_mustBeValueBySector:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add  r1, r3;        
+        move r2, r1;
+        addq r1, #2;
+        ld.b r0, (sp+2);
+        ld.w r3, #sectorStartNegativeOffsetFromSquareLookupFromY;
+        add  r3, r0;
+        ld.b r0, (r3);
+        sub  r2, r0;
+        ld.b r0, (sp+4);
+        ld.w r3, #sectorStartNegativeOffsetFromSquareLookupFromX;
+        add  r3, r0;
+        ld.b r0, (r3);
+        sub  r2, r0;
+        ld.w r3, (sp+6);
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        ld.b r0, #(6 * 4) + 2;
+        add  r2, r0;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        ld.b r0, #(6 * 4) + 2;
+        add  r2, r0;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        ld.w r1, #-1;
+        ret;
+    Grid_mustBeValueBySector_false:
+        ld.b r1, #0;
+        ret;
                 
 // function Array getSquare(Array grid, int x, int y)
 //

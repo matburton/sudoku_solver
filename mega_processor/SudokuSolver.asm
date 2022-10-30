@@ -34,4 +34,5 @@ Math_divide:
     move r1, r2;
     ret;
 
+include "asm/Grid_data.asm";
 include "asm/Leds_data.asm";
