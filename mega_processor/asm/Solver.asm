@@ -170,8 +170,6 @@ Solver_removePossibilityAt:
         addi sp, #6;
         ret;
     Grid_removeSquarePossibility_impossible:
-        dec  r3;
-        st.w (r3), r1;
         ld.w r0, #GRID_IMPOSSIBLE_FLAG_OFFSET;
         add  r2, r0;
         ld.b r0, #-1;
