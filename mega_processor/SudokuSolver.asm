@@ -35,4 +35,5 @@ Math_divide:
     ret;
 
 include "asm/Grid_data.asm";
+include "asm/Solver_data.asm";
 include "asm/Leds_data.asm";

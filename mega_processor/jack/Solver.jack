@@ -1,35 +1,6 @@
 
 class Solver {
    
-    function void removePossibilitiesRelatedToSector(Array grid, int value, int x, int y) {
-    
-        var int indexX, indexY, startX, startY;
-        
-        let startX = x / 3 * 3;
-        let startY = y / 3 * 3;
-        
-        let indexY = startY;
-        
-        while (indexY < (startY + 3)) {
-        
-            let indexX = startX;
-            
-            while (indexX < (startX + 3)) {
-            
-                if (~(indexX = x | (indexY = y))) {
-                
-                    do Solver.removePossibilityAt(grid, value, indexX, indexY);
-                }
-                
-                let indexX = indexX + 1;
-            }
-            
-            let indexY = indexY + 1;
-        }
-    
-        return;
-    }
-    
     function void removePossibilityAt(Array grid, int value, int x, int y) { return; }
     
     function void setValueAt(Array grid, int value, int x, int y) { return; }

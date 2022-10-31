@@ -89,6 +89,48 @@ Solver_removePossibilitiesRelatedToColumn:
     Solver_removePossibilitiesRelatedToColumn_return:
         addi sp, #6;
         ret;
+        
+// function void removePossibilitiesRelatedToSector(Array grid, int value, int x, int y)
+//
+Solver_removePossibilitiesRelatedToSector:
+        push r1;
+        ld.w r2, #sectorOtherCoordLookupFromCoord;
+        ld.b r3, (sp+6);
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r0, (r3++);
+        push r0;
+        ld.b r1, (r3);
+        push r1;
+        ld.b r3, (sp+8);
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r0, (r3++);
+        push r0;
+        ld.b r0, (r3);
+        push r0;
+        ld.b r2, (sp+16);
+        push r2;
+        push r1;
+        push r0;
+        ld.w r1, (sp+14);
+        jsr  Solver_removePossibilityAt;
+        addi sp, #2;
+        ld.b r0, (sp+6);
+        push r0;
+        ld.w r1, (sp+14);
+        jsr  Solver_removePossibilityAt;
+        ld.b r0, (sp+12);
+        st.b (sp+2), r0;
+        ld.w r1, (sp+14);
+        jsr  Solver_removePossibilityAt;
+        addi sp, #2;
+        ld.b r0, (sp+4);
+        push r0;
+        ld.w r1, (sp+14);
+        jsr  Solver_removePossibilityAt;
+        addi sp, #16;
+        ret;
 
 // function void removePossibilityAt(Array grid, int value, int x, int y)
 //
