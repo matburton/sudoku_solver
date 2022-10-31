@@ -8,4 +8,6 @@ class Leds {
     function void addGridRenderDisable() { return; }
     
     function void undoGridRenderDisable() { return; }
+    
+    function void renderMessage(int messageId) { return; }
 }

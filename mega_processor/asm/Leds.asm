@@ -140,3 +140,32 @@ Leds_renderGridLine:
         bne  Leds_renderGridLine_loop;
         addi sp, #6;
         ret;
+        
+Leds_renderMessage:
+        add  r1, r1;
+        ld.w r2, #LED_MESSAGE_START;
+        ld.w r3, #messages;
+        add  r3, r1;
+        ld.w r1, (r3);
+        move r3, r1;        
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ret;

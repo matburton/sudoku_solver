@@ -33,7 +33,9 @@ class Main {
         
         do Leds.renderGrid(grid);
         
-        do Solver.solve(grid);
+        do Leds.renderMessage(0);
+        
+        do Leds.renderMessage(Solver.solve(grid) + 2);
         
         return;
     }

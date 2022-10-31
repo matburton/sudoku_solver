@@ -93,6 +93,8 @@ class Solver {
             if (Grid.isComplete(grid)) {
             
                 do Leds.addGridRenderDisable();
+                
+                do Leds.renderMessage(1);
             
                 return solutions + 1;
             }
