@@ -341,3 +341,60 @@ Solver_getAPossibilityAt:
         bne  Solver_getAPossibilityAt_loop;
     Solver_getAPossibilityAt_return:
         ret;
+        
+// Returns the number of solutions found so far
+//
+// function int splitGridAt(Array grid, int x, int y)
+//
+Solver_splitGridAt:
+        move r0, sp;
+        ld.w r2, #GRID_SIZE;
+        sub  r0, r2;
+        ld.b r2, (sp+4);
+        ld.b r3, (sp+2);
+        move sp, r0;
+        push r0;
+        push r1;
+        addi sp, #-1;
+        push r2;
+        push r3;
+        jsr  Solver_getAPossibilityAt;
+        st.b (sp+4), r1;
+        ld.w r1, (sp+5);
+        ld.w r0, (sp+7);
+        push r0;
+        jsr  Grid_copyFromTo;
+        addi sp, #2;
+        jsr  Leds_addGridRenderDisable;
+        ld.w r1, (sp+5);
+        jsr  Solver_removePossibilityAt;
+        jsr  Leds_undoGridRenderDisable;
+        ld.w r1, (sp+5);
+        jsr  Grid_isImpossible;
+        bne  Solver_splitGridAt_impossible;
+        ld.w r1, (sp+7);
+        jsr  Solver_setValueAt;
+        ld.w r1, (sp+7);
+        jsr  Solver_solve;
+        push r1;
+        ld.w r1, (sp+7);
+        jsr  Leds_renderGrid;
+        pop  r1;
+        move r0, sp;
+        ld.w r2, #GRID_SIZE + 9;
+        add  r0, r2;
+        move sp, r0;
+        ret;        
+    Solver_splitGridAt_impossible:
+        ld.w r1, (sp+7);
+        ld.w r0, (sp+5);
+        push r0;
+        jsr  Grid_copyFromTo;
+        pop  r1;
+        jsr  Solver_setValueAt;
+        move r0, sp;
+        ld.w r2, #GRID_SIZE + 9;
+        add  r0, r2;
+        move sp, r0;
+        ld.b r1, #0;        
+        ret;
