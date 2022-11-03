@@ -4,6 +4,9 @@ RAM_END equ 0x8000;
 org 0;
     jmp  start;
     
+
+include "asm/Leds_startup.asm";
+
 org 0x10;
 
 start:
@@ -20,20 +23,10 @@ include "jack/Main.asm";
 include "jack/Grid.asm";
 include "jack/Solver.asm";
 include "jack/Leds.asm";
-    
-Math_multiply:
-    ld.w r0, (sp+2);
-    mulu;
-    move r1, r2;
-    ret;
-
-Math_divide:
-    move r0, r1;
-    ld.w r1, (sp+2);
-    divu;
-    move r1, r2;
-    ret;
 
 include "asm/Grid_data.asm";
 include "asm/Solver_data.asm";
 include "asm/Leds_data.asm";
+
+maxStackAddress:
+    nop;

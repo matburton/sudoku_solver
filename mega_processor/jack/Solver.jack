@@ -12,12 +12,8 @@ class Solver {
     // Returns the number of solutions found so far
     //
     function int splitGrid(Array grid) {
-    
-        var Array cloneGrid;
-    
+ 
         var int x, y, count, bestCount, bestX, bestY;
-        
-        let cloneGrid = Stack.grow(Grid.gridByteSize());
         
         let bestCount = 0;
         

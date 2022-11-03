@@ -348,6 +348,9 @@ Solver_getAPossibilityAt:
 //
 Solver_splitGridAt:
         move r0, sp;
+        ld.w r2, #maxStackAddress + 1024;
+        cmp  r0, r2;
+        bls  Solver_splitGridAt_outOfStack;
         ld.w r2, #GRID_SIZE;
         sub  r0, r2;
         ld.b r2, (sp+4);
@@ -398,3 +401,7 @@ Solver_splitGridAt:
         move sp, r0;
         ld.b r1, #0;        
         ret;
+    Solver_splitGridAt_outOfStack:
+        ld.w r1, #messageOutOfMemory;
+        jsr  Leds_renderThisMessage;
+        jmp  $;
