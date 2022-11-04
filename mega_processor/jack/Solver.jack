@@ -74,8 +74,8 @@ class Solver {
             }
             
             if (Grid.isImpossible(grid)) { return solutions; }
-            
-            let solutions = Solver.splitGrid(grid);
+
+            let solutions = Solver.splitGrid(grid) + solutions;
         }
     
         return solutions;
