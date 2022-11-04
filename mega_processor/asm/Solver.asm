@@ -224,6 +224,29 @@ Solver_setValueAt:
         addi sp, #8;
         ret;
         
+// function void setHintAt(Array grid, int value, int x, int y)
+//
+Solver_setHintAt:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add  r3, r1;
+        ld.w r0, (r3++);
+        ld.b r2, (sp+6);
+        bclr r0, r2;
+        beq  Solver_setHintAt_impossible;
+        test r0;
+        beq  Solver_setHintAt_return;
+        jmp  Solver_setValueAt;
+    Solver_setHintAt_impossible:
+        move r0, r2;
+        st.b (r3), r0;
+        ld.w r3, #GRID_IMPOSSIBLE_FLAG_OFFSET;
+        add  r3, r1;
+        ld.b r0, #-1;
+        st.b (r3), r0;
+    Solver_setHintAt_return:
+        ret;
+        
 // Returns zero if no value could be deduced
 //
 // function int getDeducedValueAt(Array grid, int x, int y)

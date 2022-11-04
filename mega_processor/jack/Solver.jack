@@ -1,7 +1,7 @@
 
 class Solver {
     
-    function void setValueAt(Array grid, int value, int x, int y) { return; }
+    function void setHintAt(Array grid, int value, int x, int y) { return; }
     
     function void refineGrid(Array grid) { return; }
     
@@ -63,9 +63,12 @@ class Solver {
           
             if (Grid.isComplete(grid)) {
             
-                do Leds.addGridRenderDisable();
+                if (solutions = 0) {
                 
-                do Leds.renderMessage(1);
+                    do Leds.addGridRenderDisable();
+                
+                    do Leds.renderMessage(1);
+                }
             
                 return solutions + 1;
             }

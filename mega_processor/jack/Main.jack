@@ -11,23 +11,23 @@ class Main {
         
         do Leds.addGridRenderDisable();
         
-        do Solver.setValueAt(grid, 1, 7, 0);
-        do Solver.setValueAt(grid, 4, 0, 1);
-        do Solver.setValueAt(grid, 2, 1, 2);
-        do Solver.setValueAt(grid, 5, 4, 3);
-        do Solver.setValueAt(grid, 6, 6, 3);
-        do Solver.setValueAt(grid, 4, 8, 3);
-        do Solver.setValueAt(grid, 8, 2, 4);
-        do Solver.setValueAt(grid, 3, 6, 4);
-        do Solver.setValueAt(grid, 1, 2, 5);
-        do Solver.setValueAt(grid, 9, 4, 5);
-        do Solver.setValueAt(grid, 3, 0, 6);
-        do Solver.setValueAt(grid, 4, 3, 6);
-        do Solver.setValueAt(grid, 2, 6, 6);
-        do Solver.setValueAt(grid, 5, 1, 7);
-        do Solver.setValueAt(grid, 1, 3, 7);
-        do Solver.setValueAt(grid, 8, 3, 8);
-        do Solver.setValueAt(grid, 7, 5, 8);
+        do Solver.setHintAt(grid, 1, 7, 0);
+        do Solver.setHintAt(grid, 6, 8, 0);
+        do Solver.setHintAt(grid, 7, 3, 1);
+        do Solver.setHintAt(grid, 8, 5, 1);
+        do Solver.setHintAt(grid, 5, 7, 2);
+        do Solver.setHintAt(grid, 5, 0, 3);
+        do Solver.setHintAt(grid, 1, 2, 3);
+        do Solver.setHintAt(grid, 2, 3, 3);
+        do Solver.setHintAt(grid, 3, 0, 4);
+        do Solver.setHintAt(grid, 8, 6, 4);
+        do Solver.setHintAt(grid, 6, 0, 5);
+        do Solver.setHintAt(grid, 4, 1, 6);
+        do Solver.setHintAt(grid, 2, 6, 6);
+        do Solver.setHintAt(grid, 5, 4, 7);
+        do Solver.setHintAt(grid, 3, 5, 7);
+        do Solver.setHintAt(grid, 8, 1, 8);
+        do Solver.setHintAt(grid, 1, 4, 8);
         
         do Leds.undoGridRenderDisable();
         
