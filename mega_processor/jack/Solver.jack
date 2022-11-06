@@ -3,43 +3,7 @@ class Solver {
     
     function void setHintAt(Array grid, int value, int x, int y) { return; }
     
-    function void refineGrid(Array grid) { return; }
-    
     // Returns the number of solutions found so far
     //
-    function int splitGrid(Array grid) { return 0; }
-    
-    // Returns the number of solutions found so far
-    //
-    function int solve(Array grid) {
-    
-        var int solutions;
-    
-        if (Grid.isImpossible(grid)) { return 0; }
-
-        let solutions = 0;        
-    
-        while (solutions < 2) {
-        
-            do Solver.refineGrid(grid);
-          
-            if (Grid.isComplete(grid)) {
-            
-                if (solutions = 0) {
-                
-                    do Leds.addGridRenderDisable();
-                
-                    do Leds.renderMessage(1);
-                }
-            
-                return solutions + 1;
-            }
-            
-            if (Grid.isImpossible(grid)) { return solutions; }
-
-            let solutions = Solver.splitGrid(grid) + solutions;
-        }
-    
-        return solutions;
-    }
+    function int solve(Array grid) { return 0; }
 }

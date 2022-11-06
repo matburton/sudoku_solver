@@ -474,3 +474,49 @@ Solver_splitGridAt:
         ld.w r1, #messageOutOfMemory;
         jsr  Leds_renderThisMessage;
         jmp  $;
+        
+Solver_solve:
+        push r1;
+        jsr  Grid_isImpossible;
+        test r1;
+        bne  Solver_solve_early_impossible;
+    Solver_solve_loop:
+        push r1; 
+        ld.w r1, (sp+2);
+        jsr  Solver_refineGrid;
+        ld.w r1, (sp+2);
+        jsr  Grid_isImpossible;
+        test r1;
+        bne  Solver_solve_impossible;
+        ld.w r1, (sp+2);
+        jsr  Grid_isComplete;
+        test r1;
+        bne  Solver_solve_complete;
+        ld.w r1, (sp+2);
+        jsr  Solver_splitGrid;
+        pop  r0;
+        add  r1, r0;
+        move r0, r1;
+        addq r0, #-2;
+        bmi  Solver_solve_loop;
+        addi sp, #2;
+        ret;
+    Solver_solve_early_impossible:
+        addi sp, #2;
+        ld.b r1, #0;
+        ret;
+    Solver_solve_complete:
+        ld.b r1, (sp+0);
+        bne  Solver_solve_already_complete;
+        jsr  Leds_addGridRenderDisable;
+        ld.w r1, #messageSolution;
+        jsr  Leds_renderThisMessage;        
+    Solver_solve_already_complete:
+        pop  r1;
+        inc  r1;
+        addi sp, #2;
+        ret;
+    Solver_solve_impossible:
+        pop  r1;
+        addi sp, #2;
+        ret;

@@ -20,9 +20,6 @@ include "asm/Solver.asm";
 include "asm/Leds.asm";
     
 include "jack/Main.asm";
-include "jack/Grid.asm";
-include "jack/Solver.asm";
-include "jack/Leds.asm";
 
 include "asm/Grid_data.asm";
 include "asm/Solver_data.asm";

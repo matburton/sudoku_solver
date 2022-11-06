@@ -4,11 +4,4 @@ class Grid {
     function int gridByteSize() { return 0; }
 
     function Array initialise(Array grid) { return 0; }
-    
-    // Once this returns false it will always return false
-    // Using setSquareValue cannot make this return true again
-    //
-    function boolean isImpossible(Array grid) { return false; }
-
-    function boolean isComplete(Array grid) { return false; }
 }
