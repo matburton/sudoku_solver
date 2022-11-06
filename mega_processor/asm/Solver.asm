@@ -364,7 +364,53 @@ Solver_getAPossibilityAt:
         bne  Solver_getAPossibilityAt_loop;
     Solver_getAPossibilityAt_return:
         ret;
-        
+
+// Returns the number of solutions found so far
+//
+// function int splitGrid(Array grid)
+//
+Solver_splitGrid:
+        push r1;        
+        ld.w r3, #SQUARE_COUNT * SQUARE_SIZE + 3;
+        add  r3, r1;        
+        addi sp, #-4;
+        ld.b r1, #10;
+        ld.b r0, #8;
+        jmp  Solver_splitGrid_loop_start;
+    Solver_splitGrid_y_loop:
+        pop  r0;
+        dec  r0;
+        bmi  Solver_splitGrid_return;
+    Solver_splitGrid_loop_start:
+        push r0;
+        ld.b r2, #9;
+    Solver_splitGrid_x_loop:
+        dec  r2;
+        bmi  Solver_splitGrid_y_loop;
+        addq r3, #-2;
+        addq r3, #-2;
+        ld.b r0, (r3);
+        cmp  r0, r1;
+        bpl  Solver_splitGrid_x_loop;
+        addq r0, #-2;
+        bmi  Solver_splitGrid_x_loop;
+        beq  Solver_splitGrid_early_return;
+        addq r0, #2;
+        move r1, r0;
+        st.b (sp+4), r2;
+        ld.b r0, (sp+0);
+        st.b (sp+2), r0;
+        jmp  Solver_splitGrid_x_loop;
+    Solver_splitGrid_early_return:
+        pop  r0;
+        st.b (sp+0), r0;
+        st.b (sp+2), r2;
+    Solver_splitGrid_return:        
+        ld.w r1, (sp+4);
+        jsr  Solver_splitGridAt;
+        addi sp, #6;        
+        ret;        
+
 // Returns the number of solutions found so far
 //
 // function int splitGridAt(Array grid, int x, int y)
