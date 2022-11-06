@@ -4,10 +4,6 @@ class Grid {
     function int gridByteSize() { return 0; }
 
     function Array initialise(Array grid) { return 0; }
-
-    function void copyFromTo(Array source, Array target) { return; }
-
-    function int getPossibilityCount(Array grid, int x, int y) { return 0; }
     
     // Once this returns false it will always return false
     // Using setSquareValue cannot make this return true again
@@ -15,6 +11,4 @@ class Grid {
     function boolean isImpossible(Array grid) { return false; }
 
     function boolean isComplete(Array grid) { return false; }
-    
-    function boolean mustBeValue(Array grid, int value, int x, int y) { return false; }
 }

@@ -69,17 +69,6 @@ Grid_setSquareValue:
         st.w (r3), r0;
         ret;
         
-// function int getPossibilityCount(Array grid, int x, int y)
-//
-Grid_getPossibilityCount:
-        nop;
-    include "asm/Grid_getSquareOffset.asm";
-        add  r3, r1;
-        addq r3, #2;
-        inc  r3;
-        ld.b r1, (r3);
-        ret;
-        
 // function boolean isImpossible(Array grid)
 //
 Grid_isImpossible:
