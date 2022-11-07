@@ -75,7 +75,6 @@ Grid_isImpossible:
         ld.w r2, #GRID_IMPOSSIBLE_FLAG_OFFSET;
         add  r2, r1;
         ld.b r1, (r2);
-        sxt  r1;
         ret;
        
 // function boolean isComplete(Array grid)

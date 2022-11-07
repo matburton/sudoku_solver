@@ -1,7 +1,5 @@
 
 class Leds {
-
-    function void renderGridLine(Array grid, int y) { return; }
     
     function void renderGrid(Array grid) { return; }
     
