@@ -1,13 +1,19 @@
 
 RAM_END equ 0x8000;
 
+include "asm/Leds_startup.asm";
+
 org 0;
     jmp  start;
     
-
-include "asm/Leds_startup.asm";
-
-org 0x10;
+org 0x4;
+    reti;
+    
+org 0x8;
+    jmp  $;
+    
+org 0xC;
+    jmp  $;
 
 start:
     ld.w r0, #RAM_END;

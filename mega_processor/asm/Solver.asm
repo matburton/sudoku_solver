@@ -174,10 +174,7 @@ Solver_removePossibilityAt:
         add  r2, r0;
         ld.b r0, #-1;
         st.b (r2), r0;
-        dec  r2;
-        ld.b r0, (r2);
-        inc  r0;
-        st.b (r2), r0;
+    include "asm/Grid_flagSetReturn.asm";
         addi sp, #6;
         ret;
     Grid_removeSquarePossibility_value:
@@ -227,7 +224,7 @@ Solver_setValueAt:
 // function void setHintAt(Array grid, int value, int x, int y)
 //
 Solver_setHintAt:
-        nop;
+        andi ps, #0b01111111;
     include "asm/Grid_getSquareOffset.asm";
         add  r3, r1;
         ld.w r0, (r3++);
@@ -439,6 +436,7 @@ Solver_splitGridAt:
         addi sp, #2;
         jsr  Leds_addGridRenderDisable;
         ld.w r1, (sp+5);
+        andi ps, #0b01111111;
         jsr  Solver_removePossibilityAt;
         jsr  Leds_undoGridRenderDisable;
         ld.w r1, (sp+5);
@@ -456,7 +454,11 @@ Solver_splitGridAt:
         ld.w r2, #GRID_SIZE + 9;
         add  r0, r2;
         move sp, r0;
-        ret;        
+        ret;
+    Solver_splitGridAt_outOfStack:
+        ld.w r1, #messageOutOfMemory;
+        jsr  Leds_renderThisMessage;
+        jmp  $;        
     Solver_splitGridAt_impossible:
         ld.w r1, (sp+7);
         ld.w r0, (sp+5);
@@ -470,20 +472,26 @@ Solver_splitGridAt:
         move sp, r0;
         ld.b r1, #0;        
         ret;
-    Solver_splitGridAt_outOfStack:
-        ld.w r1, #messageOutOfMemory;
-        jsr  Leds_renderThisMessage;
-        jmp  $;
         
 Solver_solve:
         push r1;
         jsr  Grid_isImpossible;
         test r1;
         bne  Solver_solve_early_impossible;
+        ld.w r1, (sp+0);
+        jsr  Grid_isComplete;
+        test r1;
+        bne  Solver_solve_early_complete;
     Solver_solve_loop:
         push r1; 
         ld.w r1, (sp+2);
+    include "asm/Grid_armFlagSetReturn.asm";
+        ld.w r0,   #Solver_solve_flagSetReturn;
+        st.w (r3), r0;
         jsr  Solver_refineGrid;
+    Solver_solve_flagSetReturn:
+        nop;
+    include "asm/Grid_disarmFlagSetReturn.asm";
         ld.w r1, (sp+2);
         jsr  Grid_isImpossible;
         test r1;
@@ -505,12 +513,19 @@ Solver_solve:
         addi sp, #2;
         ld.b r1, #0;
         ret;
+    Solver_solve_early_complete:
+        jsr  Leds_addGridRenderDisable;
+        ld.w r1, #messageSolution;
+        jsr  Leds_renderThisMessage;
+        addi sp, #2;
+        ld.b r1, #1;
+        ret;
     Solver_solve_complete:
         ld.b r1, (sp+0);
         bne  Solver_solve_already_complete;
         jsr  Leds_addGridRenderDisable;
         ld.w r1, #messageSolution;
-        jsr  Leds_renderThisMessage;        
+        jsr  Leds_renderThisMessage;
     Solver_solve_already_complete:
         pop  r1;
         inc  r1;

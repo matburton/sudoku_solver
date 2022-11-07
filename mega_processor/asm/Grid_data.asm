@@ -4,3 +4,6 @@ sectorStartNegativeOffsetFromSquareLookupFromY:
     
 sectorStartNegativeOffsetFromSquareLookupFromX:
     db   0, 4, 8, 0, 4, 8, 0, 4, 8;
+    
+gridFlagSetReturn:
+    dw   0, 0;
