@@ -9,3 +9,6 @@ sectorOtherCoordLookupFromCoord:
     db   7, 8;
     db   6, 8;
     db   6, 7;
+    
+solutionCount:
+    db   0;

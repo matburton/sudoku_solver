@@ -318,10 +318,8 @@ Solver_refineGrid:
         ld.w r1, (sp+4);
         ld.w r3, #GRID_INCOMPLETE_SQUARE_COUNT_OFFSET;
         add  r3, r1;
-        ld.b r1, (r3++);
-        beq  Solver_refineGrid_return;
         ld.b r1, (r3);
-        bne  Solver_refineGrid_return;
+        beq  Solver_refineGrid_return;
         st.b (sp+2), r0;
         st.b (sp+0), r2;        
     Solver_refineGrid_no_value:
@@ -362,9 +360,7 @@ Solver_getAPossibilityAt:
     Solver_getAPossibilityAt_return:
         ret;
 
-// Returns the number of solutions found so far
-//
-// function int splitGrid(Array grid)
+// function void splitGrid(Array grid)
 //
 Solver_splitGrid:
         push r1;        
@@ -408,9 +404,7 @@ Solver_splitGrid:
         addi sp, #6;        
         ret;        
 
-// Returns the number of solutions found so far
-//
-// function int splitGridAt(Array grid, int x, int y)
+// function void splitGridAt(Array grid, int x, int y)
 //
 Solver_splitGridAt:
         move r0, sp;
@@ -446,10 +440,8 @@ Solver_splitGridAt:
         jsr  Solver_setValueAt;
         ld.w r1, (sp+7);
         jsr  Solver_solve;
-        push r1;
-        ld.w r1, (sp+7);
+        ld.w r1, (sp+5);
         jsr  Leds_renderGrid;
-        pop  r1;
         move r0, sp;
         ld.w r2, #GRID_SIZE + 9;
         add  r0, r2;
@@ -469,22 +461,22 @@ Solver_splitGridAt:
         move r0, sp;
         ld.w r2, #GRID_SIZE + 9;
         add  r0, r2;
-        move sp, r0;
-        ld.b r1, #0;        
+        move sp, r0;      
         ret;
-        
+
+// function int solve(Array grid)
+//
 Solver_solve:
         push r1;
         jsr  Grid_isImpossible;
         test r1;
-        bne  Solver_solve_early_impossible;
+        bne  Solver_solve_return;
         ld.w r1, (sp+0);
         jsr  Grid_isComplete;
         test r1;
-        bne  Solver_solve_early_complete;
+        bne  Solver_solve_complete;
     Solver_solve_loop:
-        push r1; 
-        ld.w r1, (sp+2);
+        ld.w r1, (sp+0);
     include "asm/Grid_armFlagSetReturn.asm";
         ld.w r0,   #Solver_solve_flagSetReturn;
         st.w (r3), r0;
@@ -492,46 +484,39 @@ Solver_solve:
     Solver_solve_flagSetReturn:
         nop;
     include "asm/Grid_disarmFlagSetReturn.asm";
-        ld.w r1, (sp+2);
+        ld.w r1, (sp+0);
         jsr  Grid_isImpossible;
         test r1;
-        bne  Solver_solve_impossible;
-        ld.w r1, (sp+2);
+        bne  Solver_solve_return;
+        ld.w r1, (sp+0);
         jsr  Grid_isComplete;
         test r1;
         bne  Solver_solve_complete;
-        ld.w r1, (sp+2);
+        ld.w r1, (sp+0);
         jsr  Solver_splitGrid;
-        pop  r0;
-        add  r1, r0;
-        move r0, r1;
-        addq r0, #-2;
+        ld.w r3, #solutionCount;
+        ld.b r1, (r3);
+        addq r1, #-2;
         bmi  Solver_solve_loop;
+        addq r1, #2;
         addi sp, #2;
-        ret;
-    Solver_solve_early_impossible:
-        addi sp, #2;
-        ld.b r1, #0;
-        ret;
-    Solver_solve_early_complete:
-        jsr  Leds_addGridRenderDisable;
-        ld.w r1, #messageSolution;
-        jsr  Leds_renderThisMessage;
-        addi sp, #2;
-        ld.b r1, #1;
         ret;
     Solver_solve_complete:
-        ld.b r1, (sp+0);
+        ld.w r3, #solutionCount;
+        ld.b r1, (r3);
         bne  Solver_solve_already_complete;
         jsr  Leds_addGridRenderDisable;
         ld.w r1, #messageSolution;
         jsr  Leds_renderThisMessage;
+        ld.w r3, #solutionCount;
+        ld.b r1, (r3);
     Solver_solve_already_complete:
-        pop  r1;
         inc  r1;
+        st.b (r3), r1;
         addi sp, #2;
         ret;
-    Solver_solve_impossible:
-        pop  r1;
+    Solver_solve_return:
+        ld.w r3, #solutionCount;
+        ld.b r1, (r3);
         addi sp, #2;
         ret;
