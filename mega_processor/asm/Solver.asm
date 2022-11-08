@@ -459,6 +459,7 @@ Solver_splitGridAt:
         push r0;
         jsr  Grid_copyFromTo;
         pop  r1;
+        andi ps, #0b10000000;
         jsr  Solver_setValueAt;
         move r0, sp;
         ld.w r2, #GRID_SIZE + 9;
