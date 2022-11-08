@@ -1,0 +1,14 @@
+        ld.w r0, (r3);
+        and  r0, r1;
+        st.w (r3++), r0;
+        ld.w r0, (r3);
+        and  r0, r2;
+        st.w (r3++), r0;
+        ld.b r0, #5 * 4;
+        add  r3, r0;
+        ld.w r0, (r3);
+        and  r0, r1;
+        st.w (r3++), r0;
+        ld.w r0, (r3);
+        and  r0, r2;
+        st.w (r3), r0;

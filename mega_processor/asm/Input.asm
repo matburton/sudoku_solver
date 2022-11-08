@@ -52,7 +52,7 @@ Input_copyUserHintsToGrid:
 
 // function void acceptUserHints(Array grid)
 //
-Input_acceptUserHints:
+Input_acceptUserHints: // TODO: Implement for real
         move r3, r1;
         addq r3, #2;
         ld.b r0, #3;
@@ -61,4 +61,65 @@ Input_acceptUserHints:
         addq r3, #2;
         addq r3, #1;
         st.b (r3), r0;
+        ret;
+        
+// function void underline(int x, int y)
+//
+Input_underline:
+        ld.w r2, #ledStartLookupFromY;
+        ld.b r0, (sp+2);
+        add  r0, r0;
+        add  r2, r0;
+        ld.w r0, (r2);
+        move r2, r0;
+        addq r2, #-2;
+        addq r2, #-2;
+        add  r1, r1;
+        add  r1, r1;
+        ld.w r3, #highlightLookupFromX;
+        add  r3, r1;
+        ld.w r0, (r3++);
+        ld.w r1, (r2);
+        or   r0, r1;
+        st.w (r2++), r0;
+        ld.w r0, (r3);
+        ld.w r1, (r2);
+        or   r0, r1;
+        st.w (r2++), r0;
+        addq r3, #-2;
+        ld.b r1, #5 * 4;
+        add  r2, r1;
+        ld.w r0, (r3++);
+        ld.w r1, (r2);
+        or   r0, r1;
+        st.w (r2++), r0;
+        ld.w r0, (r3);
+        ld.w r1, (r2);
+        or   r0, r1;
+        st.w (r2), r0;
+        ret;
+        
+// function void clearUnderlines()
+//
+Input_clearUnderlines:
+        ld.w r1, #0b0000010000000000;
+        ld.w r2, #0b0000000000100000;
+        ld.w r3, #LED_START;
+    include "asm/Input_clearLine.asm";
+        ld.w r3, #LED_START + (6  * 4);
+    include "asm/Input_clearLine.asm";
+        ld.w r3, #LED_START + (12 * 4);
+    include "asm/Input_clearLine.asm";
+        ld.w r3, #LED_START + (20 * 4);
+    include "asm/Input_clearLine.asm";
+        ld.w r3, #LED_START + (26 * 4);
+    include "asm/Input_clearLine.asm";
+        ld.w r3, #LED_START + (32 * 4);
+    include "asm/Input_clearLine.asm";
+        ld.w r3, #LED_START + (40 * 4);
+    include "asm/Input_clearLine.asm";
+        ld.w r3, #LED_START + (46 * 4);
+    include "asm/Input_clearLine.asm";
+        ld.w r3, #LED_START + (52 * 4);
+    include "asm/Input_clearLine.asm";
         ret;
