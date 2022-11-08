@@ -318,8 +318,10 @@ Solver_refineGrid:
         ld.w r1, (sp+4);
         ld.w r3, #GRID_INCOMPLETE_SQUARE_COUNT_OFFSET;
         add  r3, r1;
-        ld.b r1, (r3);
+        ld.b r1, (r3++);
         beq  Solver_refineGrid_return;
+        ld.b r1, (r3);
+        bne  Solver_refineGrid_return;
         st.b (sp+2), r0;
         st.b (sp+0), r2;        
     Solver_refineGrid_no_value:
