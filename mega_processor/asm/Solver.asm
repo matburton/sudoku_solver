@@ -173,10 +173,11 @@ Solver_removePossibilityAt:
         ld.w r0, #GRID_IMPOSSIBLE_FLAG_OFFSET;
         add  r2, r0;
         ld.b r0, #-1;
-        st.b (r2), r0;
-    include "asm/Grid_flagSetReturn.asm";
-        addi sp, #6;
-        ret;
+        st.b (r2), r0;    
+        ld.w r0, refineStackReturn;
+        beq  Grid_removeSquarePossibility_return;
+        move sp, r0;
+        jmp  Solver_solve_refine_return;
     Grid_removeSquarePossibility_value:
         ld.w r1, #GRID_INCOMPLETE_SQUARE_COUNT_OFFSET;
         add  r2, r1;
@@ -200,6 +201,7 @@ Solver_removePossibilityAt:
         push r2;
         push r3;
         jsr  Solver_removePossibilitiesRelatedTo;
+    Grid_removeSquarePossibility_return:
         addi sp, #6;
         ret;
         
@@ -224,7 +226,7 @@ Solver_setValueAt:
 // function void setHintAt(Array grid, int value, int x, int y)
 //
 Solver_setHintAt:
-        andi ps, #0b01111111;
+        nop;
     include "asm/Grid_getSquareOffset.asm";
         add  r3, r1;
         ld.w r0, (r3++);
@@ -432,7 +434,6 @@ Solver_splitGridAt:
         addi sp, #2;
         jsr  Leds_addGridRenderDisable;
         ld.w r1, (sp+5);
-        andi ps, #0b01111111;
         jsr  Solver_removePossibilityAt;
         jsr  Leds_undoGridRenderDisable;
         ld.w r1, (sp+5);
@@ -459,7 +460,6 @@ Solver_splitGridAt:
         push r0;
         jsr  Grid_copyFromTo;
         pop  r1;
-        andi ps, #0b10000000;
         jsr  Solver_setValueAt;
         move r0, sp;
         ld.w r2, #GRID_SIZE + 9;
@@ -479,14 +479,13 @@ Solver_solve:
         test r1;
         bne  Solver_solve_complete;
     Solver_solve_loop:
+        move r0, sp;
+        st.w refineStackReturn, r0;        
         ld.w r1, (sp+0);
-    include "asm/Grid_armFlagSetReturn.asm";
-        ld.w r0,   #Solver_solve_flagSetReturn;
-        st.w (r3), r0;
         jsr  Solver_refineGrid;
-    Solver_solve_flagSetReturn:
-        nop;
-    include "asm/Grid_disarmFlagSetReturn.asm";
+    Solver_solve_refine_return:
+        ld.b r0, #0;
+        st.w refineStackReturn, r0;
         ld.w r1, (sp+0);
         jsr  Grid_isImpossible;
         test r1;
