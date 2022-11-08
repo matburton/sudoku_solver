@@ -496,29 +496,25 @@ Solver_solve:
         bne  Solver_solve_complete;
         ld.w r1, (sp+0);
         jsr  Solver_splitGrid;
-        ld.w r3, #solutionCount;
-        ld.b r1, (r3);
+        ld.b r1, solutionCount;
         addq r1, #-2;
         bmi  Solver_solve_loop;
         addq r1, #2;
         addi sp, #2;
         ret;
     Solver_solve_complete:
-        ld.w r3, #solutionCount;
-        ld.b r1, (r3);
+        ld.b r1, solutionCount;
         bne  Solver_solve_already_complete;
         jsr  Leds_addGridRenderDisable;
         ld.w r1, #messageSolution;
         jsr  Leds_renderThisMessage;
-        ld.w r3, #solutionCount;
-        ld.b r1, (r3);
+        ld.b r1, solutionCount;
     Solver_solve_already_complete:
         inc  r1;
-        st.b (r3), r1;
+        st.b solutionCount, r1;
         addi sp, #2;
         ret;
     Solver_solve_return:
-        ld.w r3, #solutionCount;
-        ld.b r1, (r3);
+        ld.b r1, solutionCount;
         addi sp, #2;
         ret;
