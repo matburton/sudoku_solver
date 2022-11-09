@@ -62,6 +62,28 @@ Input_acceptUserHints: // TODO: Implement for real
         addq r3, #1;
         st.b (r3), r0;
         ret;
+  
+// function void deltaValueAt(Array grid, int delta, int x, int y)
+//
+Input_deltaValueAt:
+        nop;
+    include "asm/Grid_getSquareOffset.asm";
+        add  r3, r1;
+        addq r3, #2;
+        ld.b r0, (r3);
+        ld.w r2, (sp+6);
+        add  r0, r2;
+        bpl  Input_deltaValueAt_skip_negative_wrap;
+        ld.b r2, #10;
+        add  r0, r2;
+    Input_deltaValueAt_skip_negative_wrap:
+        ld.w r2, #-10;
+        add  r2, r0;
+        bmi  Input_deltaValueAt_skip_positive_wrap;
+        move r0, r2;
+    Input_deltaValueAt_skip_positive_wrap:
+        st.b (r3), r0;
+        jmp  Leds_renderGridLine;
         
 // function void underline(int x, int y)
 //
