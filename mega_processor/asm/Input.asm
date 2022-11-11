@@ -57,6 +57,8 @@ Input_copyUserHintsToGrid:
 //
 Input_acceptUserHints:
         push r1;
+        ld.w r1, #messageInput;
+        jsr  Leds_renderThisMessage;
         addi sp, #-4;
         ld.b r1, #4;
         push r1;
@@ -129,7 +131,7 @@ Input_acceptUserHints:
         ld.w r3, (sp+6);
         ld.w r0, GEN_IO_INPUT;
     Input_acceptUserHints_increment:
-        ld.w r1, #0b1100110000;
+        ld.w r1, #0b100110000;
         move r2, r3;
         and  r2, r1;
         cmp  r2, r1;
@@ -146,15 +148,15 @@ Input_acceptUserHints:
         ld.w r3, (sp+6);
         ld.w r0, GEN_IO_INPUT;
     Input_acceptUserHints_decrement:
-        ld.w r1, #0b110011000000;
+        ld.w r1, #0b1011000000;
         move r2, r3;
         and  r2, r1;
         cmp  r2, r1;
-        bne  Input_acceptUserHints_loop_end;
+        bne  Input_acceptUserHints_go;
         move r2, r0;
         and  r2, r1;
         cmp  r2, r1;
-        beq  Input_acceptUserHints_loop_end;
+        beq  Input_acceptUserHints_go;
         ld.w r1, #-1;
         st.w (sp+4), r1;
         ld.w r1, (sp+8);
@@ -162,8 +164,11 @@ Input_acceptUserHints:
         jsr  Input_deltaValueAt;
         ld.w r3, (sp+6);
         ld.w r0, GEN_IO_INPUT;
-    Input_acceptUserHints_loop_end:
+    Input_acceptUserHints_go:
         move r3, r0;
+        ld.w r1, #0b110000000000;
+        and  r0, r1;
+        beq  Input_acceptUserHints_return;
         jmp  Input_acceptUserHints_loop;
     Input_acceptUserHints_return:
         addi sp, #10;
