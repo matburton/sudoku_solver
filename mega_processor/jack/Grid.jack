@@ -1,7 +1,0 @@
-
-class Grid {
-
-    function int gridByteSize() { return 0; }
-
-    function Array initialise(Array grid) { return 0; }
-}

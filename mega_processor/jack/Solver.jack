@@ -1,9 +1,0 @@
-
-class Solver {
-    
-    function void setHintAt(Array grid, int value, int x, int y) { return; }
-    
-    // Returns the number of solutions found so far
-    //
-    function int solve(Array grid) { return 0; }
-}

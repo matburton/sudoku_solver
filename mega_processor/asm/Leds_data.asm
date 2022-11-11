@@ -81,7 +81,6 @@ messageOutOfMemory:
     dw   0b0100010011101001, 0b0100101010001011;
     
 messages:
-    dw   messageSolving;
     dw   messageImpossible;
     dw   messageUnique;
     dw   messageNotUnique;

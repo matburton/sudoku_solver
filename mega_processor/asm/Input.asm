@@ -15,6 +15,7 @@ Input_copyUserHintsToGrid:
         jsr  Grid_initialise;
         ld.w r1, (sp+2);
         jsr  Input_acceptUserHints;
+        jsr  Input_clearUnderlines;
         jsr  Leds_addGridRenderDisable;        
         ld.w r0, #SQUARE_COUNT * SQUARE_SIZE + 2;
         ld.w r3, (sp+2);
