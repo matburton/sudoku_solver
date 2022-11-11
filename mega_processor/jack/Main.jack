@@ -7,13 +7,13 @@ class Main {
         
         var int x, y, value;
         
-        let grid = Stack.grow(Grid.gridWordSize());
-        
-        do Grid.initialise(grid);
+        let grid = Grid.new();
         
         do Printer.writeGridString(grid);
         
         do Output.println();
+        
+        // TODO: We're leaking some strings here but never mind
         
         let x = Keyboard.readInt("x: ");
         
@@ -23,7 +23,7 @@ class Main {
             
             let value = Keyboard.readInt("value: ");
             
-            do Main.setValueAt(grid, value, x - 1, y - 1);
+            do Main.setHintAt(grid, value, x - 1, y - 1);
             
             do Screen.clearScreen();
             
@@ -62,17 +62,19 @@ class Main {
             }
         }
         
+        do grid.dispose();
+        
         return;
     }
     
-    function void setValueAt(Array grid, int value, int x, int y) {
+    function void setHintAt(Array grid, int value, int x, int y) {
     
         if (x < 0 | (x > 8) | (y < 0) | (y > 8) | (value < 1) | (value > 9)) {
         
             return;
         }
     
-        do Solver.setValueAt(grid, value, x, y);
+        do Solver.setHintAt(grid, value, x, y);
     
         return;
     }

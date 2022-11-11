@@ -1,6 +1,17 @@
 
 class Grid {
 
+    function Array new() {
+    
+        var Array grid;
+    
+        let grid = Array.new(Grid.gridWordSize());
+        
+        do Grid.initialise(grid);
+        
+        return grid;
+    }
+
     function int gridWordSize() {
     
         // 81 squares, 2 words each and 1 word grid cache

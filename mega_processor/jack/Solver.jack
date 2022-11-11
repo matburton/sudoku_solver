@@ -75,6 +75,30 @@ class Solver {
         return;
     }
     
+    function void setHintAt(Array grid, int value, int x, int y) {
+    
+        var Array square;
+        
+        if (Grid.getSquareValue(grid, x, y) = value) { return; }
+    
+        if (Grid.squareHasPossibility(grid, value, x, y)) {
+        
+            do Solver.setValueAt(grid, value, x, y);
+            
+            return;
+        }
+        
+        let square = y * 9 + x * 2 + grid;
+
+        let square[0] = 0;
+        
+        let square[1] = value;
+        
+        let grid[162] = grid[162] + 256;
+        
+        return;
+    }
+    
     // Returns zero if no value could be deduced
     //
     function int getDeducedValueAt(Array grid, int x, int y) {
@@ -247,14 +271,12 @@ class Solver {
             
             if (Grid.isComplete(grid)) {
             
-                let solutions = solutions + 1;
-            
-                return solutions;
+                return solutions + 1;
             }
             
             if (Grid.isImpossible(grid)) { return solutions; }
             
-            let solutions = Solver.splitGrid(grid);
+            let solutions = Solver.splitGrid(grid) + solutions;
         }
     
         return solutions;
