@@ -1,4 +1,6 @@
 
+GEN_IO_INPUT equ 0x8032;
+
 // function void copyUserHintsToGrid(Array grid)
 //
 Input_copyUserHintsToGrid:
@@ -52,15 +54,130 @@ Input_copyUserHintsToGrid:
 
 // function void acceptUserHints(Array grid)
 //
-Input_acceptUserHints: // TODO: Implement for real
-        move r3, r1;
-        addq r3, #2;
-        ld.b r0, #3;
-        st.b (r3++), r0;
-        addq r0, #2;
-        addq r3, #2;
-        addq r3, #1;
-        st.b (r3), r0;
+Input_acceptUserHints:
+        push r1;
+        addi sp, #-4;
+        ld.b r1, #4;
+        push r1;
+        push r1;
+        jsr  Input_underline;
+        ld.w r3, GEN_IO_INPUT;
+    Input_acceptUserHints_loop:
+        ld.w r0, GEN_IO_INPUT;
+        cmp  r0, r3;
+        beq  Input_acceptUserHints_loop;
+        btst r3, #0;
+        beq  Input_acceptUserHints_down;
+        btst r0, #0;
+        bne  Input_acceptUserHints_down;
+        ld.b r2, (sp+0);
+        dec  r2;
+        bpl  $+4;
+        ld.b r2, #8;
+        st.b (sp+0), r2;
+        st.w (sp+6), r3;
+        jsr  Input_clearUnderlines;
+        ld.b r1, (sp+2);
+        jsr  Input_underline;
+        ld.w r3, (sp+6);
+        ld.w r0, GEN_IO_INPUT;
+    Input_acceptUserHints_down:
+        btst r3, #1;
+        beq  Input_acceptUserHints_left;
+        btst r0, #1;
+        bne  Input_acceptUserHints_left;
+        ld.b r2, (sp+0);
+        inc  r2;
+        jsr  Input_overflowWrap;
+        st.b (sp+0), r2;
+        st.w (sp+6), r3;
+        jsr  Input_clearUnderlines;
+        ld.b r1, (sp+2);
+        jsr  Input_underline;
+        ld.w r3, (sp+6);
+        ld.w r0, GEN_IO_INPUT;        
+    Input_acceptUserHints_left:
+        btst r3, #2;
+        beq  Input_acceptUserHints_right;
+        btst r0, #2;
+        bne  Input_acceptUserHints_right;
+        ld.b r2, (sp+2);
+        dec  r2;
+        bpl  $+4;
+        ld.b r2, #8;
+        st.b (sp+2), r2;
+        st.w (sp+6), r3;
+        jsr  Input_clearUnderlines;
+        ld.b r1, (sp+2);
+        jsr  Input_underline;
+        ld.w r3, (sp+6);
+        ld.w r0, GEN_IO_INPUT;
+    Input_acceptUserHints_right:
+        btst r3, #3;
+        beq  Input_acceptUserHints_increment;
+        btst r0, #3;
+        bne  Input_acceptUserHints_increment;
+        ld.b r2, (sp+2);
+        inc  r2;
+        jsr  Input_overflowWrap;
+        st.b (sp+2), r2;
+        st.w (sp+6), r3;
+        jsr  Input_clearUnderlines;
+        ld.b r1, (sp+2);
+        jsr  Input_underline;
+        ld.w r3, (sp+6);
+        ld.w r0, GEN_IO_INPUT;
+    Input_acceptUserHints_increment:
+        ld.w r1, #0b1100110000;
+        move r2, r3;
+        and  r2, r1;
+        cmp  r2, r1;
+        bne  Input_acceptUserHints_decrement;
+        move r2, r0;
+        and  r2, r1;
+        cmp  r2, r1;
+        beq  Input_acceptUserHints_decrement;
+        ld.b r1, #1;
+        st.w (sp+4), r1;
+        ld.w r1, (sp+8);
+        st.w (sp+6), r3;
+        jsr  Input_deltaValueAt;
+        ld.w r3, (sp+6);
+        ld.w r0, GEN_IO_INPUT;
+    Input_acceptUserHints_decrement:
+        ld.w r1, #0b110011000000;
+        move r2, r3;
+        and  r2, r1;
+        cmp  r2, r1;
+        bne  Input_acceptUserHints_loop_end;
+        move r2, r0;
+        and  r2, r1;
+        cmp  r2, r1;
+        beq  Input_acceptUserHints_loop_end;
+        ld.w r1, #-1;
+        st.w (sp+4), r1;
+        ld.w r1, (sp+8);
+        st.w (sp+6), r3;
+        jsr  Input_deltaValueAt;
+        ld.w r3, (sp+6);
+        ld.w r0, GEN_IO_INPUT;
+    Input_acceptUserHints_loop_end:
+        move r3, r0;
+        jmp  Input_acceptUserHints_loop;
+    Input_acceptUserHints_return:
+        addi sp, #10;
+        ret;
+        
+// r2 - value, input & output
+// r1 - clobbered
+// r0, r3 - preserved
+//
+Input_overflowWrap:
+        ld.w r1, #-9;
+        add  r1, r2;
+        bmi  Input_overflowWrap_return;
+        move r2, r1;
+    Input_overflowWrap_return:
         ret;
   
 // function void deltaValueAt(Array grid, int delta, int x, int y)
