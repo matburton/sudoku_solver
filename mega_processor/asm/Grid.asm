@@ -202,8 +202,16 @@ Grid_mustBeValueByColumn:
 // function boolean mustBeValueBySector(Array grid, int mask, int x, int y)
 //
 Grid_mustBeValueBySector:
-        nop;
-    include "asm/Grid_getSquareOffset.asm";
+        ld.b r2, (sp+2);
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r2, (sp+4);
+        add  r3, r2;
+        add  r3, r3;
+        add  r3, r3;
         add  r1, r3;        
         move r2, r1;
         addq r1, #2;

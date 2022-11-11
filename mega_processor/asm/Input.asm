@@ -193,8 +193,16 @@ Input_overflowWrap:
 // function void deltaValueAt(Array grid, int delta, int x, int y)
 //
 Input_deltaValueAt:
-        nop;
-    include "asm/Grid_getSquareOffset.asm";
+        ld.b r2, (sp+2);
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r2, (sp+4);
+        add  r3, r2;
+        add  r3, r3;
+        add  r3, r3;
         add  r3, r1;
         addq r3, #2;
         ld.b r0, (r3);

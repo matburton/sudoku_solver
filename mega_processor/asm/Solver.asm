@@ -226,8 +226,16 @@ Solver_setValueAt:
 // function void setHintAt(Array grid, int value, int x, int y)
 //
 Solver_setHintAt:
-        nop;
-    include "asm/Grid_getSquareOffset.asm";
+        ld.b r2, (sp+2);
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r2, (sp+4);
+        add  r3, r2;
+        add  r3, r3;
+        add  r3, r3;
         add  r3, r1;
         ld.w r0, (r3++);
         ld.b r2, (sp+6);
@@ -251,8 +259,16 @@ Solver_setHintAt:
 // function int getDeducedValueAt(Array grid, int x, int y)
 //
 Solver_getDeducedValueAt:
-        nop;
-    include "asm/Grid_getSquareOffset.asm";
+        ld.b r2, (sp+2);
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r2, (sp+4);
+        add  r3, r2;
+        add  r3, r3;
+        add  r3, r3;
         add  r3, r1;
         addq r3, #2;
         inc  r3;
@@ -351,8 +367,16 @@ Solver_refineGrid:
 // function int getAPossibilityAt(Array grid, int x, int y)
 //
 Solver_getAPossibilityAt:
-        nop;
-    include "asm/Grid_getSquareOffset.asm";
+        ld.b r2, (sp+2);
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r2, (sp+4);
+        add  r3, r2;
+        add  r3, r3;
+        add  r3, r3;
         add  r3, r1;
         ld.w r0, (r3);
         ld.b r1, #9;
