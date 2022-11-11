@@ -16,15 +16,15 @@ org 0xC;
         jmp  $;
 
 start:
+        ld.b r0, #0;                     // for reset
+        st.w refineStackReturn, r0;      // for reset
+        st.b gridRenderDisableCount, r0; // for reset
+        st.b solutionCount, r0;          // for reset
         ld.w r0, #RAM_END - GRID_SIZE;
         move sp, r0;
         move r1, r0;
         push r1;
-        jsr  Grid_initialise;
-        ld.w r1, (sp+0);
         jsr  Input_copyUserHintsToGrid;
-        ld.w r1, #messageSolving;       
-        jsr  Leds_renderThisMessage;       
         ld.w r1, (sp+0);
         jsr  Solver_solve;
         jsr  Leds_renderMessage;

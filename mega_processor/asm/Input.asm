@@ -57,6 +57,8 @@ Input_copyUserHintsToGrid:
 //
 Input_acceptUserHints:
         push r1;
+        jsr  Leds_renderGrid;       // for reset
+        jsr  Input_clearUnderlines; // for reset
         ld.w r1, #messageInput;
         jsr  Leds_renderThisMessage;
         addi sp, #-4;
@@ -171,6 +173,8 @@ Input_acceptUserHints:
         beq  Input_acceptUserHints_return;
         jmp  Input_acceptUserHints_loop;
     Input_acceptUserHints_return:
+        ld.w r1, #messageSolving;       
+        jsr  Leds_renderThisMessage;   
         addi sp, #10;
         ret;
         
