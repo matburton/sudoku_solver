@@ -28,7 +28,13 @@ start:
         ld.w r1, (sp+0);
         jsr  Solver_solve;
         jsr  Leds_renderMessage;
-        jmp  $;
+        ld.w r0, #0b111111110000;
+    start_reset_loop:
+        ld.w r1, GEN_IO_INPUT;
+        and  r1, r0;
+        cmp  r1, r0;
+        beq  start_reset_loop;
+        jmp  start;
     
 include "asm/Grid.asm";
 include "asm/Solver.asm";
