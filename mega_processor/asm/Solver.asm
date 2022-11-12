@@ -8,23 +8,13 @@ Solver_removePossibilitiesRelatedTo:
         push r0;
         ld.b r0, (sp+6);
         push r0;
-        jsr  Solver_removePossibilitiesRelatedToRow;
-        jsr  Solver_removePossibilitiesRelatedToColumn;
-        addi sp, #6;
-        jmp  Solver_removePossibilitiesRelatedToSector;
-
-// function void removePossibilitiesRelatedToRow(Array grid, int value, int x, int y)
-//
-// r1 - preserved
-//
-Solver_removePossibilitiesRelatedToRow:
         push r1;
-        ld.b r0, (sp+8);
+        ld.b r0, (sp+6);
         push r0;
         addi sp, #-2;
-        ld.b r0, (sp+8);
+        ld.b r0, (sp+6);
         push r0;
-        ld.b r2, (sp+12);
+        ld.b r2, (sp+10);
         beq  Solver_removePossibilitiesRelatedToRow_second;
         dec  r2;
     Solver_removePossibilitiesRelatedToRow_first_loop:
@@ -36,7 +26,7 @@ Solver_removePossibilitiesRelatedToRow:
         bpl  Solver_removePossibilitiesRelatedToRow_first_loop;
     Solver_removePossibilitiesRelatedToRow_second:
         ld.b r2, #8;
-        ld.b r0, (sp+12);
+        ld.b r0, (sp+10);
         cmp  r2, r0;
         beq  Solver_removePossibilitiesRelatedToRow_return;
     Solver_removePossibilitiesRelatedToRow_second_loop:
@@ -45,24 +35,17 @@ Solver_removePossibilitiesRelatedToRow:
         ld.w r1, (sp+6);
         ld.b r2, (sp+2);
         dec  r2;
-        ld.b r0, (sp+12);
+        ld.b r0, (sp+10);
         cmp  r2, r0;
         bne  Solver_removePossibilitiesRelatedToRow_second_loop;
     Solver_removePossibilitiesRelatedToRow_return:
         addi sp, #8;
-        ret;
-        
-// function void removePossibilitiesRelatedToColumn(Array grid, int value, int x, int y)
-//
-// r1 - preserved
-//
-Solver_removePossibilitiesRelatedToColumn:
         push r1;
-        ld.b r0, (sp+8);
+        ld.b r0, (sp+6);
         push r0;
-        ld.b r0, (sp+8);
+        ld.b r0, (sp+6);
         push r0;
-        ld.b r2, (sp+8);
+        ld.b r2, (sp+6);
         beq  Solver_removePossibilitiesRelatedToColumn_second;
         dec  r2;
     Solver_removePossibilitiesRelatedToColumn_first_loop:
@@ -74,7 +57,7 @@ Solver_removePossibilitiesRelatedToColumn:
         bpl  Solver_removePossibilitiesRelatedToColumn_first_loop;
     Solver_removePossibilitiesRelatedToColumn_second:
         ld.b r2, #8;
-        ld.b r0, (sp+8);
+        ld.b r0, (sp+6);
         cmp  r2, r0;
         beq  Solver_removePossibilitiesRelatedToColumn_return;
     Solver_removePossibilitiesRelatedToColumn_second_loop:
@@ -83,16 +66,11 @@ Solver_removePossibilitiesRelatedToColumn:
         ld.w r1, (sp+6);
         pop  r2;
         dec  r2;
-        ld.b r0, (sp+8);
+        ld.b r0, (sp+6);
         cmp  r2, r0;
         bne  Solver_removePossibilitiesRelatedToColumn_second_loop;
     Solver_removePossibilitiesRelatedToColumn_return:
-        addi sp, #6;
-        ret;
-        
-// function void removePossibilitiesRelatedToSector(Array grid, int value, int x, int y)
-//
-Solver_removePossibilitiesRelatedToSector:
+        addi sp, #12;
         push r1;
         ld.w r2, #sectorOtherCoordLookupFromCoord;
         ld.b r3, (sp+6);
@@ -185,7 +163,23 @@ Solver_removePossibilityAt:
         dec  r1;
         st.b (r2), r1;
         move r1, r0;
-        jsr  Grid_calculateValue;
+        ld.b r0, #1;
+        ld.b r2, #0;
+    Grid_calculateValue_loop:
+        add  r0, r0;
+        inc  r2;
+        cmp  r1, r0;
+        beq  Grid_calculateValue_return;
+        add  r0, r0;
+        inc  r2;
+        cmp  r1, r0;
+        beq  Grid_calculateValue_return;
+        add  r0, r0;
+        inc  r2;
+        cmp  r1, r0;
+        bne  Grid_calculateValue_loop;
+    Grid_calculateValue_return:
+        move r1, r2;
         dec  r3;
         st.b (r3), r1;
         addi sp, #2;
@@ -215,7 +209,30 @@ Solver_setValueAt:
         push r0;
         ld.b r0, (sp+8);
         push r0;
-        jsr  Grid_setSquareValue;
+        ld.w r2, #GRID_INCOMPLETE_SQUARE_COUNT_OFFSET;
+        add  r2, r1;
+        ld.b r0, (r2);
+        dec  r0;
+        st.b (r2), r0;
+        ld.b r2, (sp+0);
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r2, (sp+2);
+        add  r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r1;
+        ld.b r0, #0;
+        ld.b r2, (sp+4);
+        bset r0, r2;
+        st.w (r3), r0;
+        ld.w r0, #0x100;
+        or   r0, r2;
+        addq r3, #2;
+        st.w (r3), r0;
         ld.w r1, (sp+6);
         jsr  Leds_renderGridLine;
         ld.w r1, (sp+6);
@@ -292,7 +309,26 @@ Solver_getDeducedValueAt:
         btst r0, r2;
         beq  Solver_getDeducedValueAt_loop;
         st.b (sp+4), r2;       
-        jsr  Grid_mustBeValue;
+        push r1;
+        ld.b r2, (sp+6);
+        ld.b r0, #0;
+        bset r0, r2;
+        push r0;
+        ld.b r0, (sp+6);
+        push r0;
+        ld.b r0, (sp+6);
+        push r0;
+        jsr  Grid_mustBeValueByRow;
+        test r1;
+        bne  Grid_mustBeValue_return;
+        ld.w r1, (sp+6);
+        jsr  Grid_mustBeValueByColumn;
+        test r1;
+        bne  Grid_mustBeValue_return;
+        ld.w r1, (sp+6);
+        jsr  Grid_mustBeValueBySector;
+    Grid_mustBeValue_return:
+        addi sp, #8;
         test r1;
         bne  Solver_getDeducedValueAt_return_value;
         ld.b r2, (sp+4);
@@ -364,30 +400,6 @@ Solver_refineGrid:
         addi sp, #6;
         ret;
 
-// function int getAPossibilityAt(Array grid, int x, int y)
-//
-Solver_getAPossibilityAt:
-        ld.b r2, (sp+2);
-        move r3, r2;
-        add  r3, r3;
-        add  r3, r3;
-        add  r3, r3;
-        add  r3, r2;
-        ld.b r2, (sp+4);
-        add  r3, r2;
-        add  r3, r3;
-        add  r3, r3;
-        add  r3, r1;
-        ld.w r0, (r3);
-        ld.b r1, #9;
-    Solver_getAPossibilityAt_loop:
-        btst r0, r1;
-        bne  Solver_getAPossibilityAt_return;
-        dec  r1;
-        bne  Solver_getAPossibilityAt_loop;
-    Solver_getAPossibilityAt_return:
-        ret;
-
 // function void splitGrid(Array grid)
 //
 Solver_splitGrid:
@@ -449,7 +461,25 @@ Solver_splitGridAt:
         addi sp, #-1;
         push r2;
         push r3;
-        jsr  Solver_getAPossibilityAt;
+        ld.b r2, (sp+0);
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r2, (sp+2);
+        add  r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r1;
+        ld.w r0, (r3);
+        ld.b r1, #9;
+    Solver_getAPossibilityAt_loop:
+        btst r0, r1;
+        bne  Solver_getAPossibilityAt_return;
+        dec  r1;
+        bne  Solver_getAPossibilityAt_loop;
+    Solver_getAPossibilityAt_return:
         st.b (sp+4), r1;
         ld.w r1, (sp+5);
         ld.w r0, (sp+7);

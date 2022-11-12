@@ -49,26 +49,6 @@ Grid_copyFromTo:
         st.w (r3++), r1;
         ret;
         
-// function void setSquareValue(Array grid, int value, int x, int y)
-//
-Grid_setSquareValue:
-        ld.w r2, #GRID_INCOMPLETE_SQUARE_COUNT_OFFSET;
-        add  r2, r1;
-        ld.b r0, (r2);
-        dec  r0;
-        st.b (r2), r0;
-    include "asm/Grid_getSquareOffset.asm";
-        add  r3, r1;
-        ld.b r0, #0;
-        ld.b r2, (sp+6);
-        bset r0, r2;
-        st.w (r3), r0;
-        ld.w r0, #0x100;
-        or   r0, r2;
-        addq r3, #2;
-        st.w (r3), r0;
-        ret;
-        
 // function boolean isImpossible(Array grid)
 //
 Grid_isImpossible:
@@ -87,31 +67,6 @@ Grid_isComplete:
         bne  Grid_isComplete_return;
         dec  r1;
     Grid_isComplete_return:
-        ret;
-        
-// function boolean mustBeValue(Array grid, int value, int x, int y)
-//
-Grid_mustBeValue:
-        push r1;
-        ld.b r2, (sp+8);
-        ld.b r0, #0;
-        bset r0, r2;
-        push r0;
-        ld.b r0, (sp+8);
-        push r0;
-        ld.b r0, (sp+8);
-        push r0;
-        jsr  Grid_mustBeValueByRow;
-        test r1;
-        bne  Grid_mustBeValue_return;
-        ld.w r1, (sp+6);
-        jsr  Grid_mustBeValueByColumn;
-        test r1;
-        bne  Grid_mustBeValue_return;
-        ld.w r1, (sp+6);
-        jsr  Grid_mustBeValueBySector;
-    Grid_mustBeValue_return:
-        addi sp, #8;
         ret;
         
 // function boolean mustBeValueByRow(Array grid, int mask, int x, int y)
@@ -249,26 +204,4 @@ Grid_mustBeValueBySector:
         ret;
     Grid_mustBeValueBySector_false:
         ld.b r1, #0;
-        ret;
-
-// function int calculateValue(int possibilities)
-//
-Grid_calculateValue:
-        ld.b r0, #1;
-        ld.b r2, #0;
-    Grid_calculateValue_loop:
-        add  r0, r0;
-        inc  r2;
-        cmp  r1, r0;
-        beq  Grid_calculateValue_return;
-        add  r0, r0;
-        inc  r2;
-        cmp  r1, r0;
-        beq  Grid_calculateValue_return;
-        add  r0, r0;
-        inc  r2;
-        cmp  r1, r0;
-        bne  Grid_calculateValue_loop;
-    Grid_calculateValue_return:
-        move r1, r2;
         ret;
