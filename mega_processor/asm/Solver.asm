@@ -275,6 +275,13 @@ Solver_setHintAt:
 //
 // function int getDeducedValueAt(Array grid, int x, int y)
 //
+    Solver_getDeducedValueAt_early_zero:
+        ld.b r1, #0;
+        ret;
+    Solver_getDeducedValueAt_return_zero:
+        addi sp, #10;
+        ld.b r1, #0;
+        ret;
 Solver_getDeducedValueAt:
         ld.b r2, (sp+2);
         move r3, r2;
@@ -318,11 +325,86 @@ Solver_getDeducedValueAt:
         push r0;
         ld.b r0, (sp+6);
         push r0;
-        jsr  Grid_mustBeValueByRow;
+        ld.b r2, (sp+0);
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r1;
+        ld.w r2, (sp+4);
+        ld.b r0, (sp+2);
+        beq  Grid_mustBeValueByRow_second;
+    Grid_mustBeValueByRow_first_loop:
+        ld.w r1, (r3);
+        and  r1, r2;
+        bne  Grid_mustBeValueByRow_false;
+        addq r3, #2;
+        addq r3, #2;
+        dec  r0;
+        bne  Grid_mustBeValueByRow_first_loop;
+    Grid_mustBeValueByRow_second:
+        addq r3, #2;
+        addq r3, #2;
+        ld.b r0, #8;
+        ld.b r1, (sp+2);
+        sub  r0, r1;
+        beq  Grid_mustBeValueByRow_true;
+    Grid_mustBeValueByRow_second_loop:
+        ld.w r1, (r3);
+        and  r1, r2;
+        bne  Grid_mustBeValueByRow_false;
+        addq r3, #2;
+        addq r3, #2;
+        dec  r0;
+        bne  Grid_mustBeValueByRow_second_loop;
+    Grid_mustBeValueByRow_true:
+        ld.w r1, #-1;
+        jmp  Grid_mustBeValueByRow_return;
+    Grid_mustBeValueByRow_false:    
+        ld.w r1, #0;
+    Grid_mustBeValueByRow_return:
         test r1;
         bne  Grid_mustBeValue_return;
         ld.w r1, (sp+6);
-        jsr  Grid_mustBeValueByColumn;
+        ld.b r3, (sp+2);
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r1;
+        ld.w r2, (sp+4);
+        ld.b r0, (sp+0);
+        beq  Grid_mustBeValueByColumn_second;
+    Grid_mustBeValueByColumn_first_loop:
+        ld.w r1, (r3);
+        and  r1, r2;
+        bne  Grid_mustBeValueByColumn_false;
+        ld.b r1, #9 * 4;
+        add  r3, r1;
+        dec  r0;
+        bne  Grid_mustBeValueByColumn_first_loop;
+    Grid_mustBeValueByColumn_second:
+        ld.b r1, #9 * 4;
+        add  r3, r1;
+        ld.b r0, #8;
+        ld.b r1, (sp+0);
+        sub  r0, r1;
+        beq  Grid_mustBeValueByColumn_true;
+    Grid_mustBeValueByColumn_second_loop:
+        ld.w r1, (r3);
+        and  r1, r2;
+        bne  Grid_mustBeValueByColumn_false;
+        ld.b r1, #9 * 4;
+        add  r3, r1;
+        dec  r0;
+        bne  Grid_mustBeValueByColumn_second_loop;
+    Grid_mustBeValueByColumn_true:
+        ld.w r1, #-1;
+        jmp  Grid_mustBeValueByColumn_return;
+    Grid_mustBeValueByColumn_false:
+        ld.w r1, #0;
+    Grid_mustBeValueByColumn_return:
         test r1;
         bne  Grid_mustBeValue_return;
         ld.w r1, (sp+6);
@@ -334,12 +416,7 @@ Solver_getDeducedValueAt:
         ld.b r2, (sp+4);
         ld.w r0, (sp+6);
         ld.w r1, (sp+8);
-        jmp  Solver_getDeducedValueAt_loop;        
-    Solver_getDeducedValueAt_return_zero:
-        addi sp, #10;
-    Solver_getDeducedValueAt_early_zero:
-        ld.b r1, #0;
-        ret;
+        jmp  Solver_getDeducedValueAt_loop;
     Solver_getDeducedValueAt_return_value:
         ld.b r1, (sp+4);
         addi sp, #10;
