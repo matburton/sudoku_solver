@@ -282,11 +282,6 @@ Solver_setHintAt:
         addi sp, #10;
         ld.b r1, #0;
         ret;
-    Grid_mustBeValue_return_hack:
-        addi sp, #8;
-        ld.b r1, (sp+4);
-        addi sp, #10;
-        ret;
 Solver_getDeducedValueAt:
         ld.b r2, (sp+2);
         move r3, r2;
@@ -356,7 +351,7 @@ Solver_getDeducedValueAt:
         ld.b r0, #8;
         ld.b r1, (sp+2);
         sub  r0, r1;
-        beq  Grid_mustBeValue_return_hack;
+        beq  Grid_mustBeValueByRow_true;
     Grid_mustBeValueByRow_second_loop:
         ld.w r1, (r3);
         and  r1, r2;
@@ -366,7 +361,9 @@ Solver_getDeducedValueAt:
         dec  r0;
         bne  Grid_mustBeValueByRow_second_loop;
     Grid_mustBeValueByRow_true:
-        jmp  Grid_mustBeValue_return_hack;
+        ld.b r1, (sp+12);
+        addi sp, #18;
+        ret;
     Grid_mustBeValueByRow_false:  
         ld.w r1, (sp+6);
         ld.b r3, (sp+2);
@@ -398,15 +395,12 @@ Solver_getDeducedValueAt:
         ld.b r1, #9 * 4;
         add  r3, r1;
         dec  r0;
-        bne  Grid_mustBeValueByColumn_second_loop;
+        bne  Grid_mustBeValueByColumn_second_loop;        
     Grid_mustBeValueByColumn_true:
-        ld.w r1, #-1;
-        jmp  Grid_mustBeValueByColumn_return;
+        ld.b r1, (sp+12);
+        addi sp, #18;
+        ret;
     Grid_mustBeValueByColumn_false:
-        ld.b r1, #0;
-    Grid_mustBeValueByColumn_return:
-        test r1;
-        bne  Grid_mustBeValue_return;
         ld.w r1, (sp+6);
         ld.b r2, (sp+0);
         move r3, r2;
@@ -451,14 +445,11 @@ Solver_getDeducedValueAt:
     include "asm/Grid_mustBeValueBySector_checkSquare.asm";
         addq r2, #2;
     include "asm/Grid_mustBeValueBySector_checkSquare.asm";
-        ld.w r1, #-1;
-        jmp  Grid_mustBeValue_return;
+        ld.b r1, (sp+12);
+        addi sp, #18;
+        ret;        
     Grid_mustBeValueBySector_false:
-        ld.b r1, #0;
-    Grid_mustBeValue_return:
         addi sp, #8;
-        test r1;
-        bne  Solver_getDeducedValueAt_return_value;
         ld.b r2, (sp+4);
         ld.w r0, (sp+6);
         ld.w r1, (sp+8);
