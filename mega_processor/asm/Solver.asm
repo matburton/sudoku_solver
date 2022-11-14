@@ -282,6 +282,18 @@ Solver_setHintAt:
         addi sp, #10;
         ld.b r1, #0;
         ret;
+    Solver_getDeducedValueAt_return_value_hack:
+        ld.b r1, (sp+4);
+        addi sp, #10;
+        ret;
+    Grid_mustBeValue_return_hack:
+        addi sp, #8;
+        test r1;
+        bne  Solver_getDeducedValueAt_return_value_hack;
+        ld.b r2, (sp+4);
+        ld.w r0, (sp+6);
+        ld.w r1, (sp+8);
+        jmp  Solver_getDeducedValueAt_loop;
 Solver_getDeducedValueAt:
         ld.b r2, (sp+2);
         move r3, r2;
@@ -364,10 +376,10 @@ Solver_getDeducedValueAt:
         ld.w r1, #-1;
         jmp  Grid_mustBeValueByRow_return;
     Grid_mustBeValueByRow_false:    
-        ld.w r1, #0;
+        ld.b r1, #0;
     Grid_mustBeValueByRow_return:
         test r1;
-        bne  Grid_mustBeValue_return;
+        bne  Grid_mustBeValue_return_hack;
         ld.w r1, (sp+6);
         ld.b r3, (sp+2);
         add  r3, r3;
@@ -403,12 +415,58 @@ Solver_getDeducedValueAt:
         ld.w r1, #-1;
         jmp  Grid_mustBeValueByColumn_return;
     Grid_mustBeValueByColumn_false:
-        ld.w r1, #0;
+        ld.b r1, #0;
     Grid_mustBeValueByColumn_return:
         test r1;
         bne  Grid_mustBeValue_return;
         ld.w r1, (sp+6);
-        jsr  Grid_mustBeValueBySector;
+        ld.b r2, (sp+0);
+        move r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r3;
+        add  r3, r2;
+        ld.b r2, (sp+2);
+        add  r3, r2;
+        add  r3, r3;
+        add  r3, r3;
+        add  r1, r3;        
+        move r2, r1;
+        addq r1, #2;
+        ld.b r0, (sp+0);
+        ld.w r3, #sectorStartNegativeOffsetFromSquareLookupFromY;
+        add  r3, r0;
+        ld.b r0, (r3);
+        sub  r2, r0;
+        ld.b r0, (sp+2);
+        ld.w r3, #sectorStartNegativeOffsetFromSquareLookupFromX;
+        add  r3, r0;
+        ld.b r0, (r3);
+        sub  r2, r0;
+        ld.w r3, (sp+4);
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        ld.b r0, #(6 * 4) + 2;
+        add  r2, r0;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        ld.b r0, #(6 * 4) + 2;
+        add  r2, r0;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        addq r2, #2;
+    include "asm/Grid_mustBeValueBySector_checkSquare.asm";
+        ld.w r1, #-1;
+        jmp  Grid_mustBeValue_return;
+    Grid_mustBeValueBySector_false:
+        ld.b r1, #0;
     Grid_mustBeValue_return:
         addi sp, #8;
         test r1;
