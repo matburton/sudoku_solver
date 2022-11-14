@@ -282,18 +282,11 @@ Solver_setHintAt:
         addi sp, #10;
         ld.b r1, #0;
         ret;
-    Solver_getDeducedValueAt_return_value_hack:
+    Grid_mustBeValue_return_hack:
+        addi sp, #8;
         ld.b r1, (sp+4);
         addi sp, #10;
         ret;
-    Grid_mustBeValue_return_hack:
-        addi sp, #8;
-        test r1;
-        bne  Solver_getDeducedValueAt_return_value_hack;
-        ld.b r2, (sp+4);
-        ld.w r0, (sp+6);
-        ld.w r1, (sp+8);
-        jmp  Solver_getDeducedValueAt_loop;
 Solver_getDeducedValueAt:
         ld.b r2, (sp+2);
         move r3, r2;
@@ -363,7 +356,7 @@ Solver_getDeducedValueAt:
         ld.b r0, #8;
         ld.b r1, (sp+2);
         sub  r0, r1;
-        beq  Grid_mustBeValueByRow_true;
+        beq  Grid_mustBeValue_return_hack;
     Grid_mustBeValueByRow_second_loop:
         ld.w r1, (r3);
         and  r1, r2;
@@ -373,13 +366,8 @@ Solver_getDeducedValueAt:
         dec  r0;
         bne  Grid_mustBeValueByRow_second_loop;
     Grid_mustBeValueByRow_true:
-        ld.w r1, #-1;
-        jmp  Grid_mustBeValueByRow_return;
-    Grid_mustBeValueByRow_false:    
-        ld.b r1, #0;
-    Grid_mustBeValueByRow_return:
-        test r1;
-        bne  Grid_mustBeValue_return_hack;
+        jmp  Grid_mustBeValue_return_hack;
+    Grid_mustBeValueByRow_false:  
         ld.w r1, (sp+6);
         ld.b r3, (sp+2);
         add  r3, r3;
