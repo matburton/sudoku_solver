@@ -1,8 +1,6 @@
 
 RAM_END equ 0x8000;
 
-include "asm/Leds_startup.asm";
-
 org 0;
         jmp  start;
     
@@ -22,8 +20,9 @@ start:
         st.b solutionCount, r0;          // for reset
         ld.w r0, #RAM_END - GRID_SIZE;
         move sp, r0;
-        move r1, r0;
-        push r1;
+        push r0;
+        jsr  Leds_renderStartupLeds;
+        ld.w r1, (sp+0);
         jsr  Input_copyUserHintsToGrid;
         ld.w r1, (sp+0);
         jsr  Solver_solve;

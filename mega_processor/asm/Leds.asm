@@ -1,19 +1,44 @@
 
+Leds_renderStartupLeds:
+        ld.w r2, #LED_START;
+        ld.w r3, #startupLeds;
+        ld.b r1, #LED_SIZE / 2 / 8;
+    Leds_renderStartupLeds_loop:
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        ld.w r0, (r3++);
+        st.w (r2++), r0;
+        dec  r1;
+        bne  Leds_renderStartupLeds_loop;
+        ret;
+
 // function void addGridRenderDisable()
 //
 Leds_addGridRenderDisable:
-    ld.b r0, gridRenderDisableCount;
-    inc  r0;
-    st.b gridRenderDisableCount, r0;
-    ret;
+        ld.b r0, gridRenderDisableCount;
+        inc  r0;
+        st.b gridRenderDisableCount, r0;
+        ret;
 
 // function void undoGridRenderDisable()
 //
 Leds_undoGridRenderDisable:
-    ld.b r0, gridRenderDisableCount;
-    dec  r0;
-    st.b gridRenderDisableCount, r0;
-    ret;
+        ld.b r0, gridRenderDisableCount;
+        dec  r0;
+        st.b gridRenderDisableCount, r0;
+        ret;
 
 // function void renderGrid(Array grid)
 //    
