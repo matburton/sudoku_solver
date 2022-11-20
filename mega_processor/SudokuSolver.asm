@@ -3,18 +3,21 @@ RAM_END equ 0x8000;
 
 org 0;
         jmp  start;
+        nop;
     
 org 0x4;
         reti;
+        ds 3, 0xFF;
     
 org 0x8;
         jmp  $;
+        nop;
     
 org 0xC;
         jmp  $;
 
 start:
-        ld.b r0, #0;                     // for reset
+        clr  r0;                         // for reset
         st.w refineStackReturn, r0;      // for reset
         st.b gridRenderDisableCount, r0; // for reset
         st.b solutionCount, r0;          // for reset

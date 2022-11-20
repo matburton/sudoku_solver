@@ -164,7 +164,7 @@ Solver_removePossibilityAt:
         st.b (r2), r1;
         move r1, r0;
         ld.b r0, #1;
-        ld.b r2, #0;
+        clr  r2;
     Grid_calculateValue_loop:
         add  r0, r0;
         inc  r2;
@@ -225,7 +225,7 @@ Solver_setValueAt:
         add  r3, r3;
         add  r3, r3;
         add  r3, r1;
-        ld.b r0, #0;
+        clr  r0;
         ld.b r2, (sp+4);
         bset r0, r2;
         st.w (r3), r0;
@@ -276,11 +276,11 @@ Solver_setHintAt:
 // function int getDeducedValueAt(Array grid, int x, int y)
 //
     Solver_getDeducedValueAt_early_zero:
-        ld.b r1, #0;
+        clr r1;
         ret;
     Solver_getDeducedValueAt_return_zero:
         addi sp, #10;
-        ld.b r1, #0;
+        clr r1;
         ret;
 Solver_getDeducedValueAt:
         ld.b r2, (sp+2);
@@ -318,7 +318,7 @@ Solver_getDeducedValueAt:
         st.b (sp+4), r2;       
         push r1;
         ld.b r2, (sp+6);
-        ld.b r0, #0;
+        clr  r0;
         bset r0, r2;
         push r0;
         ld.b r0, (sp+6);
@@ -463,7 +463,7 @@ Solver_getDeducedValueAt:
 //
 Solver_refineGrid:
         push r1;
-        ld.b r0, #0;
+        clr  r0;
         move r2, r0;
         push r0;
         push r2;
@@ -652,7 +652,7 @@ Solver_solve:
         ld.w r1, (sp+0);
         jsr  Solver_refineGrid;
     Solver_solve_refine_return:
-        ld.b r0, #0;
+        clr  r0;
         st.w refineStackReturn, r0;
         ld.w r1, (sp+0);
         jsr  Grid_isImpossible;

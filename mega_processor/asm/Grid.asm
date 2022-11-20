@@ -62,7 +62,7 @@ Grid_isImpossible:
 Grid_isComplete:
         ld.w r2, #GRID_INCOMPLETE_SQUARE_COUNT_OFFSET;
         add  r2, r1;
-        ld.b r1, #0;
+        clr  r1;
         ld.b r0, (r2);
         bne  Grid_isComplete_return;
         dec  r1;
