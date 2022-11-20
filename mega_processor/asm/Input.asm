@@ -57,10 +57,7 @@ Input_copyUserHintsToGrid:
 //
 Input_acceptUserHints:
         push r1;
-        jsr  Leds_renderGrid;       // for reset
-        jsr  Input_clearUnderlines; // for reset
-        ld.w r1, #messageInput;
-        jsr  Leds_renderThisMessage;
+        andi ps, #0b01111111;
         addi sp, #-4;
         ld.b r1, #4;
         push r1;
@@ -225,7 +222,18 @@ Input_deltaValueAt:
         move r0, r2;
     Input_deltaValueAt_skip_positive_wrap:
         st.b (r3), r0;
+        buc  Input_deltaValueAt_goMessage;
         jmp  Leds_renderGridLine;
+    Input_deltaValueAt_goMessage:
+        ld.w r0, (sp+2);
+        push r0;
+        jsr  Leds_renderGridLine;
+        addi sp, #2;
+        ld.w r1, #messageGo;
+        jsr  Leds_renderThisMessage;
+        ori  ps, #0b10000000;
+    Input_deltaValueAt_return:
+        ret;
         
 // function void underline(int x, int y)
 //
