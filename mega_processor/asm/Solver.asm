@@ -498,10 +498,12 @@ Solver_refineGrid:
         beq  Solver_refineGrid_no_reset_x;
         btst r2, #3;
         beq  Solver_refineGrid_no_reset_y;
-        ld.w r2, #-1;
+        clr  r2;
+        dec  r2;
     Solver_refineGrid_no_reset_y:
         inc  r2;
-        ld.w r0, #-1;
+        clr  r0;
+        dec  r0;
     Solver_refineGrid_no_reset_x:
         inc  r0;
         ld.b r3, (sp+2);

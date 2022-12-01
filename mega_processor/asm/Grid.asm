@@ -5,12 +5,6 @@ SQUARE_SIZE  equ 4;
 
 GRID_INCOMPLETE_SQUARE_COUNT_OFFSET equ GRID_SIZE - 2;
 GRID_IMPOSSIBLE_FLAG_OFFSET         equ GRID_SIZE - 1;
-
-// function int gridByteSize()
-//
-Grid_gridByteSize:
-        ld.w r1, #GRID_SIZE;
-        ret;
         
 // function Array initialise(Array grid)
 //
