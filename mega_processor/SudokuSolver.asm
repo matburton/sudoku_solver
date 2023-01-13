@@ -41,11 +41,13 @@ start:
 include "asm/Grid.asm";
 include "asm/Solver.asm";
 include "asm/Leds.asm";
+include "asm/Leds_v2.asm";
 include "asm/Input.asm";
 
 include "asm/Grid_data.asm";
 include "asm/Solver_data.asm";
 include "asm/Leds_data.asm";
+include "asm/Leds_v2_data.asm";
 include "asm/Input_data.asm";
 
 maxStackAddress:
