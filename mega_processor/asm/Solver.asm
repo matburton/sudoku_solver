@@ -159,24 +159,22 @@ Solver_removePossibilityAt:
         ld.b r1, (r2);
         dec  r1;
         st.b (r2), r1;
-        move r1, r0;
-        ld.b r0, #1;
-        clr  r2;
+        ld.b r2, #1;
+        clr  r1;
     Grid_calculateValue_loop:
-        add  r0, r0;
-        inc  r2;
-        cmp  r1, r0;
+        add  r2, r2;
+        inc  r1;
+        cmp  r0, r2;
         beq  Grid_calculateValue_return;
-        add  r0, r0;
-        inc  r2;
-        cmp  r1, r0;
+        add  r2, r2;
+        inc  r1;
+        cmp  r0, r2;
         beq  Grid_calculateValue_return;
-        add  r0, r0;
-        inc  r2;
-        cmp  r1, r0;
+        add  r2, r2;
+        inc  r1;
+        cmp  r0, r2;
         bne  Grid_calculateValue_loop;
     Grid_calculateValue_return:
-        move r1, r2;
         dec  r3;
         st.b (r3), r1;
         push r1;
