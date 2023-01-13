@@ -62,12 +62,6 @@ Leds_renderGrid:
 //
 Leds_renderGridLine:
 
-        ld.b r0, gridRenderDisableCount;
-        beq  Leds_renderGridLine_setup;
-        ret;
-        
-    Leds_renderGridLine_setup:
-
         move r3, r1;
         ld.b r0, (sp+2);
         add  r0, r0;

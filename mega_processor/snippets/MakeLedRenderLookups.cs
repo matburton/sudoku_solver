@@ -15,7 +15,7 @@ internal sealed class MakeLedRenderLookups
 
         stringBuilder.AppendLine("xToDigitLookupOffset:");
 
-        stringBuilder.AppendLine($"    dw {string.Join(", ", Enumerable.Range(0, 9).Select(x => x * 92))};\n");
+        stringBuilder.AppendLine($"    dw {string.Join(", ", Enumerable.Range(0, 9).Select(x => x * 90))};\n");
 
         stringBuilder.AppendLine("digitLookup: // Left side of 'screen'");
 
@@ -25,34 +25,26 @@ internal sealed class MakeLedRenderLookups
 
             if (x > 2) shift += 2;
 
-            stringBuilder.AppendLine($"    dw   0b{ToBinary(~(0b11 << shift))}; // Mask @ x = {x}");
-
             foreach (var value in Enumerable.Range(1, 9))
             {
-                var digitBitmap = DitgitBitmaps[value - 1];
+                var digitBitmap = DigitBitmaps[value - 1];
 
-                stringBuilder.AppendLine($"    dw   0b{ToBinary(digitBitmap[0] << shift)}; // Value {value} @ {x}");
-
-                foreach (var lineIndex in Enumerable.Range(1, 4))
+                foreach (var lineIndex in Enumerable.Range(0, 5))
                 {
-                    stringBuilder.AppendLine($"    dw   0b{ToBinary(digitBitmap[lineIndex] << shift)};");
+                    stringBuilder.AppendLine($"    dw   0b{ToBinary(digitBitmap[lineIndex] << shift)}; // Value {value} @ {x} line {lineIndex + 1}");
                 }
             }
         }
 
         stringBuilder.AppendLine("    // Middle of 'screen'");
 
-        stringBuilder.AppendLine($"    dw   0b{ToBinary(~(0b11 << 7))}; // Mask @ x = 4");
-
         foreach (var value in Enumerable.Range(1, 9))
         {
-            var digitBitmap = DitgitBitmaps[value - 1];
+            var digitBitmap = DigitBitmaps[value - 1];
 
-            stringBuilder.AppendLine($"    dw   0b{ToBinary(digitBitmap[0] << 7)}; // Value {value} @ 4");
-
-            foreach (var lineIndex in Enumerable.Range(1, 4))
+            foreach (var lineIndex in Enumerable.Range(0, 5))
             {
-                stringBuilder.AppendLine($"    dw   0b{ToBinary(digitBitmap[lineIndex] << 7)};");
+                stringBuilder.AppendLine($"    dw   0b{ToBinary(digitBitmap[lineIndex] << 7)}; // Value {value} @ 4 line {lineIndex + 1}");
             }
         }
 
@@ -64,17 +56,13 @@ internal sealed class MakeLedRenderLookups
 
             if (x > 5) shift += 2;
 
-            stringBuilder.AppendLine($"    dw   0b{ToBinary(~(0b11 << shift))}; // Mask @ x = {x}");
-
             foreach (var value in Enumerable.Range(1, 9))
             {
-                var digitBitmap = DitgitBitmaps[value - 1];
+                var digitBitmap = DigitBitmaps[value - 1];
 
-                stringBuilder.AppendLine($"    dw   0b{ToBinary(digitBitmap[0] << shift)}; // Value {value} @ {x}");
-
-                foreach (var lineIndex in Enumerable.Range(1, 4))
+                foreach (var lineIndex in Enumerable.Range(0, 5))
                 {
-                    stringBuilder.AppendLine($"    dw   0b{ToBinary(digitBitmap[lineIndex] << shift)};");
+                    stringBuilder.AppendLine($"    dw   0b{ToBinary(digitBitmap[lineIndex] << shift)}; // Value {value} @ {x} line {lineIndex + 1}");
                 }
             }
         }
@@ -82,7 +70,7 @@ internal sealed class MakeLedRenderLookups
         Console.WriteLine(stringBuilder);
     }
 
-    private static readonly IReadOnlyList<IReadOnlyList<int>> DitgitBitmaps = new []
+    private static readonly IReadOnlyList<IReadOnlyList<int>> DigitBitmaps = new []
     {
         new [] { 0b10,
                  0b10,
