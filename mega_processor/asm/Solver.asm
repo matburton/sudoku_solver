@@ -603,7 +603,7 @@ Solver_splitGridAt:
         ld.w r1, (sp+7);
         jsr  Solver_solve;
         ld.w r1, (sp+5);
-        jsr  Leds_renderGrid;
+        jsr  Leds_v2_renderGrid;
         move r0, sp;
         ld.w r2, #GRID_SIZE + 9;
         add  r0, r2;
