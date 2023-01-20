@@ -7,15 +7,34 @@ internal sealed class OriginalSolver : ISolver
 {
     public Grid Solve(Grid puzzle)
     {
-        throw new NotImplementedException();
+        _disableRender = true;
+
+        var grid = new G();
+
+        for (var y = 8; y > 0; --y)
+        for (var x = 8; x > 0; --x)
+        {
+            if (puzzle.Values[y][x] is {} value)
+            {
+                SetHintAt(grid, value, x, y);
+            }
+        }
+
+        _disableRender = false;
+
+        // TODO
+
+        return new (grid.ToValues());
     }
     
     private void SetHintAt(G grid, int value, int x, int y)
     {
-        var possibilities = grid.SquareBits[x, y];
+        var possibilities = grid.Squares[x, y].Possibilities;
 
         if (!BitClear(ref possibilities, value))
         {
+            grid.Squares[x, y].Value = value;
+
             grid.Impossible = true;
         }
         else if (possibilities is not 0)
@@ -28,7 +47,11 @@ internal sealed class OriginalSolver : ISolver
 
     private void SetValueAt(G grid, int value, int x, int y)
     {
-        throw new NotImplementedException();
+        SetSquareValue(grid, value, x, y);
+
+        Render(grid);
+
+        RemovePossibilitiesRelatedTo(grid, value, x, y);
     }
 
     private void RemovePossibilityAt(G grid, int value, int x, int y)
@@ -62,7 +85,13 @@ internal sealed class OriginalSolver : ISolver
     {
         --grid.IncompleteSquares;
 
-        grid.SquareBits[x, y] = 1 << value; // Uses bset
+        var square = grid.Squares[x, y];
+
+        square.Possibilities = 1 << value; // Uses bset
+
+        square.PossibilityCount = 1;
+
+        square.Value = value;
 
         ++Counters.SquareHits;
     }
@@ -74,9 +103,7 @@ internal sealed class OriginalSolver : ISolver
 
     private int GetAPossibilityAt(G grid, int x, int y)
     {
-        var possibilities = grid.SquareBits[x, y];
-
-        ++Counters.SquareHits;
+        var possibilities = grid.Squares[x, y].Possibilities;
 
         var value = 9;
 
@@ -87,6 +114,8 @@ internal sealed class OriginalSolver : ISolver
                 break;
             }
         }
+
+        ++Counters.SquareHits;
 
         return value;
     }
@@ -144,6 +173,11 @@ internal sealed class OriginalSolver : ISolver
         return value;
     }
 
+    private void Render(G grid)
+    {
+        if (_disableRender) OnGridChange(new (grid.ToValues()));
+    }
+
     public Counters Counters => _counters with {};
 
     public event Action<Grid> OnGridChange =  delegate {};
@@ -155,23 +189,57 @@ internal sealed class OriginalSolver : ISolver
             for (var x = 0; x < 9; ++x)
             for (var y = 0; y < 9; ++y)
             {
-                SquareBits[x, y] = 0b11_11111110;
+                Squares[x, y] = new () { Possibilities    = 0b11_11111110,
+                                         PossibilityCount = 9,
+                                         Value            = 0 };
             }
         }
 
-        public int[,] SquareBits { get; init; } = new int[9, 9];
+        public Square[,] Squares { get; private set; } = new Square[9, 9];
 
         public int IncompleteSquares { get; set; } = 81;
 
         public bool Impossible { get; set; }
 
-        public G Clone() => new ()
-            { SquareBits        = (int[,])SquareBits.Clone(),
-              IncompleteSquares = IncompleteSquares,
-              Impossible        = Impossible };
+        public G Clone()
+        {
+            var grid = (G)MemberwiseClone();
+            
+            grid.Squares = new Square[9, 9];
+
+            for (var x = 0; x < 9; ++x)
+            for (var y = 0; y < 9; ++y)
+            {
+                grid.Squares[x, y] = Squares[x, y] with {};
+            }
+            
+            return grid;
+        }
+
+        public int?[][] ToValues()
+        {
+            int?[] FromRow(int y) => Enumerable
+                                    .Range(0, 9)
+                                    .Select(x => Squares[x, y].Value)
+                                    .Select(v => v is 0 ? (int?)null : v)
+                                    .ToArray();
+
+            return Enumerable.Range(0, 9).Select(FromRow).ToArray();
+        }
     }
 
-    public sealed class ImpossibleException : Exception {}
+    private sealed record Square
+    {
+        public int Possibilities { get; set; }
+
+        public int Value { get; set; }
+
+        public int PossibilityCount { get; set; }
+    }
+
+    public sealed class EarlyOutException : Exception {}
 
     private readonly Counters _counters = new ();
+
+    private bool _disableRender;
 }
