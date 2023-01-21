@@ -31,6 +31,8 @@ internal sealed class OriginalSolver : ISolver
     {
         var possibilities = grid.Squares[x, y].Possibilities;
 
+        ++Counters.SquareHits;
+
         if (!BitClear(ref possibilities, value))
         {
             grid.Squares[x, y].Value = value;
@@ -41,10 +43,10 @@ internal sealed class OriginalSolver : ISolver
         {
             SetValueAt(grid, value, x, y);
         }
-
-        ++Counters.SquareHits;
     }
 
+    // Assumes the square has the value and had others
+    //
     private void SetValueAt(G grid, int value, int x, int y)
     {
         SetSquareValue(grid, value, x, y);
@@ -79,21 +81,21 @@ internal sealed class OriginalSolver : ISolver
         throw new NotImplementedException();
     }
 
-    /// <remarks>Assumes the square has the value and had others</remarks>
-    ///
+    // Assumes the square has the value and had others
+    //
     private void SetSquareValue(G grid, int value, int x, int y)
     {
         --grid.IncompleteSquares;
 
         var square = grid.Squares[x, y];
 
+        ++Counters.SquareHits;
+
         square.Possibilities = 1 << value; // Uses bset
 
         square.PossibilityCount = 1;
 
         square.Value = value;
-
-        ++Counters.SquareHits;
     }
 
     private void RefineGrid(G grid)
@@ -105,6 +107,8 @@ internal sealed class OriginalSolver : ISolver
     {
         var possibilities = grid.Squares[x, y].Possibilities;
 
+        ++Counters.SquareHits;
+
         var value = 9;
 
         for (; value > 0; --value)
@@ -114,8 +118,6 @@ internal sealed class OriginalSolver : ISolver
                 break;
             }
         }
-
-        ++Counters.SquareHits;
 
         return value;
     }
@@ -137,17 +139,69 @@ internal sealed class OriginalSolver : ISolver
 
     private bool MustBeValue(G grid, int value, int x, int y)
     {
-        throw new NotImplementedException();
+        var mask = 1 << value; // Uses bset
+
+        return MustBeValueByRow   (grid, mask, x, y)
+            || MustBeValueByColumn(grid, mask, x, y)
+            || MustBeValueBySector(grid, mask, x, y);
     }
 
     private bool MustBeValueByRow(G grid, int mask, int x, int y)
     {
-        throw new NotImplementedException();
+        var index = 0; // In reality we use pointer bumping
+
+        for (var counter = x; counter > 0; --counter)
+        {
+            ++Counters.SquareHits;
+
+            if ((grid.Squares[index++, y].Possibilities & mask) is not 0)
+            {
+                return false;
+            }
+        }
+
+        ++index;
+
+        for (var counter = 8 - x; counter > 0; --counter)
+        {
+            ++Counters.SquareHits;
+
+            if ((grid.Squares[index++, y].Possibilities & mask) is not 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private bool MustBeValueByColumn(G grid, int mask, int x, int y)
     {
-        throw new NotImplementedException();
+        var index = 0; // In reality we use pointer bumping
+
+        for (var counter = y; counter > 0; --counter)
+        {
+            ++Counters.SquareHits;
+
+            if ((grid.Squares[x, index++].Possibilities & mask) is not 0)
+            {
+                return false;
+            }
+        }
+
+        ++index;
+
+        for (var counter = 8 - y; counter > 0; --counter)
+        {
+            ++Counters.SquareHits;
+
+            if ((grid.Squares[x, index++].Possibilities & mask) is not 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private bool MustBeValueBySector(G grid, int mask, int x, int y)
@@ -155,8 +209,8 @@ internal sealed class OriginalSolver : ISolver
         throw new NotImplementedException();
     }
 
-    /// <remarks>Assumes there is a single bit set</remarks>
-    ///
+    // Assumes there is a single bit set
+    //
     private static int CalculateValue(short possibilities)
     {
         var mask = 1;
