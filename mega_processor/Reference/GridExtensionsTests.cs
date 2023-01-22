@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Megaprocessor.Reference.SudokuSolver;
 
-internal class GridExtensionTests
+internal class GridExtensionsTests
 {
     [Test]
     public void ToAsciiArt_is_correct()

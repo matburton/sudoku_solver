@@ -58,27 +58,85 @@ internal sealed class OriginalSolver : ISolver
 
     private void RemovePossibilityAt(G grid, int value, int x, int y)
     {
-        throw new NotImplementedException();
+        ++Counters.SquareHits;
+
+        var square = grid.Squares[x, y];
+
+        var possibilities = square.Possibilities;
+
+        if (!BitClear(ref possibilities, value)) return;
+
+        square.Possibilities = possibilities;
+
+        if (square.PossibilityCount is 1)
+        {
+            grid.Impossible = true;
+
+            if (_earlyOutThrow) throw new EarlyOutException();
+
+            return;
+        }
+
+        --square.PossibilityCount;
+
+        if (square.PossibilityCount is not 1) return;
+
+        --grid.IncompleteSquares;
+
+        square.Value = CalculateValue(square.Possibilities);
+
+        RefineGrid(grid);
+
+        RemovePossibilitiesRelatedTo(grid, square.Value, x, y);
     }
 
     private void RemovePossibilitiesRelatedTo(G grid, int value, int x, int y)
     {
-        throw new NotImplementedException();
+        RemovePossibilitiesRelatedToRow   (grid, value, x, y);
+        RemovePossibilitiesRelatedToColumn(grid, value, x, y);
+        RemovePossibilitiesRelatedToSector(grid, value, x, y);
     }
 
     private void RemovePossibilitiesRelatedToRow(G grid, int value, int x, int y)
     {
-        throw new NotImplementedException();
+        for (var index = x - 1; index >= 0; --index)
+        {
+            RemovePossibilityAt(grid, value, index, y);
+        }
+
+        for (var index = 8; index > x; --index)
+        {
+            RemovePossibilityAt(grid, value, index, y);
+        }
     }
 
     private void RemovePossibilitiesRelatedToColumn(G grid, int value, int x, int y)
     {
-        throw new NotImplementedException();
+        for (var index = y - 1; index >= 0; --index)
+        {
+            RemovePossibilityAt(grid, value, x, index);
+        }
+
+        for (var index = 8; index > y; --index)
+        {
+            RemovePossibilityAt(grid, value, x, index);
+        }
     }
+
+    private static readonly IReadOnlyList<int> SectorOtherCoordLookupFromCoord =
+        new [] { 1, 2, 0, 2, 0, 1, 4, 5, 3, 5, 3, 4, 7, 8, 6, 8, 6, 7 };
 
     private void RemovePossibilitiesRelatedToSector(G grid, int value, int x, int y)
     {
-        throw new NotImplementedException();
+        var otherXA = SectorOtherCoordLookupFromCoord[x + x];
+        var otherXB = SectorOtherCoordLookupFromCoord[x + x + 1]; // Pointer bump
+        var otherYA = SectorOtherCoordLookupFromCoord[y + y];
+        var otherYB = SectorOtherCoordLookupFromCoord[y + y + 1]; // Pointer bump
+
+        RemovePossibilityAt(grid, value, otherXB, otherYB);
+        RemovePossibilityAt(grid, value, otherXB, otherYA);
+        RemovePossibilityAt(grid, value, otherXA, otherYA);
+        RemovePossibilityAt(grid, value, otherXA, otherYB);
     }
 
     // Assumes the square has the value and had others
@@ -132,7 +190,9 @@ internal sealed class OriginalSolver : ISolver
         throw new NotImplementedException();
     }
 
-    private void GetDeducedValueAt(G grid, int x, int y)
+    // Returns zero if no value could be deduced
+    //
+    private int GetDeducedValueAt(G grid, int x, int y)
     {
         throw new NotImplementedException();
     }
@@ -206,12 +266,32 @@ internal sealed class OriginalSolver : ISolver
 
     private bool MustBeValueBySector(G grid, int mask, int x, int y)
     {
-        throw new NotImplementedException();
+        // In reality we compute the squares index from x and y and then use
+        // that offset vs a pair of lookup tables to get the negative offset
+        // from the index to the index of the first square in the sector
+
+        var startX = (x / 3) * 3;
+        var startY = (x / y) * 3;
+
+        for (var yIndex = startY; yIndex < startY + 3; ++yIndex) // In reality we
+        for (var xIndex = startX; xIndex < startX + 3; ++xIndex) // pointer bump
+        {
+            if (xIndex == x && yIndex == y) continue;
+
+            ++Counters.SquareHits;
+
+            if ((grid.Squares[xIndex, yIndex].Possibilities & mask) is not 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // Assumes there is a single bit set
     //
-    private static int CalculateValue(short possibilities)
+    private static int CalculateValue(int possibilities)
     {
         var mask = 1;
 
@@ -292,6 +372,8 @@ internal sealed class OriginalSolver : ISolver
     }
 
     public sealed class EarlyOutException : Exception {}
+
+    private bool _earlyOutThrow;
 
     private readonly Counters _counters = new ();
 
