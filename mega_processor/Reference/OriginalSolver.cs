@@ -194,7 +194,20 @@ internal sealed class OriginalSolver : ISolver
     //
     private int GetDeducedValueAt(G grid, int x, int y)
     {
-        throw new NotImplementedException();
+        ++Counters.SquareHits;
+
+        var square = grid.Squares[x, y];
+
+        if (square.PossibilityCount < 2) return 0;
+
+        for (var value = 9; value > 0; --value)
+        {
+            if (!BitTest(square.Possibilities, value)) continue;
+
+            if (MustBeValue(grid, value, x, y)) return value;
+        }
+
+        return 0;
     }
 
     private bool MustBeValue(G grid, int value, int x, int y)
