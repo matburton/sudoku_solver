@@ -11,8 +11,8 @@ internal sealed class OriginalSolver : ISolver
 
         var grid = new G();
 
-        for (var y = 8; y > 0; --y)
-        for (var x = 8; x > 0; --x)
+        for (var y = 8; y >= 0; --y)
+        for (var x = 8; x >= 0; --x)
         {
             if (puzzle.Values[y][x] is {} value)
             {
@@ -163,7 +163,34 @@ internal sealed class OriginalSolver : ISolver
 
     private void RefineGrid(G grid)
     {
-        throw new NotImplementedException();
+        var last = (x: 0, y: 0); // Really a pointer
+
+        var x = 0;
+        var y = 0;
+
+        do
+        {
+            if (GetDeducedValueAt(grid, x, y) is {} value and > 0)
+            {
+                SetValueAt(grid, value, x, y);
+            }
+
+            if (grid.IncompleteSquares is 0) return;
+
+            if (grid.Impossible) return;
+
+            if (BitTest(x, 3))
+            {
+                if (BitTest(y, 3)) y = -1;
+
+                x = -1;
+
+                ++y;
+            }
+
+            ++x;
+        }
+        while ((x, y) != last); // Really a pointer comparison
     }
 
     private int GetAPossibilityAt(G grid, int x, int y)
@@ -187,7 +214,28 @@ internal sealed class OriginalSolver : ISolver
 
     private void SpitGrid(G grid)
     {
-        throw new NotImplementedException();
+        var best = (x: 0, y: 0, possibilityCount: 10); // x and y don't get initialized
+
+        for (var y = 8; y >= 0; --y)
+        for (var x = 8; x >= 0; --x)
+        {
+            ++Counters.SquareHits;
+
+            var possibilityCount = grid.Squares[x, y].PossibilityCount;
+
+            if (possibilityCount - best.possibilityCount > 0) continue;
+
+            if (possibilityCount is 2)
+            {
+                SpitGridAt(grid, x, y);
+
+                return;
+            }
+
+            best = (x, y, possibilityCount);
+        }
+
+        SpitGridAt(grid, best.x, best.y);
     }
 
     private void SpitGridAt(G grid, int x, int y)
