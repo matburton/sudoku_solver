@@ -26,6 +26,11 @@ internal sealed class OriginalSolver : ISolver
 
         return new (grid.ToValues());
     }
+
+    private int Solve(G grid)
+    {
+        throw new NotImplementedException();
+    }
     
     private void SetHintAt(G grid, int value, int x, int y)
     {
@@ -187,7 +192,32 @@ internal sealed class OriginalSolver : ISolver
 
     private void SpitGridAt(G grid, int x, int y)
     {
-        throw new NotImplementedException();
+        // We first check if the stack is getting close to the code/data
+
+        var possibility = GetAPossibilityAt(grid, x, y);
+
+        var cloneGrid = new G();
+
+        _disableRender = true;
+
+        RemovePossibilityAt(grid, possibility, x, y);
+
+        _disableRender = false;
+
+        if (grid.Impossible)
+        {
+            cloneGrid.CopyTo(grid);
+
+            SetValueAt(grid, possibility, x, y);
+
+            return;
+        }
+
+        SetValueAt(cloneGrid, possibility, x, y);
+
+        Solve(cloneGrid);
+
+        Render(grid);
     }
 
     // Returns zero if no value could be deduced
@@ -333,8 +363,8 @@ internal sealed class OriginalSolver : ISolver
     {
         public G()
         {
-            for (var x = 0; x < 9; ++x)
-            for (var y = 0; y < 9; ++y)
+            for (var y = 0; y < 9; ++y) // In reality this just overwrites the
+            for (var x = 0; x < 9; ++x) // block of memory with constant words
             {
                 Squares[x, y] = new () { Possibilities    = 0b11_11111110,
                                          PossibilityCount = 9,
@@ -348,19 +378,17 @@ internal sealed class OriginalSolver : ISolver
 
         public bool Impossible { get; set; }
 
-        public G Clone()
+        public void CopyTo(G target)
         {
-            var grid = (G)MemberwiseClone();
-            
-            grid.Squares = new Square[9, 9];
-
-            for (var x = 0; x < 9; ++x)
-            for (var y = 0; y < 9; ++y)
+            for (var y = 0; y < 9; ++y) // In reality this just copies the
+            for (var x = 0; x < 9; ++x) // entire block of memory as words
             {
-                grid.Squares[x, y] = Squares[x, y] with {};
+                target.Squares[x, y] = Squares[x, y] with {};
             }
-            
-            return grid;
+
+            target.IncompleteSquares = IncompleteSquares;
+
+            target.Impossible = Impossible;
         }
 
         public int?[][] ToValues()
