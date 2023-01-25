@@ -42,6 +42,31 @@ internal sealed class OriginalSolverTests
     }
 
     [Test]
+    public void Can_solve_puzzle_of_doom()
+    {
+        var solver = new OriginalSolver();
+
+        var grid = Parser.FromLine(  ".9...37......5...4..12...6..45.6.....3..."
+                                   + "4...2..7..........93....6....1.7...8...2");
+
+        solver.OnGridChange += g => grid = g;
+
+        solver.Solve(grid);
+
+        Assert.That(grid.Line,
+                    Is.EqualTo("69284375187315692445129786314596823793752"
+                               + "4186268731495524619378386472519719385642"));
+
+        Assert.That(solver.Counters.Solutions, Is.EqualTo(1));
+
+        Assert.That(solver.Counters.ImpossibleGrids,
+                    Is.LessThanOrEqualTo(236));
+
+        Assert.That(solver.Counters.SquareHits,
+                    Is.LessThanOrEqualTo(112_884));
+    }
+
+    [Test]
     public void Can_solve_blank_grid()
     {
         var solver = new OriginalSolver();
