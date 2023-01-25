@@ -11,8 +11,18 @@ internal sealed class OriginalSolverTests
     {
         var solver = new OriginalSolver();
 
-        Assert.That(solver.Solve(Parser.FromLine(puzzleLine)).Line,
-                    Is.EqualTo(solutionLine));
+        var grid = Parser.FromLine(puzzleLine);
+
+        solver.OnGridChange += g =>
+        {
+            Assert.That(g.Line, Is.Not.EqualTo(grid.Line));
+
+            grid = g;
+        };
+
+        solver.Solve(grid);
+
+        Assert.That(grid.Line, Is.EqualTo(solutionLine));
 
         Assert.That(solver.Counters.Solutions, Is.EqualTo(1));
     }

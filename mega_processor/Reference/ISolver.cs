@@ -3,7 +3,11 @@ namespace Megaprocessor.Reference.SudokuSolver;
 
 internal interface ISolver
 {
-    public Grid Solve(Grid puzzle);
+    /// <remarks>Subscribe to OnGridChange to get the final
+    ///          output, which should normally either be the
+    ///          first solution found or an impossible grid</remarks>
+    ///
+    public void Solve(Grid puzzle);
 
     public Counters Counters { get; }
 

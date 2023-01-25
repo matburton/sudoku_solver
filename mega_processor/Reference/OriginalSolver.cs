@@ -5,7 +5,7 @@ using static BitInstructions;
 
 internal sealed class OriginalSolver : ISolver
 {
-    public Grid Solve(Grid puzzle)
+    public void Solve(Grid puzzle)
     {
         _disableRender = true;
 
@@ -22,21 +22,47 @@ internal sealed class OriginalSolver : ISolver
 
         _disableRender = false;
 
-        // TODO
-
-        return new (grid.ToValues());
+        Solve(grid);
     }
 
     private int Solve(G grid)
     {
-        throw new NotImplementedException();
+        if (grid.Impossible) return _counters.Solutions;
+
+        if (grid.IncompleteSquares is 0) goto Complete;
+
+        do
+        {
+            _earlyOutThrow = true;
+
+            try
+            {
+                RefineGrid(grid);
+            }
+            catch (EarlyOutException) {}
+            finally { _earlyOutThrow = false; }
+
+            if (grid.Impossible) return _counters.Solutions;
+
+            if (grid.IncompleteSquares is 0) goto Complete;
+
+            SpitGrid(grid);
+        }
+        while (_counters.Solutions < 2);
+
+        return _counters.Solutions;
+
+    Complete:
+        if (_counters.Solutions is 0) _disableRender = true;
+
+        return ++_counters.Solutions;
     }
     
     private void SetHintAt(G grid, int value, int x, int y)
     {
         var possibilities = grid.Squares[x, y].Possibilities;
 
-        ++Counters.SquareHits;
+        ++_counters.SquareHits;
 
         if (!BitClear(ref possibilities, value))
         {
@@ -63,7 +89,7 @@ internal sealed class OriginalSolver : ISolver
 
     private void RemovePossibilityAt(G grid, int value, int x, int y)
     {
-        ++Counters.SquareHits;
+        ++_counters.SquareHits;
 
         var square = grid.Squares[x, y];
 
@@ -90,7 +116,7 @@ internal sealed class OriginalSolver : ISolver
 
         square.Value = CalculateValue(square.Possibilities);
 
-        RefineGrid(grid);
+        Render(grid);
 
         RemovePossibilitiesRelatedTo(grid, square.Value, x, y);
     }
@@ -152,7 +178,7 @@ internal sealed class OriginalSolver : ISolver
 
         var square = grid.Squares[x, y];
 
-        ++Counters.SquareHits;
+        ++_counters.SquareHits;
 
         square.Possibilities = 1 << value; // Uses bset
 
@@ -197,7 +223,7 @@ internal sealed class OriginalSolver : ISolver
     {
         var possibilities = grid.Squares[x, y].Possibilities;
 
-        ++Counters.SquareHits;
+        ++_counters.SquareHits;
 
         var value = 9;
 
@@ -219,11 +245,13 @@ internal sealed class OriginalSolver : ISolver
         for (var y = 8; y >= 0; --y)
         for (var x = 8; x >= 0; --x)
         {
-            ++Counters.SquareHits;
+            ++_counters.SquareHits;
 
             var possibilityCount = grid.Squares[x, y].PossibilityCount;
 
-            if (possibilityCount - best.possibilityCount > 0) continue;
+            if (possibilityCount - best.possibilityCount >= 0) continue;
+
+            if (possibilityCount < 2) continue;
 
             if (possibilityCount is 2)
             {
@@ -245,6 +273,8 @@ internal sealed class OriginalSolver : ISolver
         var possibility = GetAPossibilityAt(grid, x, y);
 
         var cloneGrid = new G();
+
+        grid.CopyTo(cloneGrid);
 
         _disableRender = true;
 
@@ -272,7 +302,7 @@ internal sealed class OriginalSolver : ISolver
     //
     private int GetDeducedValueAt(G grid, int x, int y)
     {
-        ++Counters.SquareHits;
+        ++_counters.SquareHits;
 
         var square = grid.Squares[x, y];
 
@@ -303,7 +333,7 @@ internal sealed class OriginalSolver : ISolver
 
         for (var counter = x; counter > 0; --counter)
         {
-            ++Counters.SquareHits;
+            ++_counters.SquareHits;
 
             if ((grid.Squares[index++, y].Possibilities & mask) is not 0)
             {
@@ -315,7 +345,7 @@ internal sealed class OriginalSolver : ISolver
 
         for (var counter = 8 - x; counter > 0; --counter)
         {
-            ++Counters.SquareHits;
+            ++_counters.SquareHits;
 
             if ((grid.Squares[index++, y].Possibilities & mask) is not 0)
             {
@@ -332,7 +362,7 @@ internal sealed class OriginalSolver : ISolver
 
         for (var counter = y; counter > 0; --counter)
         {
-            ++Counters.SquareHits;
+            ++_counters.SquareHits;
 
             if ((grid.Squares[x, index++].Possibilities & mask) is not 0)
             {
@@ -344,7 +374,7 @@ internal sealed class OriginalSolver : ISolver
 
         for (var counter = 8 - y; counter > 0; --counter)
         {
-            ++Counters.SquareHits;
+            ++_counters.SquareHits;
 
             if ((grid.Squares[x, index++].Possibilities & mask) is not 0)
             {
@@ -362,14 +392,14 @@ internal sealed class OriginalSolver : ISolver
         // from the index to the index of the first square in the sector
 
         var startX = (x / 3) * 3;
-        var startY = (x / y) * 3;
+        var startY = (y / 3) * 3;
 
         for (var yIndex = startY; yIndex < startY + 3; ++yIndex) // In reality we
         for (var xIndex = startX; xIndex < startX + 3; ++xIndex) // pointer bump
         {
             if (xIndex == x && yIndex == y) continue;
 
-            ++Counters.SquareHits;
+            ++_counters.SquareHits;
 
             if ((grid.Squares[xIndex, yIndex].Possibilities & mask) is not 0)
             {
@@ -400,7 +430,7 @@ internal sealed class OriginalSolver : ISolver
 
     private void Render(G grid)
     {
-        if (_disableRender) OnGridChange(new (grid.ToValues()));
+        if (!_disableRender) OnGridChange(new (grid.ToValues()));
     }
 
     public Counters Counters => _counters with {};
