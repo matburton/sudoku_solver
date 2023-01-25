@@ -7,7 +7,7 @@ internal sealed class OriginalSolver : ISolver
 {
     public void Solve(Grid puzzle)
     {
-        _disableRender = true;
+        ++_disableRender;
 
         var grid = new G();
 
@@ -20,7 +20,7 @@ internal sealed class OriginalSolver : ISolver
             }
         }
 
-        _disableRender = false;
+        --_disableRender;
 
         Solve(grid);
     }
@@ -53,7 +53,7 @@ internal sealed class OriginalSolver : ISolver
         return _counters.Solutions;
 
     Complete:
-        if (_counters.Solutions is 0) _disableRender = true;
+        if (_counters.Solutions is 0) ++_disableRender;
 
         return ++_counters.Solutions;
     }
@@ -199,11 +199,13 @@ internal sealed class OriginalSolver : ISolver
             if (GetDeducedValueAt(grid, x, y) is {} value and > 0)
             {
                 SetValueAt(grid, value, x, y);
+
+                if (grid.IncompleteSquares is 0) return;
+
+                if (grid.Impossible) return;
+
+                last = (x, y);
             }
-
-            if (grid.IncompleteSquares is 0) return;
-
-            if (grid.Impossible) return;
 
             if (BitTest(x, 3))
             {
@@ -276,11 +278,11 @@ internal sealed class OriginalSolver : ISolver
 
         grid.CopyTo(cloneGrid);
 
-        _disableRender = true;
+        ++_disableRender;
 
         RemovePossibilityAt(grid, possibility, x, y);
 
-        _disableRender = false;
+        --_disableRender;
 
         if (grid.Impossible)
         {
@@ -414,7 +416,7 @@ internal sealed class OriginalSolver : ISolver
     //
     private static int CalculateValue(int possibilities)
     {
-        var mask = 1;
+        var mask = 2;
 
         var value = 1;
 
@@ -430,7 +432,7 @@ internal sealed class OriginalSolver : ISolver
 
     private void Render(G grid)
     {
-        if (!_disableRender) OnGridChange(new (grid.ToValues()));
+        if (_disableRender is 0) OnGridChange(new (grid.ToValues()));
     }
 
     public Counters Counters => _counters with {};
@@ -496,5 +498,5 @@ internal sealed class OriginalSolver : ISolver
 
     private readonly Counters _counters = new ();
 
-    private bool _disableRender;
+    private int _disableRender;
 }
