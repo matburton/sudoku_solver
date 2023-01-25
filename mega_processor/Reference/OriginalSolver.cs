@@ -69,6 +69,8 @@ internal sealed class OriginalSolver : ISolver
             grid.Squares[x, y].Value = value;
 
             grid.Impossible = true;
+
+            ++_counters.ImpossibleGrids;
         }
         else if (possibilities is not 0)
         {
@@ -102,6 +104,8 @@ internal sealed class OriginalSolver : ISolver
         if (square.PossibilityCount is 1)
         {
             grid.Impossible = true;
+
+            ++_counters.ImpossibleGrids;
 
             if (_earlyOutThrow) throw new EarlyOutException();
 
@@ -293,9 +297,13 @@ internal sealed class OriginalSolver : ISolver
             return;
         }
 
+        ++_counters.GridsInMemory;
+
         SetValueAt(cloneGrid, possibility, x, y);
 
         Solve(cloneGrid);
+
+        --_counters.GridsInMemory;
 
         Render(grid);
     }
@@ -496,7 +504,7 @@ internal sealed class OriginalSolver : ISolver
 
     private bool _earlyOutThrow;
 
-    private readonly Counters _counters = new ();
+    private readonly Counters _counters = new () { GridsInMemory = 1 };
 
     private int _disableRender;
 }
