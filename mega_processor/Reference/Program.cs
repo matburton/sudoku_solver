@@ -2,8 +2,7 @@
 using Megaprocessor.Reference.SudokuSolver;
 
 var harness = new Harness(() => new OriginalSolver(),
-                          () => new SuppressedRefineSolver
-                                        { EnableUponCompleteSquareCount = 10 });
+                          () => new ExtraImpossibleCheckSolver());
 var puzzles = File
     .ReadAllLines(@"../../../../../puzzles/sudoku17/puzzles.txt")
     .Take(20_000)
