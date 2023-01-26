@@ -53,35 +53,46 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
 
     private static string FormatPercent(double v)
     {
-        if (v is < 0.001 and > -0.001) return new string(' ', 7);
+        if (v is < 0.001 and > -0.001 or double.NaN) return new string(' ', 7);
 
         return v > 0 ? $"\u001b[1;31m{v,-7:+0.#%;-0.#%}\u001b[0m"
                      : $"\u001b[1;32m{v,-7:+0.#%;-0.#%}\u001b[0m";
     }
 
-    public IEnumerable<string> GetSparseComparison(int maxValues = 5,
-                                                   int samples   = 20_000,
-                                                   int seed      = 1337)
+    public IEnumerable<string> GetSparseComparison(int minValues,
+                                                   int maxValues,
+                                                   params Grid[] puzzles)
     {
-        var random = new Random(seed);
+        var random = new Random(1337);
 
-        Grid CreateGrid()
+        Grid RemoveHints(Grid grid)
         {
-            var values = new int?[9, 9];
+            var hintCoords = grid.Values
+                .SelectMany((r, y) => r.Select((v, x) => (x, y, v)))
+                .Where(t => t.v is {})
+                .ToList();
 
-            for (var index = 0; index < random.Next(1, maxValues + 1); ++index)
+            var wantedHintCount = random.Next(minValues, maxValues + 1);
+
+            while (hintCoords.Count > wantedHintCount)
             {
-                values[random.Next(0, 9), random.Next(0, 9)] = random.Next(1, 10);
+                hintCoords.RemoveAt(random.Next(0, hintCoords.Count));
             }
 
-            int?[] FromRow(int y) =>
-                Enumerable.Range(0, 9).Select(x => values[x, y]).ToArray();
+            var coordValues = hintCoords.ToDictionary(t => (t.x, t.y), t => t.v);
 
-            return new (Enumerable.Range(0, 9).Select(FromRow).ToArray());
+            int? GetAt(int x, int y) =>
+                coordValues.TryGetValue((x, y), out var v) ? v : null;
+
+            return new
+                (Enumerable.Range(0, 9)
+                           .Select(y => Enumerable.Range(0, 9)
+                                                  .Select(x => GetAt(x, y))
+                                                  .ToArray())
+                           .ToArray());
         }
 
-        return GetPuzzleComparison
-            (Enumerable.Range(0, samples).Select(_ => CreateGrid()).ToArray());
+        return GetPuzzleComparison(puzzles.Select(RemoveHints).ToArray());
     }
 
     private static Deltas ToDeltas(PuzzleCounters[] counters)
@@ -103,7 +114,7 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
 
         var maxGridsInMemory = GetRatio(counters, c => c.MaxGridsInMemory);
 
-        return new (counters.Count(), atSolve, atComplete, maxGridsInMemory);
+        return new (counters.Length, atSolve, atComplete, maxGridsInMemory);
     }
 
     private static SolverCounters Solve(ISolver solver, Grid grid)
@@ -128,7 +139,16 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
 
         solver.OnGridChange += OnGridChange;
 
-        solver.Solve(grid);
+        try
+        {
+            solver.Solve(grid);
+        }
+        catch (Exception exception)
+        {
+            throw new Exception($"Solver {solver} failed on {grid.Line}:"
+                                + $"\r\n\r\n{grid.ToAsciiArt()}\r\n\r\n",
+                                exception);
+        }
 
         solver.OnGridChange -= OnGridChange;
 

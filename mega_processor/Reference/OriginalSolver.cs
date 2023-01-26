@@ -196,7 +196,7 @@ internal class OriginalSolver : ISolver
         square.Value = value;
     }
 
-    private void RefineGrid(G grid)
+    protected virtual void RefineGrid(G grid)
     {
         var last = (x: 0, y: 0); // Really a pointer
 
@@ -465,7 +465,7 @@ internal class OriginalSolver : ISolver
             }
         }
 
-        public Square[,] Squares { get; private set; } = new Square[9, 9];
+        public Square[,] Squares { get; } = new Square[9, 9];
 
         public int IncompleteSquares { get; set; } = 81;
 
