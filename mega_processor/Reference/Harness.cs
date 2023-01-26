@@ -35,7 +35,7 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
               chunkDeltas.Take(index).Sum(c => (double)c.SampleCount)
             / chunkDeltas.Sum(c => (double)c.SampleCount);
 
-        yield return $"Comparison using {puzzles.Length} grids:"
+        yield return $"Comparison using {puzzles.Length:#,#} grids:"
                    + " (easiest @ 0%, hardest @ 100%, negative better)";
 
         for (var index = 0; index < chunkDeltas.Length; ++index)
@@ -43,16 +43,24 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
             var d = chunkDeltas[index];
 
             yield return $"* {ToRatio(index),3:0%} - {ToRatio(index + 1),4:0%}:"
-                       + $" hits@solve: {d.AtSolve.SquareHitsRatio,-7:+0.#%;-0.#%;-}"
-                       + $" hits@end: {d.AtComplete.SquareHitsRatio,-7:+0.#%;-0.#%;-}"
-                       + $" imposs@solve: {d.AtSolve.ImpossibleGridsRatio,-7:+0.#%;-0.#%;-}"
-                       + $" imposs@end: {d.AtComplete.ImpossibleGridsRatio,-7:+0.#%;-0.#%;-}"
-                       + $" maxInMem: {d.MaxGridsInMemoryRatio,-7:+0.#%;-0.#%;-}";
+                       + $" hits@solve: {FormatPercent(d.AtSolve.SquareHitsRatio)}"
+                       + $" hits@end: {FormatPercent(d.AtComplete.SquareHitsRatio)}"
+                       + $" imposs@solve: {FormatPercent(d.AtSolve.ImpossibleGridsRatio)}"
+                       + $" imposs@end: {FormatPercent(d.AtComplete.ImpossibleGridsRatio)}"
+                       + $" maxInMem: {FormatPercent(d.MaxGridsInMemoryRatio)}";
         }
     }
 
+    private static string FormatPercent(double v)
+    {
+        if (v is < 0.001 and > -0.001) return new string(' ', 7);
+
+        return v > 0 ? $"\u001b[1;31m{v,-7:+0.#%;-0.#%}\u001b[0m"
+                     : $"\u001b[1;32m{v,-7:+0.#%;-0.#%}\u001b[0m";
+    }
+
     public IEnumerable<string> GetSparseComparison(int maxValues = 5,
-                                                   int samples   = 10_000,
+                                                   int samples   = 20_000,
                                                    int seed      = 1337)
     {
         var random = new Random(seed);

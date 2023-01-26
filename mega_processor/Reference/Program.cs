@@ -6,7 +6,7 @@ var harness = new Harness(() => new OriginalSolver(),
 
 var puzzles = File
     .ReadAllLines(@"../../../../../puzzles/sudoku17/puzzles.txt")
-    .Take(10_000)
+    .Take(20_000)
     .Select(Parser.FromLine)
     .ToArray();
 
