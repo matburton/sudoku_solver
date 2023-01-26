@@ -11,5 +11,7 @@ internal interface ISolver
 
     public Counters Counters { get; }
 
+    /// <summary>Also raised when Counters.Solutions changes</summary>
+    ///
     public event Action<Grid> OnGridChange;
 }

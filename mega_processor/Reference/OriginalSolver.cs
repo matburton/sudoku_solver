@@ -53,9 +53,14 @@ internal sealed class OriginalSolver : ISolver
         return _counters.Solutions;
 
     Complete:
-        if (_counters.Solutions is 0) ++_disableRender;
 
-        return ++_counters.Solutions;
+        ++_counters.Solutions; // Code here is a bit different to the .asm
+
+        Render(grid);
+
+        if (_counters.Solutions is 1) ++_disableRender;
+
+        return _counters.Solutions;
     }
     
     private void SetHintAt(G grid, int value, int x, int y)

@@ -1,21 +1,25 @@
 
 using Megaprocessor.Reference.SudokuSolver;
 
-Console.WriteLine("Paste puzzle line:");
+var harness = new Harness(() => new OriginalSolver(),
+                          () => new OriginalSolver());
 
-var grid = Parser.FromLine(Console.ReadLine());
+var puzzles = File
+    .ReadAllLines(@"../../../../../puzzles/sudoku17/puzzles.txt")
+    .Take(10_000)
+    .Select(Parser.FromLine)
+    .ToArray();
 
-var solver = new OriginalSolver();
-
-solver.OnGridChange += g => grid = g;
-
-solver.Solve(grid);
-
-Console.WriteLine(grid.Line);
+var lines = harness.GetPuzzleComparison(puzzles);
 
 Console.WriteLine();
-Console.WriteLine($"Solutions:        {solver.Counters.Solutions}");
-Console.WriteLine($"Impossible grids: {solver.Counters.ImpossibleGrids}");
-Console.WriteLine($"Square 'hits':    {solver.Counters.SquareHits}");
+Console.WriteLine("17-hint puzzles..");
 Console.WriteLine();
-Console.WriteLine(grid.ToAsciiArt());
+Console.WriteLine(string.Join(Environment.NewLine, lines));
+
+lines = harness.GetSparseComparison();
+
+Console.WriteLine();
+Console.WriteLine("Sparse grids...");
+Console.WriteLine();
+Console.WriteLine(string.Join(Environment.NewLine, lines));
