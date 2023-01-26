@@ -35,19 +35,19 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
               chunkDeltas.Take(index).Sum(c => (double)c.SampleCount)
             / chunkDeltas.Sum(c => (double)c.SampleCount);
 
-        yield return $"Comparison of {puzzles.Length} grids:"
-                   + " (easiest @ 0%, hardest @ 100%, negatives better)";
+        yield return $"Comparison using {puzzles.Length} grids:"
+                   + " (easiest @ 0%, hardest @ 100%, negative better)";
 
         for (var index = 0; index < chunkDeltas.Length; ++index)
         {
             var d = chunkDeltas[index];
 
             yield return $"* {ToRatio(index),3:0%} - {ToRatio(index + 1),4:0%}:"
-                       + $" hits@solve: {d.AtSolve.SquareHits,-9:+0;-0}"
-                       + $" hits@end: {d.AtComplete.SquareHits,-9:+0;-0}"
-                       + $" imposs@solve: {d.AtSolve.ImpossibleGrids,-9:+0;-0}"
-                       + $" imposs@end: {d.AtComplete.ImpossibleGrids,-9:+0;-0}"
-                       + $" maxInMem: {d.MaxGridsInMemory,-9:+0;-0}";
+                       + $" hits@solve: {d.AtSolve.SquareHitsRatio,-7:+0.#%;-0.#%;-}"
+                       + $" hits@end: {d.AtComplete.SquareHitsRatio,-7:+0.#%;-0.#%;-}"
+                       + $" imposs@solve: {d.AtSolve.ImpossibleGridsRatio,-7:+0.#%;-0.#%;-}"
+                       + $" imposs@end: {d.AtComplete.ImpossibleGridsRatio,-7:+0.#%;-0.#%;-}"
+                       + $" maxInMem: {d.MaxGridsInMemoryRatio,-7:+0.#%;-0.#%;-}";
         }
     }
 
@@ -76,26 +76,24 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
             (Enumerable.Range(0, samples).Select(_ => CreateGrid()).ToArray());
     }
 
-    private static Deltas ToDeltas(IEnumerable<PuzzleCounters> counters)
+    private static Deltas ToDeltas(PuzzleCounters[] counters)
     {
-        counters = counters.ToArray();
+        var solved = counters.Where(c => c.BaseSolver.Solution is {}).ToArray();
 
-        var solved = counters.Where(c => c.BaseSolver.Solution is {})
-                                     .ToArray();
+        double GetRatio(PuzzleCounters[] a, Func<SolverCounters, int> v) =>
+              a.Sum(c => (double)v(c.NewSolver))
+            / a.Sum(c => (double)v(c.BaseSolver))
+            - 1;
+
         var atSolve = new Delta
-            (  solved.Sum(c => c.NewSolver.AtSolve.SquareHits)
-             - solved.Sum(c => c.BaseSolver.AtSolve.SquareHits),
-               solved.Sum(c => c.NewSolver.AtSolve.ImpossibleGrids)
-             - solved.Sum(c => c.BaseSolver.AtSolve.ImpossibleGrids));
+            (GetRatio(solved, c => c.AtSolve.SquareHits),
+             GetRatio(solved, c => c.AtSolve.ImpossibleGrids));
 
         var atComplete = new Delta
-            (  solved.Sum(c => c.NewSolver.AtComplete.SquareHits)
-             - solved.Sum(c => c.BaseSolver.AtComplete.SquareHits),
-               solved.Sum(c => c.NewSolver.AtComplete.ImpossibleGrids)
-             - solved.Sum(c => c.BaseSolver.AtComplete.ImpossibleGrids));
+            (GetRatio(counters, c => c.AtComplete.SquareHits),
+             GetRatio(counters, c => c.AtComplete.ImpossibleGrids));
 
-        var maxGridsInMemory = counters.Sum(c => c.NewSolver.MaxGridsInMemory)
-                             - counters.Sum(c => c.BaseSolver.MaxGridsInMemory);
+        var maxGridsInMemory = GetRatio(counters, c => c.MaxGridsInMemory);
 
         return new (counters.Count(), atSolve, atComplete, maxGridsInMemory);
     }
@@ -137,10 +135,11 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
                                          Counters AtComplete,
                                          int MaxGridsInMemory);
 
-    private sealed record Delta(int SquareHits, int ImpossibleGrids);
+    private sealed record Delta(double SquareHitsRatio,
+                                double ImpossibleGridsRatio);
 
     private sealed record Deltas(int SampleCount,
                                  Delta AtSolve,
                                  Delta AtComplete,
-                                 int MaxGridsInMemory);
+                                 double MaxGridsInMemoryRatio);
 }
