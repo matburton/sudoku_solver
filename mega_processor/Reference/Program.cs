@@ -2,7 +2,7 @@
 using Megaprocessor.Reference.SudokuSolver;
 
 var harness = new Harness(() => new OriginalSolver(),
-                          () => new OriginalSolver());
+                          () => new BetterSplitValueSolver());
 
 var puzzles = File
     .ReadAllLines(@"../../../../../puzzles/sudoku17/puzzles.txt")

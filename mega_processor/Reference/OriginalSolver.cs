@@ -3,7 +3,7 @@ namespace Megaprocessor.Reference.SudokuSolver;
 
 using static BitInstructions;
 
-internal sealed class OriginalSolver : ISolver
+internal class OriginalSolver : ISolver
 {
     public void Solve(Grid puzzle)
     {
@@ -25,7 +25,7 @@ internal sealed class OriginalSolver : ISolver
         Solve(grid);
     }
 
-    private int Solve(G grid)
+    protected int Solve(G grid)
     {
         if (grid.Impossible) return _counters.Solutions;
 
@@ -85,7 +85,7 @@ internal sealed class OriginalSolver : ISolver
 
     // Assumes the square has the value and had others
     //
-    private void SetValueAt(G grid, int value, int x, int y)
+    protected void SetValueAt(G grid, int value, int x, int y)
     {
         SetSquareValue(grid, value, x, y);
 
@@ -94,7 +94,7 @@ internal sealed class OriginalSolver : ISolver
         RemovePossibilitiesRelatedTo(grid, value, x, y);
     }
 
-    private void RemovePossibilityAt(G grid, int value, int x, int y)
+    protected void RemovePossibilityAt(G grid, int value, int x, int y)
     {
         ++_counters.SquareHits;
 
@@ -163,7 +163,7 @@ internal sealed class OriginalSolver : ISolver
         }
     }
 
-    private static readonly IReadOnlyList<int> SectorOtherCoordLookupFromCoord =
+    protected static readonly IReadOnlyList<int> SectorOtherCoordLookupFromCoord =
         new [] { 1, 2, 0, 2, 0, 1, 4, 5, 3, 5, 3, 4, 7, 8, 6, 8, 6, 7 };
 
     private void RemovePossibilitiesRelatedToSector(G grid, int value, int x, int y)
@@ -277,7 +277,7 @@ internal sealed class OriginalSolver : ISolver
         SpitGridAt(grid, best.x, best.y);
     }
 
-    private void SpitGridAt(G grid, int x, int y)
+    protected virtual void SpitGridAt(G grid, int x, int y)
     {
         // We first check if the stack is getting close to the code/data
 
@@ -443,7 +443,7 @@ internal sealed class OriginalSolver : ISolver
         return value;
     }
 
-    private void Render(G grid)
+    protected void Render(G grid)
     {
         if (_disableRender is 0) OnGridChange(new (grid.ToValues()));
     }
@@ -452,7 +452,7 @@ internal sealed class OriginalSolver : ISolver
 
     public event Action<Grid> OnGridChange =  delegate {};
 
-    private sealed class G
+    protected sealed class G
     {
         public G()
         {
@@ -496,7 +496,7 @@ internal sealed class OriginalSolver : ISolver
         }
     }
 
-    private sealed record Square
+    protected sealed record Square
     {
         public int Possibilities { get; set; }
 
@@ -509,7 +509,7 @@ internal sealed class OriginalSolver : ISolver
 
     private bool _earlyOutThrow;
 
-    private readonly Counters _counters = new () { GridsInMemory = 1 };
+    protected readonly Counters _counters = new () { GridsInMemory = 1 };
 
-    private int _disableRender;
+    protected int _disableRender;
 }

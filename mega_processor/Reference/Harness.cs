@@ -20,7 +20,7 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
                                 + " of solutions for a puzzle");
         }
 
-        if (counters.Where(c => c.BaseSolver.Solution is not null)
+        if (counters.Where(c => c.BaseSolver.AtComplete.Solutions is 1)
                     .Any(c => c.BaseSolver.Solution.Line
                            != c.NewSolver.Solution?.Line))
         {
@@ -35,18 +35,19 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
               chunkDeltas.Take(index).Sum(c => (double)c.SampleCount)
             / chunkDeltas.Sum(c => (double)c.SampleCount);
 
-        yield return "Comparison: (easiest @ 0%, hardest @ 100%, negatives better)";
+        yield return $"Comparison of {puzzles.Length} grids:"
+                   + " (easiest @ 0%, hardest @ 100%, negatives better)";
 
         for (var index = 0; index < chunkDeltas.Length; ++index)
         {
             var d = chunkDeltas[index];
 
             yield return $"* {ToRatio(index),3:0%} - {ToRatio(index + 1),4:0%}:"
-                       + $" hits@solve: {d.AtSolve.SquareHits,-6:+0;-0}"
-                       + $" hits@end: {d.AtComplete.SquareHits,-6:+0;-0}"
-                       + $" imposs@solve: {d.AtSolve.ImpossibleGrids,-6:+0;-0}"
-                       + $" imposs@end: {d.AtComplete.ImpossibleGrids,-6:+0;-0}"
-                       + $" maxInMem: {d.MaxGridsInMemory,-6:+0;-0}";
+                       + $" hits@solve: {d.AtSolve.SquareHits,-9:+0;-0}"
+                       + $" hits@end: {d.AtComplete.SquareHits,-9:+0;-0}"
+                       + $" imposs@solve: {d.AtSolve.ImpossibleGrids,-9:+0;-0}"
+                       + $" imposs@end: {d.AtComplete.ImpossibleGrids,-9:+0;-0}"
+                       + $" maxInMem: {d.MaxGridsInMemory,-9:+0;-0}";
         }
     }
 
