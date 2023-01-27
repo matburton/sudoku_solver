@@ -24,7 +24,7 @@ internal class ValueCountCacheSolver : ISolver
                 }
             }
         }
-        catch (EarlyOutException) {}
+        catch (ImpossibleException) {}
 
         --_disableRender;
 
@@ -76,30 +76,32 @@ internal class ValueCountCacheSolver : ISolver
         {
             RemovePossibilityAt(grid, possibility, x, y);
         }
-        catch (EarlyOutException)
+        catch (ImpossibleException)
         {
             --_disableRender;
 
-            if (grid.Impossible)
+            ++_counters.ImpossibleGrids;
+
+            cloneGrid.CopyTo(grid);
+
+            try
             {
-                ++_counters.ImpossibleGrids;
-
-                cloneGrid.CopyTo(grid);
-
-                try
-                {
-                    SetValueAt(grid, possibility, x, y);
-                }
-                catch (EarlyOutException) {}
-
-                return;
+                SetValueAt(grid, possibility, x, y);
             }
+            catch (ImpossibleException) {}
 
+            return;
+        }
+
+        --_disableRender;
+
+        if (grid.IncompleteSquares is 0)
+        {
             if (_counters.Solutions is not 0) return;
 
             ++_counters.Solutions;
 
-            Render(grid); // Not needed in the real thing
+            Render(grid);
 
             ++_disableRender;
 
@@ -109,12 +111,10 @@ internal class ValueCountCacheSolver : ISolver
             {
                 SetValueAt(grid, possibility, x, y);
             }
-            catch (EarlyOutException) {}
+            catch (ImpossibleException) {}
 
             return;
         }
-
-        --_disableRender;
 
         ++_counters.GridsInMemory;
 
@@ -122,7 +122,7 @@ internal class ValueCountCacheSolver : ISolver
         {
             SetValueAt(cloneGrid, possibility, x, y);
         }
-        catch (EarlyOutException) {}
+        catch (ImpossibleException) {}
 
         SpitGrid(cloneGrid); // Has to be counted!
 
@@ -169,7 +169,7 @@ internal class ValueCountCacheSolver : ISolver
 
             grid.Impossible = true;
 
-            throw new EarlyOutException();
+            throw new ImpossibleException();
         }
         else if (possibilities is not 0)
         {
@@ -204,16 +204,16 @@ internal class ValueCountCacheSolver : ISolver
         {
             grid.Impossible = true;
 
-            throw new EarlyOutException();
+            throw new ImpossibleException();
         }
 
         --square.PossibilityCount;
 
         if (square.PossibilityCount is not 1) return;
 
-        square.Value = CalculateValue(square.Possibilities);
+        --grid.IncompleteSquares;
 
-        if (--grid.IncompleteSquares is 0) throw new EarlyOutException();
+        square.Value = CalculateValue(square.Possibilities);
 
         Render(grid);
 
@@ -273,6 +273,8 @@ internal class ValueCountCacheSolver : ISolver
     //
     private void SetSquareValue(G grid, int value, int x, int y)
     {
+        --grid.IncompleteSquares;
+
         var square = grid.Squares[x, y];
 
         ++_counters.SquareHits;
@@ -282,8 +284,6 @@ internal class ValueCountCacheSolver : ISolver
         square.PossibilityCount = 1;
 
         square.Value = value;
-
-        if (--grid.IncompleteSquares is 0) throw new EarlyOutException();
     }
 
     private int GetAPossibilityAt(G grid, int x, int y)
@@ -385,7 +385,7 @@ internal class ValueCountCacheSolver : ISolver
         public int PossibilityCount { get; set; }
     }
 
-    public sealed class EarlyOutException : Exception {}
+    public sealed class ImpossibleException : Exception {}
 
     protected readonly Counters _counters = new () { GridsInMemory = 1 };
 

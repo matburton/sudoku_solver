@@ -8,16 +8,19 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
     {
         var counters = puzzles
             .AsParallel()
-            .Select(p => new PuzzleCounters(Solve(BaseSolver(), p),
+            .Select(p => new PuzzleCounters(p,
+                                            Solve(BaseSolver(), p),
                                             Solve(NewSolver(),  p)))
             .OrderBy(c => c.BaseSolver.AtComplete.SquareHits)
             .ToArray();
 
-        if (counters.Any(c => c.BaseSolver.AtComplete.Solutions
-                           != c.NewSolver.AtComplete.Solutions))
+        if (counters.Where(c => c.BaseSolver.AtComplete.Solutions
+                             != c.NewSolver.AtComplete.Solutions)
+                    .Take(1)
+                    .ToArray() is [var c])
         {
             throw new Exception("Solvers found different number of"
-                                + " of solutions for a puzzle");
+                                + $" solutions for puzzle: {c.Puzzle.Line}");
         }
 
         if (counters.Where(c => c.BaseSolver.AtComplete.Solutions is 1)
@@ -155,7 +158,8 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
         return new (solution, atSolve, solver.Counters, maxGridsInMemory);
     }
 
-    private sealed record PuzzleCounters(SolverCounters BaseSolver,
+    private sealed record PuzzleCounters(Grid Puzzle,
+                                         SolverCounters BaseSolver,
                                          SolverCounters NewSolver);
 
     private sealed record SolverCounters(Grid Solution,
