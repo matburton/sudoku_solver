@@ -1,11 +1,23 @@
 ﻿
+using System.Diagnostics;
+
 namespace Megaprocessor.Reference.SudokuSolver;
 
 internal sealed record Harness(Func<ISolver> BaseSolver,
                                Func<ISolver> NewSolver)
 {
+    public string VsString =>
+        $"{NewSolver().GetType().Name} vs. {BaseSolver().GetType().Name}";
+
     public IEnumerable<string> GetPuzzleComparison(params Grid[] puzzles)
     {
+        yield return $"Comparison using {puzzles.Length:#,#} grids:"
+                   + " (easiest @ 0%, hardest @ 100%, negative better)";
+
+        var stopwatch = new Stopwatch();
+
+        stopwatch.Start();
+
         var counters = puzzles
             .AsParallel()
             .Select(p => new PuzzleCounters(p,
@@ -38,9 +50,6 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
               chunkDeltas.Take(index).Sum(c => (double)c.SampleCount)
             / chunkDeltas.Sum(c => (double)c.SampleCount);
 
-        yield return $"Comparison using {puzzles.Length:#,#} grids:"
-                   + " (easiest @ 0%, hardest @ 100%, negative better)";
-
         for (var index = 0; index < chunkDeltas.Length; ++index)
         {
             var d = chunkDeltas[index];
@@ -52,6 +61,8 @@ internal sealed record Harness(Func<ISolver> BaseSolver,
                        + $" imposs@end: {FormatPercent(d.AtComplete.ImpossibleGridsRatio)}"
                        + $" maxInMem: {FormatPercent(d.MaxGridsInMemoryRatio)}";
         }
+
+        yield return $"Done in {stopwatch.Elapsed.TotalSeconds:0} second";
     }
 
     private static string FormatPercent(double v)

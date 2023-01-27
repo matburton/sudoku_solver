@@ -2,6 +2,7 @@
 namespace Megaprocessor.Reference.SudokuSolver;
 
 using static BitInstructions;
+using static ValueCountCacheSolver.SliceTypes;
 
 /// <remarks>This doesn't have a new cache or new rules yet</remarks>
 ///
@@ -171,7 +172,8 @@ internal class ValueCountCacheSolver : ISolver
 
             throw new ImpossibleException();
         }
-        else if (possibilities is not 0)
+        
+        if (possibilities is not 0)
         {
             SetValueAt(grid, value, x, y);
         }
@@ -209,13 +211,20 @@ internal class ValueCountCacheSolver : ISolver
 
         --square.PossibilityCount;
 
-        if (square.PossibilityCount is not 1) return;
+        if (square.PossibilityCount is not 1)
+        {
+            DecrementCache(grid, value, x, y);
+
+            return;
+        }
 
         --grid.IncompleteSquares;
 
         square.Value = CalculateValue(square.Possibilities);
 
         Render(grid);
+
+        DecrementCache(grid, value, x, y);
 
         RemovePossibilitiesRelatedTo(grid, square.Value, x, y);
     }
@@ -225,6 +234,89 @@ internal class ValueCountCacheSolver : ISolver
         RemovePossibilitiesRelatedToRow   (grid, value, x, y);
         RemovePossibilitiesRelatedToColumn(grid, value, x, y);
         RemovePossibilitiesRelatedToSector(grid, value, x, y);
+    }
+
+    private void DecrementCache(G grid, int value, int x, int y)
+    {
+        _counters.SquareHits += 3;
+
+        if (--grid.ValueCountCache[Row][y][value - 1] is var r and <= 1)
+        {
+            if (r is 0)
+            {
+                grid.Impossible = true;
+
+                throw new ImpossibleException();
+            }
+
+            for (var index = 8; index >= 0; --index)
+            {
+                ++_counters.SquareHits;
+
+                var possibilities = grid.Squares[index, y].Possibilities;
+
+                if (BitClear(ref possibilities, value) && possibilities is not 0)
+                {
+                    SetValueAt(grid, value, index, y);
+
+                    break;
+                }
+            }
+        }
+
+        if (--grid.ValueCountCache[Column][x][value - 1] is var c and <= 1)
+        {
+            if (c is 0)
+            {
+                grid.Impossible = true;
+
+                throw new ImpossibleException();
+            }
+
+            for (var index = 8; index >= 0; --index)
+            {
+                ++_counters.SquareHits;
+
+                var possibilities = grid.Squares[x, index].Possibilities;
+
+                if (BitClear(ref possibilities, value) && possibilities is not 0)
+                {
+                    SetValueAt(grid, value, x, index);
+
+                    break;
+                }
+            }
+        }
+
+        var i = y / 3 * 3  + x / 3;
+
+        if (--grid.ValueCountCache[Sector][i][value - 1] is var s and <= 1)
+        {
+            if (s is 0)
+            {
+                grid.Impossible = true;
+
+                throw new ImpossibleException();
+            }
+
+            var startX = x / 3 * 3;
+            var startY = y / 3 * 3;
+
+            for (var yIndex = startY; yIndex < startY + 3; ++yIndex)
+            for (var xIndex = startX; xIndex < startX + 3; ++xIndex)
+            {
+                ++_counters.SquareHits;
+
+                var possibilities = grid.Squares[xIndex, yIndex].Possibilities;
+
+                if (BitClear(ref possibilities, value) && possibilities is not 0)
+                {
+                    SetValueAt(grid, value, xIndex, yIndex);
+
+                    break;
+                }
+            }
+        }
     }
 
     private void RemovePossibilitiesRelatedToRow(G grid, int value, int x, int y)
@@ -279,11 +371,23 @@ internal class ValueCountCacheSolver : ISolver
 
         ++_counters.SquareHits;
 
-        square.Possibilities = 1 << value; // Uses bset
+        var mask = 1 << value; // Uses bset
+
+        var lostPossibilities = square.Possibilities & ~mask;
+
+        square.Possibilities = mask;
 
         square.PossibilityCount = 1;
 
         square.Value = value;
+
+        for (var index = 9; index > 0; --index)
+        {
+            if (BitTest(lostPossibilities, index))
+            {
+                DecrementCache(grid, index, x, y);
+            }
+        }
     }
 
     private int GetAPossibilityAt(G grid, int x, int y)
@@ -332,6 +436,8 @@ internal class ValueCountCacheSolver : ISolver
 
     public event Action<Grid> OnGridChange =  delegate {};
 
+    public enum SliceTypes { Row, Column, Sector }
+
     protected sealed class G
     {
         public G()
@@ -346,6 +452,14 @@ internal class ValueCountCacheSolver : ISolver
         }
 
         public Square[,] Squares { get; } = new Square[9, 9];
+
+        // First index is slice index, second is possibility, value is count
+        //
+        public IReadOnlyDictionary<SliceTypes, int[][]> ValueCountCache
+            { get; private set; } = new Dictionary<SliceTypes, int[][]>
+                { { Row,    CreateSliceValueCache() },
+                  { Column, CreateSliceValueCache() },
+                  { Sector, CreateSliceValueCache() } };
 
         public int IncompleteSquares { get; set; } = 81;
 
@@ -362,6 +476,10 @@ internal class ValueCountCacheSolver : ISolver
             target.IncompleteSquares = IncompleteSquares;
 
             target.Impossible = Impossible;
+
+            target.ValueCountCache = ValueCountCache.ToDictionary
+                (p => p.Key,
+                 p => p.Value.Select(a => a.ToArray()).ToArray());
         }
 
         public int?[][] ToValues()
@@ -374,6 +492,11 @@ internal class ValueCountCacheSolver : ISolver
 
             return Enumerable.Range(0, 9).Select(FromRow).ToArray();
         }
+
+        private static int[][] CreateSliceValueCache() =>
+            Enumerable.Range(0, 9)
+                      .Select(_ => Enumerable.Repeat(9, 9).ToArray())
+                      .ToArray();
     }
 
     protected sealed record Square
