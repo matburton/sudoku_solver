@@ -8,7 +8,7 @@ Console.WriteLine(harness.VsString);
 Console.WriteLine();
 
 var puzzles = File
-    .ReadAllLines(@"../../../../../puzzles/sudoku17/puzzles.txt")
+    .ReadAllLines(@"../../puzzles/sudoku17/puzzles.txt")
     .Take(20_000)
     .Select(Parser.FromLine)
     .ToArray();
